@@ -1,0 +1,635 @@
+{
+  "schema": 1,
+  "queries": [
+    {
+      "id": "python-01-1",
+      "query": "derive salted password digest pbkdf2",
+      "fixture": "fixtures/python",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "passwords.py",
+          "symbol": "hash_password",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "passwords.py",
+          "symbol": "verify_password",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "passwords.py",
+          "symbol": "password_help_text",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "passwords.py",
+            "symbol": "verify_password",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "passwords.py",
+            "symbol": "hash_password",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-01-2",
+      "query": "verify supplied password against stored digest",
+      "fixture": "fixtures/python",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "passwords.py",
+          "symbol": "verify_password",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "passwords.py",
+          "symbol": "hash_password",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "passwords.py",
+          "symbol": "password_help_text",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "passwords.py",
+            "symbol": "verify_password",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "passwords.py",
+            "symbol": "hash_password",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-01-3",
+      "query": "password work factor needs upgrade",
+      "fixture": "fixtures/python",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "passwords.py",
+          "symbol": "password_needs_upgrade",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "passwords.py",
+          "symbol": "hash_password",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "passwords.py",
+          "symbol": "password_help_text",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "passwords.py",
+            "symbol": "verify_password",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "passwords.py",
+            "symbol": "hash_password",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-02-1",
+      "query": "queued job scheduled time has arrived",
+      "fixture": "fixtures/python",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "jobs.py",
+          "symbol": "job_ready",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "jobs.py",
+          "symbol": "take_ready_jobs",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "jobs.py",
+          "symbol": "job_dashboard_title",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "jobs.py",
+            "symbol": "take_ready_jobs",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "jobs.py",
+            "symbol": "job_ready",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-02-2",
+      "query": "select jobs eligible for execution",
+      "fixture": "fixtures/python",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "jobs.py",
+          "symbol": "take_ready_jobs",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "jobs.py",
+          "symbol": "job_ready",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "jobs.py",
+          "symbol": "job_dashboard_title",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "jobs.py",
+            "symbol": "take_ready_jobs",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "jobs.py",
+            "symbol": "job_ready",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-02-3",
+      "query": "cancel queued job without interrupting running",
+      "fixture": "fixtures/python",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "jobs.py",
+          "symbol": "cancel_job",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "jobs.py",
+          "symbol": "job_ready",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "jobs.py",
+          "symbol": "job_dashboard_title",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "jobs.py",
+            "symbol": "take_ready_jobs",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "jobs.py",
+            "symbol": "job_ready",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-03-1",
+      "query": "read csv records keyed by column header",
+      "fixture": "fixtures/python",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "csv_reader.py",
+          "symbol": "parse_csv_rows",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "csv_reader.py",
+          "symbol": "import_contacts",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "csv_reader.py",
+          "symbol": "csv_export_filename",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "csv_reader.py",
+            "symbol": "import_contacts",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "csv_reader.py",
+            "symbol": "parse_csv_rows",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-03-2",
+      "query": "validate imported contact email row",
+      "fixture": "fixtures/python",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "csv_reader.py",
+          "symbol": "valid_email_row",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "csv_reader.py",
+          "symbol": "import_contacts",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "csv_reader.py",
+          "symbol": "csv_export_filename",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "csv_reader.py",
+            "symbol": "import_contacts",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "csv_reader.py",
+            "symbol": "valid_email_row",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-03-3",
+      "query": "import contacts filtering invalid email addresses",
+      "fixture": "fixtures/python",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "csv_reader.py",
+          "symbol": "import_contacts",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "csv_reader.py",
+          "symbol": "valid_email_row",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "csv_reader.py",
+          "symbol": "csv_export_filename",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "csv_reader.py",
+            "symbol": "import_contacts",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "csv_reader.py",
+            "symbol": "parse_csv_rows",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-04-1",
+      "query": "remaining request quota never negative",
+      "fixture": "fixtures/python",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "rate_limit.py",
+          "symbol": "remaining_quota",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "rate_limit.py",
+          "symbol": "allow_request",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "rate_limit.py",
+          "symbol": "rate_limit_chart_label",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "rate_limit.py",
+            "symbol": "allow_request",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "rate_limit.py",
+            "symbol": "remaining_quota",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-04-2",
+      "query": "allow request only below rate limit",
+      "fixture": "fixtures/python",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "rate_limit.py",
+          "symbol": "allow_request",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "rate_limit.py",
+          "symbol": "remaining_quota",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "rate_limit.py",
+          "symbol": "rate_limit_chart_label",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "rate_limit.py",
+            "symbol": "allow_request",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "rate_limit.py",
+            "symbol": "remaining_quota",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-04-3",
+      "query": "retry after seconds until quota reset",
+      "fixture": "fixtures/python",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "rate_limit.py",
+          "symbol": "retry_after",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "rate_limit.py",
+          "symbol": "allow_request",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "rate_limit.py",
+          "symbol": "rate_limit_chart_label",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "rate_limit.py",
+            "symbol": "allow_request",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "rate_limit.py",
+            "symbol": "remaining_quota",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-05-1",
+      "query": "resolve relative workspace filename",
+      "fixture": "fixtures/python",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "paths.py",
+          "symbol": "resolve_workspace",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "paths.py",
+          "symbol": "is_within_workspace",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "paths.py",
+          "symbol": "workspace_breadcrumb",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "paths.py",
+            "symbol": "is_within_workspace",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "paths.py",
+            "symbol": "resolve_workspace",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-05-2",
+      "query": "reject directory traversal outside workspace",
+      "fixture": "fixtures/python",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "paths.py",
+          "symbol": "is_within_workspace",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "paths.py",
+          "symbol": "resolve_workspace",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "paths.py",
+          "symbol": "workspace_breadcrumb",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "paths.py",
+            "symbol": "is_within_workspace",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "paths.py",
+            "symbol": "resolve_workspace",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "python-05-3",
+      "query": "read workspace file after path validation",
+      "fixture": "fixtures/python",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "paths.py",
+          "symbol": "read_workspace_file",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "paths.py",
+          "symbol": "is_within_workspace",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "paths.py",
+          "symbol": "workspace_breadcrumb",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "paths.py",
+            "symbol": "read_workspace_file",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "paths.py",
+            "symbol": "is_within_workspace",
+            "kind": "function"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 use std::fs::OpenOptions;
-use std::io::BufWriter;
+use std::io::{BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
 use std::time::{Instant, UNIX_EPOCH};
 
@@ -13,25 +13,30 @@ use crate::model::Symbol;
 use crate::parser::SymbolExtractor;
 use crate::repository::load_source_file;
 
-const CACHE_SCHEMA: u32 = 3;
+const CACHE_SCHEMA: u32 = 4;
+pub const CACHE_FINGERPRINT: &str = env!("FLEXCONTEXT_CACHE_FINGERPRINT");
 const CACHE_DIRECTORY: &str = ".flexcontext";
-const CACHE_FILE: &str = "index-v3.json";
+const CACHE_FILE: &str = "index.json";
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 struct FileFingerprint {
     bytes: u64,
     modified_ns: u128,
+    identity: Option<(u64, u64, i64, i64)>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct CachedFile {
     fingerprint: FileFingerprint,
+    source: std::sync::Arc<str>,
+    imports: std::sync::Arc<[String]>,
     symbols: Vec<Symbol>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct RepositoryCache {
     schema: u32,
+    compatibility: String,
     files: BTreeMap<String, CachedFile>,
     index: LexicalIndex,
 }
@@ -39,6 +44,7 @@ struct RepositoryCache {
 #[derive(Serialize)]
 struct RepositoryCacheRef<'a> {
     schema: u32,
+    compatibility: &'a str,
     files: &'a BTreeMap<String, CachedFile>,
     index: &'a LexicalIndex,
 }
@@ -49,6 +55,7 @@ pub struct IndexedRepository {
     pub index: LexicalIndex,
     pub source_bytes: usize,
     pub files_available: usize,
+    pub files_skipped: usize,
     pub files_reused: usize,
     pub files_reparsed: usize,
     pub index_reused: bool,
@@ -66,12 +73,12 @@ pub fn load_indexed_repository(
     let stage = Instant::now();
     let mut old_cache = if use_cache { read_cache(root) } else { None };
     let cache_load_us = stage.elapsed().as_micros();
-    let old_cache_valid = old_cache
-        .as_ref()
-        .is_some_and(|cache| cache.schema == CACHE_SCHEMA);
+    let old_cache_valid = old_cache.as_ref().is_some_and(|cache| {
+        cache.schema == CACHE_SCHEMA && cache.compatibility == CACHE_FINGERPRINT
+    });
     let mut old_files = old_cache
         .as_mut()
-        .filter(|cache| cache.schema == CACHE_SCHEMA)
+        .filter(|cache| cache.schema == CACHE_SCHEMA && cache.compatibility == CACHE_FINGERPRINT)
         .map(|cache| std::mem::take(&mut cache.files))
         .unwrap_or_default();
     let mut files = BTreeMap::new();
@@ -82,6 +89,7 @@ pub fn load_indexed_repository(
 
     let mut changed = Vec::new();
     for path in paths {
+        crate::repository::check_cancelled()?;
         let relative = relative_path(root, path);
         let fingerprint = fingerprint(path)?;
         source_bytes += fingerprint.bytes as usize;
@@ -108,6 +116,14 @@ pub fn load_indexed_repository(
                     relative.clone(),
                     CachedFile {
                         fingerprint: fingerprint.clone(),
+                        source: symbols
+                            .first()
+                            .map(|s| s.source.clone())
+                            .unwrap_or_else(|| std::sync::Arc::from(file.source)),
+                        imports: symbols
+                            .first()
+                            .map(|s| s.imports.clone())
+                            .unwrap_or_default(),
                         symbols,
                     },
                 )))
@@ -120,24 +136,25 @@ pub fn load_indexed_repository(
     }
     let parse_and_extract_us = parse_stage.elapsed().as_micros();
     let removed_files = !old_files.is_empty();
-    let mut symbols: Vec<_> = files
-        .values()
-        .flat_map(|file| file.symbols.iter().cloned())
-        .collect();
-    for (id, symbol) in symbols.iter_mut().enumerate() {
-        symbol.id = id;
+    let mut next_id = 0;
+    for file in files.values_mut() {
+        for symbol in &mut file.symbols {
+            symbol.id = next_id;
+            next_id += 1;
+        }
     }
 
     let index_stage = Instant::now();
     let index_reused = use_cache
         && old_cache_valid
+        && changed.is_empty()
         && files_reparsed == 0
         && !removed_files
         && files_reused == files.len();
     let index = if index_reused {
         old_cache.expect("validated cache exists").index
     } else {
-        LexicalIndex::build(&symbols)
+        LexicalIndex::build_iter(files.values().flat_map(|file| file.symbols.iter()))
     };
     let index_us = index_stage.elapsed().as_micros();
 
@@ -147,8 +164,11 @@ pub fn load_indexed_repository(
     }
     let cache_write_us = write_stage.elapsed().as_micros();
 
+    let files_available = files.len();
+    let symbols = files.into_values().flat_map(|file| file.symbols).collect();
     Ok(IndexedRepository {
-        files_available: paths.len(),
+        files_available,
+        files_skipped: paths.len() - files_available,
         symbols,
         index,
         source_bytes,
@@ -163,8 +183,21 @@ pub fn load_indexed_repository(
 }
 
 fn read_cache(root: &Path) -> Option<RepositoryCache> {
-    let bytes = std::fs::read(cache_path(root)).ok()?;
-    serde_json::from_slice(&bytes).ok()
+    let file = std::fs::File::open(cache_path(root)).ok()?;
+    let mut cache: RepositoryCache = serde_json::from_reader(BufReader::new(file)).ok()?;
+    if cache.schema != CACHE_SCHEMA || cache.compatibility != CACHE_FINGERPRINT {
+        return None;
+    }
+    for file in cache.files.values_mut() {
+        for symbol in &mut file.symbols {
+            symbol.source = file.source.clone();
+            symbol.imports = file.imports.clone();
+            if !symbol.valid_ranges() {
+                return None;
+            }
+        }
+    }
+    Some(cache)
 }
 
 fn write_cache(
@@ -182,15 +215,19 @@ fn write_cache(
         .write(true)
         .open(&temporary)
         .with_context(|| format!("cannot write cache {}", temporary.display()))?;
+    let mut writer = BufWriter::new(file);
     serde_json::to_writer(
-        BufWriter::new(file),
+        &mut writer,
         &RepositoryCacheRef {
             schema: CACHE_SCHEMA,
+            compatibility: CACHE_FINGERPRINT,
             files,
             index,
         },
     )
     .with_context(|| format!("cannot serialize cache {}", temporary.display()))?;
+    writer.flush()?;
+    drop(writer);
     std::fs::rename(&temporary, cache_path(root))
         .with_context(|| format!("cannot install cache in {}", directory.display()))?;
     Ok(())
@@ -215,8 +252,21 @@ fn fingerprint(path: &Path) -> Result<FileFingerprint> {
         .ok()
         .and_then(|time| time.duration_since(UNIX_EPOCH).ok())
         .map_or(0, |duration| duration.as_nanos());
+    #[cfg(unix)]
+    let identity = {
+        use std::os::unix::fs::MetadataExt;
+        Some((
+            metadata.dev(),
+            metadata.ino(),
+            metadata.ctime(),
+            metadata.ctime_nsec(),
+        ))
+    };
+    #[cfg(not(unix))]
+    let identity = None;
     Ok(FileFingerprint {
         bytes: metadata.len(),
         modified_ns,
+        identity,
     })
 }

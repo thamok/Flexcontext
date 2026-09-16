@@ -12,6 +12,10 @@ pub struct LexicalIndex {
 
 impl LexicalIndex {
     pub fn build(symbols: &[Symbol]) -> Self {
+        Self::build_iter(symbols.iter())
+    }
+
+    pub fn build_iter<'a>(symbols: impl IntoIterator<Item = &'a Symbol>) -> Self {
         let mut postings: BTreeMap<String, Vec<usize>> = BTreeMap::new();
         for symbol in symbols {
             let mut keys = BTreeSet::new();
@@ -20,9 +24,9 @@ impl LexicalIndex {
                 symbol.name.as_str(),
                 symbol.containing_symbol.as_deref().unwrap_or(""),
                 &symbol.path,
-                &symbol.comments,
-                &symbol.signature,
-                &symbol.body,
+                &symbol.comments(),
+                symbol.signature(),
+                symbol.body(),
             ] {
                 add_text_keys(&mut keys, text);
             }
@@ -92,11 +96,16 @@ mod tests {
             end_byte: 2,
             start_line: 1,
             end_line: 1,
-            signature: "fn authenticate_user()".to_owned(),
-            body: "{}".to_owned(),
-            comments: String::new(),
-            content: "{}".to_owned(),
-            imports: Vec::new(),
+            source: std::sync::Arc::from(format!(
+                "{}{}",
+                "{}".to_owned(),
+                "fn authenticate_user()".to_owned()
+            )),
+            signature_range: ("{}".to_owned()).len()
+                ..("{}".to_owned()).len() + ("fn authenticate_user()".to_owned()).len(),
+            body_range: 0..("{}".to_owned()).len(),
+            comment_ranges: Vec::new(),
+            imports: std::sync::Arc::from([]),
             identifiers: Vec::new(),
             type_references: Vec::new(),
             calls: Vec::new(),

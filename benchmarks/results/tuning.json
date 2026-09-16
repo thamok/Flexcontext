@@ -1,0 +1,58 @@
+{
+  "method": "two coordinate passes, factors 0.5 and 1.5; development nDCG then MRR; fixed zero import weight; no automatic default changes",
+  "trials": 29,
+  "weights": {
+    "exact_name_weight": 12.0,
+    "normalized_name_weight": 10.0,
+    "identifier_weight": 3.75,
+    "body_weight": 1.7999999999999998,
+    "call_edge_weight": 3.0,
+    "container_edge_weight": 4.5,
+    "import_edge_weight": 0.0,
+    "diversity_penalty": 0.5
+  },
+  "baseline": {
+    "dev": {
+      "queries": 36,
+      "recall_at_k": 0.9444444444444444,
+      "mrr": 0.6814814814814814,
+      "ndcg_at_k": 0.7725471731447295,
+      "relationship_recall": 0.5833333333333334,
+      "mean_source_bytes": 500.0,
+      "mean_serialized_bytes": 8102.361111111111,
+      "mean_estimated_tokens": 2026.0555555555557
+    },
+    "test": {
+      "queries": 24,
+      "recall_at_k": 0.9583333333333334,
+      "mrr": 0.7131944444444444,
+      "ndcg_at_k": 0.7812650985021015,
+      "relationship_recall": 0.5833333333333334,
+      "mean_source_bytes": 523.8333333333334,
+      "mean_serialized_bytes": 8258.75,
+      "mean_estimated_tokens": 2065.0833333333335
+    }
+  },
+  "selected": {
+    "dev": {
+      "queries": 36,
+      "recall_at_k": 0.9722222222222222,
+      "mrr": 0.7685185185185186,
+      "ndcg_at_k": 0.835776562508425,
+      "relationship_recall": 0.75,
+      "mean_source_bytes": 519.75,
+      "mean_serialized_bytes": 8207.666666666666,
+      "mean_estimated_tokens": 2052.25
+    },
+    "test": {
+      "queries": 24,
+      "recall_at_k": 1.0,
+      "mrr": 0.767361111111111,
+      "ndcg_at_k": 0.8298319845598652,
+      "relationship_recall": 0.625,
+      "mean_source_bytes": 539.7083333333334,
+      "mean_serialized_bytes": 8433.0,
+      "mean_estimated_tokens": 2108.625
+    }
+  }
+}

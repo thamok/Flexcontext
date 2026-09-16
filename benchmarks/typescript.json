@@ -1,0 +1,635 @@
+{
+  "schema": 1,
+  "queries": [
+    {
+      "id": "typescript-01-1",
+      "query": "parse HTTP request line method path",
+      "fixture": "fixtures/typescript",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "request.ts",
+          "symbol": "parseRequest",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "request.ts",
+          "symbol": "ParsedRequest",
+          "kind": "interface"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "request.ts",
+          "symbol": "requestLogTitle",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "request.ts",
+            "symbol": "parseRequest",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "request.ts",
+            "symbol": "normalizeMethod",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "typescript-01-2",
+      "query": "trim and uppercase HTTP method",
+      "fixture": "fixtures/typescript",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "request.ts",
+          "symbol": "normalizeMethod",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "request.ts",
+          "symbol": "parseRequest",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "request.ts",
+          "symbol": "requestLogTitle",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "request.ts",
+            "symbol": "parseRequest",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "request.ts",
+            "symbol": "normalizeMethod",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "typescript-01-3",
+      "query": "reject unsupported request methods",
+      "fixture": "fixtures/typescript",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "request.ts",
+          "symbol": "isAllowedMethod",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "request.ts",
+          "symbol": "normalizeMethod",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "request.ts",
+          "symbol": "requestLogTitle",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "request.ts",
+            "symbol": "isAllowedMethod",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "request.ts",
+            "symbol": "normalizeMethod",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "typescript-02-1",
+      "query": "decode pagination cursor from query string",
+      "fixture": "fixtures/typescript",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "pagination.ts",
+          "symbol": "decodeCursor",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "pagination.ts",
+          "symbol": "Page",
+          "kind": "interface"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "pagination.ts",
+          "symbol": "paginationIcon",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "pagination.ts",
+            "symbol": "parsePage",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "pagination.ts",
+            "symbol": "decodeCursor",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "typescript-02-2",
+      "query": "bound requested page size to hundred",
+      "fixture": "fixtures/typescript",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "pagination.ts",
+          "symbol": "clampPageSize",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "pagination.ts",
+          "symbol": "Page",
+          "kind": "interface"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "pagination.ts",
+          "symbol": "paginationIcon",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "pagination.ts",
+            "symbol": "parsePage",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "pagination.ts",
+            "symbol": "clampPageSize",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "typescript-02-3",
+      "query": "parse cursor and page size parameters",
+      "fixture": "fixtures/typescript",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "pagination.ts",
+          "symbol": "parsePage",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "pagination.ts",
+          "symbol": "decodeCursor",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "pagination.ts",
+          "symbol": "paginationIcon",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "pagination.ts",
+            "symbol": "parsePage",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "pagination.ts",
+            "symbol": "decodeCursor",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "typescript-03-1",
+      "query": "expired login session timestamp comparison",
+      "fixture": "fixtures/typescript",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "session.ts",
+          "symbol": "sessionExpired",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "session.ts",
+          "symbol": "Session",
+          "kind": "interface"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "session.ts",
+          "symbol": "sessionPanelTitle",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "session.ts",
+            "symbol": "sessionUser",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "session.ts",
+            "symbol": "sessionExpired",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "typescript-03-2",
+      "query": "get authenticated user from active session",
+      "fixture": "fixtures/typescript",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "session.ts",
+          "symbol": "sessionUser",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "session.ts",
+          "symbol": "sessionExpired",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "session.ts",
+          "symbol": "sessionPanelTitle",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "session.ts",
+            "symbol": "sessionUser",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "session.ts",
+            "symbol": "sessionExpired",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "typescript-03-3",
+      "query": "refresh session expiry preserving user",
+      "fixture": "fixtures/typescript",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "session.ts",
+          "symbol": "refreshSession",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "session.ts",
+          "symbol": "Session",
+          "kind": "interface"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "session.ts",
+          "symbol": "sessionPanelTitle",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "session.ts",
+            "symbol": "refreshSession",
+            "kind": "function"
+          },
+          "kind": "type_reference",
+          "target": {
+            "path": "session.ts",
+            "symbol": "Session",
+            "kind": "interface"
+          }
+        }
+      ]
+    },
+    {
+      "id": "typescript-04-1",
+      "query": "reject uploads exceeding byte limit",
+      "fixture": "fixtures/typescript",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "upload.ts",
+          "symbol": "validateUploadSize",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "upload.ts",
+          "symbol": "Upload",
+          "kind": "interface"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "upload.ts",
+          "symbol": "uploadProgressLabel",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "upload.ts",
+            "symbol": "prepareUpload",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "upload.ts",
+            "symbol": "validateUploadSize",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "typescript-04-2",
+      "query": "strip directories from uploaded filename",
+      "fixture": "fixtures/typescript",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "upload.ts",
+          "symbol": "safeUploadName",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "upload.ts",
+          "symbol": "prepareUpload",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "upload.ts",
+          "symbol": "uploadProgressLabel",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "upload.ts",
+            "symbol": "prepareUpload",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "upload.ts",
+            "symbol": "safeUploadName",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "typescript-04-3",
+      "query": "prepare validated upload storage name",
+      "fixture": "fixtures/typescript",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "upload.ts",
+          "symbol": "prepareUpload",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "upload.ts",
+          "symbol": "validateUploadSize",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "upload.ts",
+          "symbol": "uploadProgressLabel",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "upload.ts",
+            "symbol": "prepareUpload",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "upload.ts",
+            "symbol": "safeUploadName",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "typescript-05-1",
+      "query": "deduplicate webhook delivery by event id",
+      "fixture": "fixtures/typescript",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "webhook.ts",
+          "symbol": "alreadyDelivered",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "webhook.ts",
+          "symbol": "WebhookEvent",
+          "kind": "interface"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "webhook.ts",
+          "symbol": "webhookSettingsTitle",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "webhook.ts",
+            "symbol": "acceptWebhook",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "webhook.ts",
+            "symbol": "alreadyDelivered",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "typescript-05-2",
+      "query": "record successful webhook delivery",
+      "fixture": "fixtures/typescript",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "webhook.ts",
+          "symbol": "markDelivered",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "webhook.ts",
+          "symbol": "WebhookEvent",
+          "kind": "interface"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "webhook.ts",
+          "symbol": "webhookSettingsTitle",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "webhook.ts",
+            "symbol": "acceptWebhook",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "webhook.ts",
+            "symbol": "markDelivered",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "typescript-05-3",
+      "query": "accept webhook event at most once",
+      "fixture": "fixtures/typescript",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "webhook.ts",
+          "symbol": "acceptWebhook",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "webhook.ts",
+          "symbol": "alreadyDelivered",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "webhook.ts",
+          "symbol": "webhookSettingsTitle",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "webhook.ts",
+            "symbol": "acceptWebhook",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "webhook.ts",
+            "symbol": "markDelivered",
+            "kind": "function"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,635 @@
+{
+  "schema": 1,
+  "queries": [
+    {
+      "id": "rust-01-1",
+      "query": "where is the bearer prefix removed",
+      "fixture": "fixtures/rust",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "auth.rs",
+          "symbol": "decode_bearer",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "auth.rs",
+          "symbol": "Claims",
+          "kind": "struct"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "auth.rs",
+          "symbol": "authentication_heading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "auth.rs",
+            "symbol": "authenticate_request",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "auth.rs",
+            "symbol": "decode_bearer",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rust-01-2",
+      "query": "reject expired credentials using current time",
+      "fixture": "fixtures/rust",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "auth.rs",
+          "symbol": "validate_expiry",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "auth.rs",
+          "symbol": "Claims",
+          "kind": "struct"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "auth.rs",
+          "symbol": "authentication_heading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "auth.rs",
+            "symbol": "authenticate_request",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "auth.rs",
+            "symbol": "validate_expiry",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rust-01-3",
+      "query": "authenticate request from authorization header",
+      "fixture": "fixtures/rust",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "auth.rs",
+          "symbol": "authenticate_request",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "auth.rs",
+          "symbol": "decode_bearer",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "auth.rs",
+          "symbol": "authentication_heading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "auth.rs",
+            "symbol": "authenticate_request",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "auth.rs",
+            "symbol": "decode_bearer",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rust-02-1",
+      "query": "cache hit must respect ttl expiration",
+      "fixture": "fixtures/rust",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "cache.rs",
+          "symbol": "lookup_cache",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "cache.rs",
+          "symbol": "is_fresh",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "cache.rs",
+          "symbol": "cache_directory_label",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "cache.rs",
+            "symbol": "lookup_cache",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "cache.rs",
+            "symbol": "is_fresh",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rust-02-2",
+      "query": "remove stale cache entries",
+      "fixture": "fixtures/rust",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "cache.rs",
+          "symbol": "evict_expired",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "cache.rs",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "cache.rs",
+          "symbol": "cache_directory_label",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "cache.rs",
+            "symbol": "evict_expired",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "cache.rs",
+            "symbol": "is_fresh",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rust-02-3",
+      "query": "compare cache expiry timestamp",
+      "fixture": "fixtures/rust",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "cache.rs",
+          "symbol": "is_fresh",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "cache.rs",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "cache.rs",
+          "symbol": "cache_directory_label",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "cache.rs",
+            "symbol": "lookup_cache",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "cache.rs",
+            "symbol": "is_fresh",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rust-03-1",
+      "query": "exponential backoff delay calculation",
+      "fixture": "fixtures/rust",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "retry.rs",
+          "symbol": "retry_delay",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "retry.rs",
+          "symbol": "RetryPolicy",
+          "kind": "struct"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "retry.rs",
+          "symbol": "retry_button_text",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "retry.rs",
+            "symbol": "schedule_retry",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "retry.rs",
+            "symbol": "retry_delay",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rust-03-2",
+      "query": "stop retries after maximum attempts",
+      "fixture": "fixtures/rust",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "retry.rs",
+          "symbol": "should_retry",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "retry.rs",
+          "symbol": "RetryPolicy",
+          "kind": "struct"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "retry.rs",
+          "symbol": "retry_button_text",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "retry.rs",
+            "symbol": "schedule_retry",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "retry.rs",
+            "symbol": "should_retry",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rust-03-3",
+      "query": "schedule another failed job attempt",
+      "fixture": "fixtures/rust",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "retry.rs",
+          "symbol": "schedule_retry",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "retry.rs",
+          "symbol": "retry_delay",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "retry.rs",
+          "symbol": "retry_button_text",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "retry.rs",
+            "symbol": "schedule_retry",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "retry.rs",
+            "symbol": "retry_delay",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rust-04-1",
+      "query": "reject zero or invalid server port",
+      "fixture": "fixtures/rust",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "config.rs",
+          "symbol": "parse_port",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "config.rs",
+          "symbol": "ServerConfig",
+          "kind": "struct"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "config.rs",
+          "symbol": "configuration_help",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "config.rs",
+            "symbol": "load_server_config",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "config.rs",
+            "symbol": "parse_port",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rust-04-2",
+      "query": "load server config from environment",
+      "fixture": "fixtures/rust",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "config.rs",
+          "symbol": "load_server_config",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "config.rs",
+          "symbol": "parse_port",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "config.rs",
+          "symbol": "configuration_help",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "config.rs",
+            "symbol": "load_server_config",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "config.rs",
+            "symbol": "parse_port",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rust-04-3",
+      "query": "format listener host and port address",
+      "fixture": "fixtures/rust",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "config.rs",
+          "symbol": "bind_address",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "config.rs",
+          "symbol": "ServerConfig",
+          "kind": "struct"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "config.rs",
+          "symbol": "configuration_help",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "config.rs",
+            "symbol": "load_server_config",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "config.rs",
+            "symbol": "parse_port",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rust-05-1",
+      "query": "atomic save records via temporary file rename",
+      "fixture": "fixtures/rust",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "storage.rs",
+          "symbol": "save_records",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "storage.rs",
+          "symbol": "encode_record",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "storage.rs",
+          "symbol": "storage_status_label",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "storage.rs",
+            "symbol": "save_records",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "storage.rs",
+            "symbol": "encode_record",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rust-05-2",
+      "query": "tab separated record encoding",
+      "fixture": "fixtures/rust",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "storage.rs",
+          "symbol": "encode_record",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "storage.rs",
+          "symbol": "Record",
+          "kind": "struct"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "storage.rs",
+          "symbol": "storage_status_label",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "storage.rs",
+            "symbol": "encode_record",
+            "kind": "function"
+          },
+          "kind": "type_reference",
+          "target": {
+            "path": "storage.rs",
+            "symbol": "Record",
+            "kind": "struct"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rust-05-3",
+      "query": "decode persisted key value line",
+      "fixture": "fixtures/rust",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "storage.rs",
+          "symbol": "decode_record",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "storage.rs",
+          "symbol": "Record",
+          "kind": "struct"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "storage.rs",
+          "symbol": "storage_status_label",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "storage.rs",
+            "symbol": "decode_record",
+            "kind": "function"
+          },
+          "kind": "type_reference",
+          "target": {
+            "path": "storage.rs",
+            "symbol": "Record",
+            "kind": "struct"
+          }
+        }
+      ]
+    }
+  ]
+}

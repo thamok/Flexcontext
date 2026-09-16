@@ -1,0 +1,305 @@
+{
+  "root": "benchmarks/fixtures/typescript",
+  "measured_at": "2026-09-16T15:42:46.450090+00:00",
+  "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "binary_sha256": "c6ccf1c95eddb167e6f3aaad6b8c698ad6056c18d387c7e3d68a91c41cd609d4",
+  "startup_ms": 7.630708998476621,
+  "repeats": 3,
+  "results": [
+    {
+      "query": "auth",
+      "median_ms": 0.06670800212305039,
+      "p95_ms": 0.08600000001024455,
+      "ranking_median_ms": 0.001,
+      "relationships_median_ms": 0.0,
+      "selection_median_ms": 0.0,
+      "stats": {
+        "approximate_tokens": 0,
+        "cache_load_us": 0,
+        "cache_write_us": 0,
+        "candidate_and_ranking_us": 1,
+        "candidate_symbols": 0,
+        "elapsed_us": 1,
+        "files_indexed": 5,
+        "files_parsed": 0,
+        "files_reparsed": 0,
+        "files_reused": 5,
+        "files_scanned": 5,
+        "human_payload_bytes": 338,
+        "index_reused": true,
+        "index_us": 0,
+        "json_payload_bytes": 1408,
+        "parse_and_extract_us": 0,
+        "relationship_us": 0,
+        "returned_bytes": 0,
+        "returned_symbols": 0,
+        "scan": {
+          "depth_limited_directories": 0,
+          "excluded_directories": 0,
+          "files_scanned": 5,
+          "oversized_files": 0,
+          "source_bytes": 3367
+        },
+        "selection_us": 0,
+        "skipped_binary_or_unreadable_files": 0,
+        "source_bytes": 3367,
+        "symbols": 26,
+        "traversal_us": 0
+      },
+      "context_cost": {
+        "estimated_tokens": 343,
+        "representation": "mcp-jsonrpc",
+        "selection_budget": 16384,
+        "serialized_bytes": 1369,
+        "source_bytes": 0,
+        "token_budget": null
+      },
+      "symbols": []
+    },
+    {
+      "query": "authentication",
+      "median_ms": 0.05149999924469739,
+      "p95_ms": 0.054332998843165115,
+      "ranking_median_ms": 0.0,
+      "relationships_median_ms": 0.0,
+      "selection_median_ms": 0.0,
+      "stats": {
+        "approximate_tokens": 0,
+        "cache_load_us": 0,
+        "cache_write_us": 0,
+        "candidate_and_ranking_us": 0,
+        "candidate_symbols": 0,
+        "elapsed_us": 1,
+        "files_indexed": 5,
+        "files_parsed": 0,
+        "files_reparsed": 0,
+        "files_reused": 5,
+        "files_scanned": 5,
+        "human_payload_bytes": 338,
+        "index_reused": true,
+        "index_us": 0,
+        "json_payload_bytes": 1418,
+        "parse_and_extract_us": 0,
+        "relationship_us": 0,
+        "returned_bytes": 0,
+        "returned_symbols": 0,
+        "scan": {
+          "depth_limited_directories": 0,
+          "excluded_directories": 0,
+          "files_scanned": 5,
+          "oversized_files": 0,
+          "source_bytes": 3367
+        },
+        "selection_us": 0,
+        "skipped_binary_or_unreadable_files": 0,
+        "source_bytes": 3367,
+        "symbols": 26,
+        "traversal_us": 0
+      },
+      "context_cost": {
+        "estimated_tokens": 345,
+        "representation": "mcp-jsonrpc",
+        "selection_budget": 16384,
+        "serialized_bytes": 1379,
+        "source_bytes": 0,
+        "token_budget": null
+      },
+      "symbols": []
+    },
+    {
+      "query": "validate token",
+      "median_ms": 0.17195899999933317,
+      "p95_ms": 0.2061669983959291,
+      "ranking_median_ms": 0.002,
+      "relationships_median_ms": 0.001,
+      "selection_median_ms": 0.002,
+      "stats": {
+        "approximate_tokens": 77,
+        "cache_load_us": 0,
+        "cache_write_us": 0,
+        "candidate_and_ranking_us": 1,
+        "candidate_symbols": 2,
+        "elapsed_us": 6,
+        "files_indexed": 5,
+        "files_parsed": 0,
+        "files_reparsed": 0,
+        "files_reused": 5,
+        "files_scanned": 5,
+        "human_payload_bytes": 1052,
+        "index_reused": true,
+        "index_us": 0,
+        "json_payload_bytes": 6182,
+        "parse_and_extract_us": 0,
+        "relationship_us": 1,
+        "returned_bytes": 307,
+        "returned_symbols": 3,
+        "scan": {
+          "depth_limited_directories": 0,
+          "excluded_directories": 0,
+          "files_scanned": 5,
+          "oversized_files": 0,
+          "source_bytes": 3367
+        },
+        "selection_us": 2,
+        "skipped_binary_or_unreadable_files": 0,
+        "source_bytes": 3367,
+        "symbols": 26,
+        "traversal_us": 0
+      },
+      "context_cost": {
+        "estimated_tokens": 1154,
+        "representation": "mcp-jsonrpc",
+        "selection_budget": 16384,
+        "serialized_bytes": 4615,
+        "source_bytes": 307,
+        "token_budget": null
+      },
+      "symbols": [
+        {
+          "symbol": "validateUploadSize",
+          "path": "upload.ts",
+          "bytes": 108,
+          "sliced": false
+        },
+        {
+          "symbol": "prepareUpload",
+          "path": "upload.ts",
+          "bytes": 147,
+          "sliced": false
+        },
+        {
+          "symbol": "Upload",
+          "path": "upload.ts",
+          "bytes": 52,
+          "sliced": false
+        }
+      ]
+    },
+    {
+      "query": "IPluginAuth",
+      "median_ms": 0.04850000186706893,
+      "p95_ms": 0.0503330011270009,
+      "ranking_median_ms": 0.001,
+      "relationships_median_ms": 0.0,
+      "selection_median_ms": 0.0,
+      "stats": {
+        "approximate_tokens": 0,
+        "cache_load_us": 0,
+        "cache_write_us": 0,
+        "candidate_and_ranking_us": 1,
+        "candidate_symbols": 0,
+        "elapsed_us": 1,
+        "files_indexed": 5,
+        "files_parsed": 0,
+        "files_reparsed": 0,
+        "files_reused": 5,
+        "files_scanned": 5,
+        "human_payload_bytes": 338,
+        "index_reused": true,
+        "index_us": 0,
+        "json_payload_bytes": 1415,
+        "parse_and_extract_us": 0,
+        "relationship_us": 0,
+        "returned_bytes": 0,
+        "returned_symbols": 0,
+        "scan": {
+          "depth_limited_directories": 0,
+          "excluded_directories": 0,
+          "files_scanned": 5,
+          "oversized_files": 0,
+          "source_bytes": 3367
+        },
+        "selection_us": 0,
+        "skipped_binary_or_unreadable_files": 0,
+        "source_bytes": 3367,
+        "symbols": 26,
+        "traversal_us": 0
+      },
+      "context_cost": {
+        "estimated_tokens": 345,
+        "representation": "mcp-jsonrpc",
+        "selection_budget": 16384,
+        "serialized_bytes": 1377,
+        "source_bytes": 0,
+        "token_budget": null
+      },
+      "symbols": []
+    },
+    {
+      "query": "createRemoteAgentAuth",
+      "median_ms": 0.04787500074598938,
+      "p95_ms": 0.047917001211317256,
+      "ranking_median_ms": 0.002,
+      "relationships_median_ms": 0.0,
+      "selection_median_ms": 0.0,
+      "stats": {
+        "approximate_tokens": 0,
+        "cache_load_us": 0,
+        "cache_write_us": 0,
+        "candidate_and_ranking_us": 2,
+        "candidate_symbols": 0,
+        "elapsed_us": 2,
+        "files_indexed": 5,
+        "files_parsed": 0,
+        "files_reparsed": 0,
+        "files_reused": 5,
+        "files_scanned": 5,
+        "human_payload_bytes": 338,
+        "index_reused": true,
+        "index_us": 0,
+        "json_payload_bytes": 1425,
+        "parse_and_extract_us": 0,
+        "relationship_us": 0,
+        "returned_bytes": 0,
+        "returned_symbols": 0,
+        "scan": {
+          "depth_limited_directories": 0,
+          "excluded_directories": 0,
+          "files_scanned": 5,
+          "oversized_files": 0,
+          "source_bytes": 3367
+        },
+        "selection_us": 0,
+        "skipped_binary_or_unreadable_files": 0,
+        "source_bytes": 3367,
+        "symbols": 26,
+        "traversal_us": 0
+      },
+      "context_cost": {
+        "estimated_tokens": 347,
+        "representation": "mcp-jsonrpc",
+        "selection_budget": 16384,
+        "serialized_bytes": 1387,
+        "source_bytes": 0,
+        "token_budget": null
+      },
+      "symbols": []
+    }
+  ],
+  "budgets": [
+    {
+      "budget": 2048,
+      "latency_ms": 0.04845799776376225,
+      "estimated_tokens": 343,
+      "serialized_bytes": 1370,
+      "returned_bytes": 0,
+      "symbols": []
+    },
+    {
+      "budget": 4096,
+      "latency_ms": 0.04662500214180909,
+      "estimated_tokens": 343,
+      "serialized_bytes": 1370,
+      "returned_bytes": 0,
+      "symbols": []
+    },
+    {
+      "budget": 8192,
+      "latency_ms": 0.053209001634968445,
+      "estimated_tokens": 343,
+      "serialized_bytes": 1370,
+      "returned_bytes": 0,
+      "symbols": []
+    }
+  ]
+}

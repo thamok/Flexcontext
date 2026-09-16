@@ -31,6 +31,7 @@ request_id = 0
 def call(method, params):
     global request_id
     request_id += 1
+    params["_meta"] = {"io.modelcontextprotocol/protocolVersion": "2026-07-28", "io.modelcontextprotocol/clientCapabilities": {}}
     process.stdin.write(json.dumps(dict(jsonrpc='2.0', id=request_id, method=method, params=params)) + '\n')
     process.stdin.flush()
     response = json.loads(process.stdout.readline())
@@ -39,9 +40,7 @@ def call(method, params):
     return response['result']
 
 try:
-    call('initialize', dict(protocolVersion='2025-11-25', capabilities={}, clientInfo=dict(name='task-evidence-bench', version='1')))
-    process.stdin.write('{"jsonrpc":"2.0","method":"notifications/initialized"}\n')
-    process.stdin.flush()
+    call('server/discover', {})
     rows = []
     for case in cases:
         source = (args.root / case['path']).read_text()

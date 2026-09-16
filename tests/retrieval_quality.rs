@@ -7,36 +7,30 @@ fn fixture() -> PathBuf {
 }
 
 #[test]
-fn known_relevant_symbols_have_recall_at_five() {
-    let cases = [
-        ("auth", ["UserSession", "AuthToken"]),
-        (
-            "validate token",
-            ["validate_token", "decode_bearer_credential"],
-        ),
-        ("UserSession", ["UserSession", "authenticate_user"]),
-        ("config", ["RuntimeConfig", "runtimeConfig"]),
-        ("parseRequest", ["parseRequest", "ParsedRequest"]),
-    ];
-    for (query, relevant) in cases {
-        let response = search(&SearchOptions {
-            root: fixture(),
-            query: query.to_owned(),
-            max_bytes: 8_192,
-            max_results: 5,
-            use_cache: false,
-        })
-        .unwrap();
-        let names: Vec<_> = response
-            .results
-            .iter()
-            .map(|result| result.symbol.as_str())
-            .collect();
-        let hits = relevant.iter().filter(|name| names.contains(name)).count();
-        let recall_at_five = hits as f64 / relevant.len() as f64;
+fn graded_corpus_does_not_regress_from_recorded_baseline() {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let report = flexcontext::evaluation::evaluate(&root.join("benchmarks"), 5, 12000).unwrap();
+    let baseline: flexcontext::evaluation::Report =
+        serde_json::from_str(include_str!("../benchmarks/results/baseline.json")).unwrap();
+    assert_eq!(report.summary.queries, 60);
+    for split in ["dev", "test"] {
+        let current = &report.by_split[split];
+        let previous = &baseline.by_split[split];
         assert!(
-            recall_at_five >= 0.5,
-            "query {query:?} recall@5={recall_at_five}; got {names:?}"
+            current.recall_at_k >= previous.recall_at_k,
+            "{split}: recall regressed: {current:?}"
+        );
+        assert!(
+            current.mrr + 0.01 >= previous.mrr,
+            "{split}: MRR regressed: {current:?}"
+        );
+        assert!(
+            current.ndcg_at_k + 0.01 >= previous.ndcg_at_k,
+            "{split}: nDCG regressed: {current:?}"
+        );
+        assert!(
+            current.relationship_recall >= previous.relationship_recall,
+            "{split}: relationships regressed"
         );
     }
 }
@@ -49,6 +43,7 @@ fn context_budget_is_never_exceeded() {
         max_bytes: 500,
         max_results: 20,
         use_cache: false,
+        ..Default::default()
     })
     .unwrap();
     assert!(response.stats.returned_bytes <= 500);
@@ -86,6 +81,7 @@ fn persistent_cache_reuses_unchanged_files_and_reparses_only_changes() {
         max_bytes: 2_048,
         max_results: 5,
         use_cache: true,
+        ..Default::default()
     };
 
     let cold = search(&options).unwrap();

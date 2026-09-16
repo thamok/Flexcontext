@@ -65,10 +65,10 @@ impl PreparedSymbol {
             symbol.name.as_str(),
             symbol.containing_symbol.as_deref().unwrap_or(""),
             &symbol.path,
-            &symbol.comments,
+            &symbol.comments(),
             &identifiers,
-            &symbol.signature,
-            &symbol.body,
+            symbol.signature(),
+            symbol.body(),
         ]
         .into_iter()
         .map(|text| {
@@ -269,8 +269,8 @@ fn score_prepared(
     if lexical_total <= 0.0 {
         return None;
     }
-    let size_penalty = if symbol.content.len() > 2_048 {
-        -((symbol.content.len() as f64 / 2_048.0).log2() * 0.35).min(3.0)
+    let size_penalty = if symbol.content().len() > 2_048 {
+        -((symbol.content().len() as f64 / 2_048.0).log2() * 0.35).min(3.0)
     } else {
         0.0
     };
@@ -381,11 +381,12 @@ mod tests {
             end_byte: body.len(),
             start_line: 1,
             end_line: 1,
-            signature: format!("fn {name}()"),
-            body: body.to_owned(),
-            comments: String::new(),
-            content: body.to_owned(),
-            imports: Vec::new(),
+            source: std::sync::Arc::from(format!("{body}fn {name}()")),
+            signature_range: (body.to_owned()).len()
+                ..(body.to_owned()).len() + (format!("fn {name}()")).len(),
+            body_range: 0..(body.to_owned()).len(),
+            comment_ranges: Vec::new(),
+            imports: std::sync::Arc::from([]),
             identifiers: identifier_tokens(body),
             type_references: Vec::new(),
             calls: Vec::new(),
@@ -429,4 +430,83 @@ mod tests {
         let ranked = rank_indexed_candidates(&symbols, &query, &index);
         assert_eq!(symbols[ranked[0].symbol_id].kind, "function");
     }
+}
+
+/// Existing scoring contributions exposed for deterministic offline tuning.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RankingWeights {
+    pub exact_name_weight: f64,
+    pub normalized_name_weight: f64,
+    pub identifier_weight: f64,
+    pub body_weight: f64,
+    pub call_edge_weight: f64,
+    pub container_edge_weight: f64,
+    pub import_edge_weight: f64,
+    pub diversity_penalty: f64,
+}
+impl Default for RankingWeights {
+    fn default() -> Self {
+        // Selected by the fixed development-only sweep in evaluation::tune.
+        // Full procedure and held-out evidence: benchmarks/results/tuning.json.
+        Self {
+            exact_name_weight: 12.0,
+            normalized_name_weight: 10.0,
+            identifier_weight: 3.75,
+            body_weight: 1.8,
+            call_edge_weight: 3.0,
+            container_edge_weight: 4.5,
+            import_edge_weight: 0.0,
+            diversity_penalty: 0.5,
+        }
+    }
+}
+impl RankingWeights {
+    pub fn tuning_anchor() -> Self {
+        Self {
+            exact_name_weight: 12.0,
+            normalized_name_weight: 10.0,
+            identifier_weight: 2.5,
+            body_weight: 1.2,
+            call_edge_weight: 4.0,
+            container_edge_weight: 3.0,
+            import_edge_weight: 0.0,
+            diversity_penalty: 1.0,
+        }
+    }
+
+    pub fn validate(&self) -> anyhow::Result<()> {
+        anyhow::ensure!(
+            [
+                self.exact_name_weight,
+                self.normalized_name_weight,
+                self.identifier_weight,
+                self.body_weight,
+                self.call_edge_weight,
+                self.container_edge_weight,
+                self.import_edge_weight,
+                self.diversity_penalty
+            ]
+            .iter()
+            .all(|x| x.is_finite() && *x >= 0.0),
+            "ranking weights must be finite and nonnegative"
+        );
+        // File-level import evidence cannot be promoted into a relevance signal.
+        anyhow::ensure!(
+            self.import_edge_weight == 0.0,
+            "file_import evidence has no relevance weight"
+        );
+        Ok(())
+    }
+}
+pub fn apply_weights(ranked: &mut [ScoredSymbol], symbols: &[Symbol], weights: &RankingWeights) {
+    for item in ranked.iter_mut() {
+        item.signals.exact_symbol_name *= weights.exact_name_weight / WEIGHT_EXACT_SYMBOL_NAME;
+        item.signals.normalized_symbol_name *=
+            weights.normalized_name_weight / WEIGHT_NORMALIZED_SYMBOL_NAME;
+        item.signals.identifiers *= weights.identifier_weight / WEIGHT_IDENTIFIERS;
+        item.signals.body *= weights.body_weight / WEIGHT_BODY;
+        item.score = item.signals.total();
+    }
+    sort_scored(ranked, symbols);
 }

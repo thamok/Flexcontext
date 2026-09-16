@@ -1,0 +1,10 @@
+{
+  "exact_name_weight": 12.0,
+  "normalized_name_weight": 10.0,
+  "identifier_weight": 3.75,
+  "body_weight": 1.8,
+  "call_edge_weight": 3.0,
+  "container_edge_weight": 4.5,
+  "import_edge_weight": 0.0,
+  "diversity_penalty": 0.5
+}

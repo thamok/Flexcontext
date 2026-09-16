@@ -1,0 +1,635 @@
+{
+  "schema": 1,
+  "queries": [
+    {
+      "id": "mixed-monorepo-01-1",
+      "query": "order total integer cents quantity price",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "order_total",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "Order",
+          "kind": "struct"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "order_menu_label",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "api/orders.rs",
+            "symbol": "checkout_order",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "api/orders.rs",
+            "symbol": "order_total",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-01-2",
+      "query": "reject empty orders before checkout",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "validate_order",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "Order",
+          "kind": "struct"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "order_menu_label",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "api/orders.rs",
+            "symbol": "checkout_order",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "api/orders.rs",
+            "symbol": "validate_order",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-01-3",
+      "query": "checkout validated order and charge total",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "checkout_order",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "order_total",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "order_menu_label",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "api/orders.rs",
+            "symbol": "checkout_order",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "api/orders.rs",
+            "symbol": "order_total",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-02-1",
+      "query": "display order price with two decimal places",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "web/orders.ts",
+          "symbol": "formatOrderPrice",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "web/orders.ts",
+          "symbol": "OrderView",
+          "kind": "interface"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "web/orders.ts",
+          "symbol": "orderTotalMetric",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "web/orders.ts",
+            "symbol": "renderOrderSummary",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "web/orders.ts",
+            "symbol": "formatOrderPrice",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-02-2",
+      "query": "render checkout order summary text",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "web/orders.ts",
+          "symbol": "renderOrderSummary",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "web/orders.ts",
+          "symbol": "formatOrderPrice",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "web/orders.ts",
+          "symbol": "orderTotalMetric",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "web/orders.ts",
+            "symbol": "renderOrderSummary",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "web/orders.ts",
+            "symbol": "formatOrderPrice",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-02-3",
+      "query": "build encoded order detail route",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "web/orders.ts",
+          "symbol": "orderDetailUrl",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "web/orders.ts",
+          "symbol": "OrderView",
+          "kind": "interface"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "web/orders.ts",
+          "symbol": "orderTotalMetric",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "web/orders.ts",
+            "symbol": "orderDetailUrl",
+            "kind": "function"
+          },
+          "kind": "type_reference",
+          "target": {
+            "path": "web/orders.ts",
+            "symbol": "OrderView",
+            "kind": "interface"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-03-1",
+      "query": "encode order row for warehouse export",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_order_row",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_orders",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "worker/orders.py",
+          "symbol": "order_export_title",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "worker/orders.py",
+            "symbol": "export_orders",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "worker/orders.py",
+            "symbol": "export_order_row",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-03-2",
+      "query": "batch export orders to warehouse",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_orders",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_order_row",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "worker/orders.py",
+          "symbol": "order_export_title",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "worker/orders.py",
+            "symbol": "export_orders",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "worker/orders.py",
+            "symbol": "export_order_row",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-03-3",
+      "query": "find orders awaiting warehouse export",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "worker/orders.py",
+          "symbol": "pending_exports",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_orders",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "worker/orders.py",
+          "symbol": "order_export_title",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "worker/orders.py",
+            "symbol": "export_orders",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "worker/orders.py",
+            "symbol": "export_order_row",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-04-1",
+      "query": "available inventory after reservations",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "api/inventory.rs",
+          "symbol": "available_stock",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "api/inventory.rs",
+          "symbol": "Stock",
+          "kind": "struct"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "api/inventory.rs",
+          "symbol": "inventory_page_title",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "api/inventory.rs",
+            "symbol": "reserve_stock",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "api/inventory.rs",
+            "symbol": "available_stock",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-04-2",
+      "query": "reserve inventory only if sufficient stock",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "api/inventory.rs",
+          "symbol": "reserve_stock",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "api/inventory.rs",
+          "symbol": "available_stock",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "api/inventory.rs",
+          "symbol": "inventory_page_title",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "api/inventory.rs",
+            "symbol": "reserve_stock",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "api/inventory.rs",
+            "symbol": "available_stock",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-04-3",
+      "query": "release reservation for cancelled order",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "api/inventory.rs",
+          "symbol": "release_stock",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "api/inventory.rs",
+          "symbol": "Stock",
+          "kind": "struct"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "api/inventory.rs",
+          "symbol": "inventory_page_title",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "api/inventory.rs",
+            "symbol": "reserve_stock",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "api/inventory.rs",
+            "symbol": "available_stock",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-05-1",
+      "query": "product page remaining stock label",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "web/inventory.ts",
+          "symbol": "stockLabel",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "web/inventory.ts",
+          "symbol": "StockView",
+          "kind": "interface"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "web/inventory.ts",
+          "symbol": "stockChartTitle",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "web/inventory.ts",
+            "symbol": "renderInventory",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "web/inventory.ts",
+            "symbol": "stockLabel",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-05-2",
+      "query": "disable add to cart when sold out",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "web/inventory.ts",
+          "symbol": "canAddToCart",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "web/inventory.ts",
+          "symbol": "StockView",
+          "kind": "interface"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "web/inventory.ts",
+          "symbol": "stockChartTitle",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "web/inventory.ts",
+            "symbol": "renderInventory",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "web/inventory.ts",
+            "symbol": "canAddToCart",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-05-3",
+      "query": "render product inventory purchase availability",
+      "fixture": "fixtures/mixed-monorepo",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "web/inventory.ts",
+          "symbol": "renderInventory",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "web/inventory.ts",
+          "symbol": "stockLabel",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "web/inventory.ts",
+          "symbol": "stockChartTitle",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "web/inventory.ts",
+            "symbol": "renderInventory",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "web/inventory.ts",
+            "symbol": "stockLabel",
+            "kind": "function"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -26,6 +26,7 @@ request_id = 0
 def call(method, params):
     global request_id
     request_id += 1
+    params["_meta"] = {"io.modelcontextprotocol/protocolVersion": "2026-07-28", "io.modelcontextprotocol/clientCapabilities": {}}
     t = time.perf_counter()
     process.stdin.write(json.dumps(dict(jsonrpc='2.0', id=request_id, method=method, params=params)) + '\n')
     process.stdin.flush()
@@ -38,10 +39,8 @@ def call(method, params):
     return response['result'], (time.perf_counter() - t) * 1000
 
 try:
-    call('initialize', dict(protocolVersion='2025-11-25', capabilities={}, clientInfo=dict(name='resident-bench', version='1')))
+    call('server/discover', {})
     startup_ms = (time.perf_counter() - started) * 1000
-    process.stdin.write(json.dumps(dict(jsonrpc='2.0', method='notifications/initialized')) + '\n')
-    process.stdin.flush()
     results = []
     for query in ['auth', 'authentication', 'validate token', 'IPluginAuth', 'createRemoteAgentAuth']:
         timings, ranking, relations, selection = [], [], [], []
@@ -55,12 +54,12 @@ try:
                 ranking.append(response['stats']['candidate_and_ranking_us'] / 1000)
                 relations.append(response['stats']['relationship_us'] / 1000)
                 selection.append(response['stats']['selection_us'] / 1000)
-        results.append(dict(query=query, median_ms=statistics.median(timings), p95_ms=sorted(timings)[max(0, math.ceil(len(timings)*.95)-1)], ranking_median_ms=statistics.median(ranking), relationships_median_ms=statistics.median(relations), selection_median_ms=statistics.median(selection), stats=response['stats'], symbols=[dict(symbol=r['symbol'], path=r['path'], bytes=r['content_bytes'], sliced=r['content_truncated']) for r in response['results']]))
+        results.append(dict(query=query, median_ms=statistics.median(timings), p95_ms=sorted(timings)[max(0, math.ceil(len(timings)*.95)-1)], ranking_median_ms=statistics.median(ranking), relationships_median_ms=statistics.median(relations), selection_median_ms=statistics.median(selection), stats=response['stats'], context_cost=response['context_cost'], symbols=[dict(symbol=r['symbol'], path=r['path'], bytes=r['content_bytes'], sliced=r['content_truncated']) for r in response['results']]))
     budgets = []
     for budget in [2048, 4096, 8192]:
-        result, elapsed = call('tools/call', dict(name='code_search', arguments=dict(query='auth', budget=budget)))
+        result, elapsed = call('tools/call', dict(name='code_search', arguments=dict(query='auth', max_tokens=budget)))
         response = result['structuredContent']
-        budgets.append(dict(budget=budget, latency_ms=elapsed, returned_tokens=response['stats']['approximate_tokens'], returned_bytes=response['stats']['returned_bytes'], symbols=[r['symbol'] for r in response['results']]))
+        budgets.append(dict(budget=budget, latency_ms=elapsed, estimated_tokens=response['context_cost']['estimated_tokens'], serialized_bytes=response['context_cost']['serialized_bytes'], returned_bytes=response['stats']['returned_bytes'], symbols=[r['symbol'] for r in response['results']]))
     report = dict(root=args.root, measured_at=datetime.now(timezone.utc).isoformat(), platform=platform.platform(), binary_sha256=hashlib.sha256(Path(args.binary).read_bytes()).hexdigest(), startup_ms=startup_ms, repeats=args.repeats, results=results, budgets=budgets)
     text = json.dumps(report, indent=2)
     if args.output:

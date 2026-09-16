@@ -1,0 +1,481 @@
+{
+  "schema": 1,
+  "rayon_threads": 4,
+  "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "measured_at": "2026-09-16T15:45:23.033635+00:00",
+  "binary_sha256": "d34a7c9e42f4ba433807a17149f1105268f396a10cd8221495b58a7438b85918",
+  "runs": [
+    {
+      "source_bytes": 10000000,
+      "fixture": "dense synthetic TypeScript",
+      "mode": "full profile",
+      "elapsed_seconds": 2.0464963750018796,
+      "exit_code": 0,
+      "profile": {
+        "allocator": "Rust System allocations; excludes native Tree-sitter allocations",
+        "resident_only": false,
+        "rss": "ps RSS after each stage; peak RSS is process lifetime getrusage high water",
+        "schema": 1,
+        "source_bytes": 10000000,
+        "stages": [
+          {
+            "allocated_bytes": 371352,
+            "allocation_calls": 2407,
+            "elapsed_us": 1251,
+            "live_rust_bytes": 41385,
+            "peak_rss_bytes": 4079616,
+            "peak_rust_bytes": 69593,
+            "rss_bytes": 4079616,
+            "stage": "discovery"
+          },
+          {
+            "allocated_bytes": 738698767,
+            "allocation_calls": 11451200,
+            "elapsed_us": 632311,
+            "live_rust_bytes": 19366180,
+            "peak_rss_bytes": 57081856,
+            "peak_rust_bytes": 20016134,
+            "rss_bytes": 57081856,
+            "stage": "cold_indexing"
+          },
+          {
+            "allocated_bytes": 738672413,
+            "allocation_calls": 11451136,
+            "elapsed_us": 610508,
+            "live_rust_bytes": 19366193,
+            "peak_rss_bytes": 58458112,
+            "peak_rust_bytes": 20016147,
+            "rss_bytes": 58458112,
+            "stage": "populate_cache"
+          },
+          {
+            "allocated_bytes": 45204289,
+            "allocation_calls": 57254,
+            "elapsed_us": 38082,
+            "live_rust_bytes": 19796437,
+            "peak_rss_bytes": 62160896,
+            "peak_rust_bytes": 20408215,
+            "rss_bytes": 62160896,
+            "stage": "cache_load"
+          },
+          {
+            "allocated_bytes": 255644392,
+            "allocation_calls": 2323491,
+            "elapsed_us": 112211,
+            "live_rust_bytes": 48123211,
+            "peak_rss_bytes": 95256576,
+            "peak_rust_bytes": 48130355,
+            "rss_bytes": 95256576,
+            "stage": "prepared_index"
+          },
+          {
+            "allocated_bytes": 1899772,
+            "allocation_calls": 38992,
+            "elapsed_us": 1220,
+            "live_rust_bytes": 48691570,
+            "peak_rss_bytes": 95584256,
+            "peak_rust_bytes": 48766004,
+            "rss_bytes": 95584256,
+            "stage": "relation_index"
+          },
+          {
+            "allocated_bytes": 302824575,
+            "allocation_calls": 2420251,
+            "elapsed_us": 141910,
+            "live_rust_bytes": 48683491,
+            "peak_rss_bytes": 95715328,
+            "peak_rust_bytes": 48766101,
+            "rss_bytes": 95715328,
+            "stage": "resident_open"
+          },
+          {
+            "allocated_bytes": 0,
+            "allocation_calls": 0,
+            "elapsed_us": 0,
+            "live_rust_bytes": 48684996,
+            "peak_rss_bytes": 95715328,
+            "peak_rust_bytes": 48684996,
+            "rss_bytes": 95715328,
+            "stage": "resident_idle"
+          },
+          {
+            "allocated_bytes": 5318074,
+            "allocation_calls": 26892,
+            "elapsed_us": 40896,
+            "live_rust_bytes": 48717876,
+            "peak_rss_bytes": 96026624,
+            "peak_rust_bytes": 49978403,
+            "rss_bytes": 96026624,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 5318074,
+            "allocation_calls": 26892,
+            "elapsed_us": 44311,
+            "live_rust_bytes": 48718777,
+            "peak_rss_bytes": 96026624,
+            "peak_rust_bytes": 49979304,
+            "rss_bytes": 96026624,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 5318074,
+            "allocation_calls": 26892,
+            "elapsed_us": 42795,
+            "live_rust_bytes": 48718782,
+            "peak_rss_bytes": 96026624,
+            "peak_rust_bytes": 49979309,
+            "rss_bytes": 96026624,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 5318074,
+            "allocation_calls": 26892,
+            "elapsed_us": 43270,
+            "live_rust_bytes": 48718787,
+            "peak_rss_bytes": 96026624,
+            "peak_rust_bytes": 49979314,
+            "rss_bytes": 96026624,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 5318074,
+            "allocation_calls": 26892,
+            "elapsed_us": 45391,
+            "live_rust_bytes": 48718792,
+            "peak_rss_bytes": 96026624,
+            "peak_rust_bytes": 49979319,
+            "rss_bytes": 96026624,
+            "stage": "query"
+          }
+        ],
+        "symbols": 5936
+      },
+      "cache_bytes": 15001088,
+      "fresh_resident_profile": {
+        "allocator": "Rust System allocations; excludes native Tree-sitter allocations",
+        "resident_only": true,
+        "rss": "ps RSS after each stage; peak RSS is process lifetime getrusage high water",
+        "schema": 1,
+        "source_bytes": 10000000,
+        "stages": [
+          {
+            "allocated_bytes": 303155783,
+            "allocation_calls": 2422225,
+            "elapsed_us": 158667,
+            "live_rust_bytes": 48682409,
+            "peak_rss_bytes": 65323008,
+            "peak_rust_bytes": 48765019,
+            "rss_bytes": 65323008,
+            "stage": "resident_open"
+          },
+          {
+            "allocated_bytes": 0,
+            "allocation_calls": 0,
+            "elapsed_us": 0,
+            "live_rust_bytes": 48684362,
+            "peak_rss_bytes": 65339392,
+            "peak_rust_bytes": 48684362,
+            "rss_bytes": 65339392,
+            "stage": "resident_idle"
+          },
+          {
+            "allocated_bytes": 5318074,
+            "allocation_calls": 26892,
+            "elapsed_us": 43012,
+            "live_rust_bytes": 48717242,
+            "peak_rss_bytes": 66846720,
+            "peak_rust_bytes": 49977769,
+            "rss_bytes": 66846720,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 5318074,
+            "allocation_calls": 26892,
+            "elapsed_us": 41701,
+            "live_rust_bytes": 48717247,
+            "peak_rss_bytes": 66879488,
+            "peak_rust_bytes": 49977774,
+            "rss_bytes": 66879488,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 5318074,
+            "allocation_calls": 26892,
+            "elapsed_us": 41034,
+            "live_rust_bytes": 48717252,
+            "peak_rss_bytes": 66879488,
+            "peak_rust_bytes": 49977779,
+            "rss_bytes": 66879488,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 5318074,
+            "allocation_calls": 26892,
+            "elapsed_us": 41038,
+            "live_rust_bytes": 48717705,
+            "peak_rss_bytes": 66895872,
+            "peak_rust_bytes": 49978232,
+            "rss_bytes": 66895872,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 5318074,
+            "allocation_calls": 26892,
+            "elapsed_us": 42045,
+            "live_rust_bytes": 48717710,
+            "peak_rss_bytes": 66895872,
+            "peak_rust_bytes": 49978237,
+            "rss_bytes": 66895872,
+            "stage": "query"
+          }
+        ],
+        "symbols": 5936
+      }
+    },
+    {
+      "source_bytes": 100000000,
+      "fixture": "dense synthetic TypeScript",
+      "mode": "full profile",
+      "elapsed_seconds": 16.20692829100153,
+      "exit_code": 0,
+      "profile": {
+        "allocator": "Rust System allocations; excludes native Tree-sitter allocations",
+        "resident_only": false,
+        "rss": "ps RSS after each stage; peak RSS is process lifetime getrusage high water",
+        "schema": 1,
+        "source_bytes": 100000000,
+        "stages": [
+          {
+            "allocated_bytes": 577740,
+            "allocation_calls": 4166,
+            "elapsed_us": 1376,
+            "live_rust_bytes": 110403,
+            "peak_rss_bytes": 4210688,
+            "peak_rust_bytes": 138611,
+            "rss_bytes": 4210688,
+            "stage": "discovery"
+          },
+          {
+            "allocated_bytes": 7355617355,
+            "allocation_calls": 114517473,
+            "elapsed_us": 6036028,
+            "live_rust_bytes": 176490300,
+            "peak_rss_bytes": 260440064,
+            "peak_rust_bytes": 188745856,
+            "rss_bytes": 260440064,
+            "stage": "cold_indexing"
+          },
+          {
+            "allocated_bytes": 7355600889,
+            "allocation_calls": 114517435,
+            "elapsed_us": 6554932,
+            "live_rust_bytes": 176490313,
+            "peak_rss_bytes": 263340032,
+            "peak_rust_bytes": 188745869,
+            "rss_bytes": 259604480,
+            "stage": "populate_cache"
+          },
+          {
+            "allocated_bytes": 414901493,
+            "allocation_calls": 550190,
+            "elapsed_us": 377278,
+            "live_rust_bytes": 180768087,
+            "peak_rss_bytes": 313114624,
+            "peak_rust_bytes": 192381899,
+            "rss_bytes": 313081856,
+            "stage": "cache_load"
+          },
+          {
+            "allocated_bytes": 2540665172,
+            "allocation_calls": 23225073,
+            "elapsed_us": 1150203,
+            "live_rust_bytes": 455908070,
+            "peak_rss_bytes": 651296768,
+            "peak_rust_bytes": 455948780,
+            "rss_bytes": 651296768,
+            "stage": "prepared_index"
+          },
+          {
+            "allocated_bytes": 22215213,
+            "allocation_calls": 386574,
+            "elapsed_us": 14405,
+            "live_rust_bytes": 463169809,
+            "peak_rss_bytes": 661372928,
+            "peak_rust_bytes": 465497083,
+            "rss_bytes": 661372928,
+            "stage": "relation_index"
+          },
+          {
+            "allocated_bytes": 2978064388,
+            "allocation_calls": 24164110,
+            "elapsed_us": 1575857,
+            "live_rust_bytes": 463092712,
+            "peak_rss_bytes": 665649152,
+            "peak_rust_bytes": 465497180,
+            "rss_bytes": 665649152,
+            "stage": "resident_open"
+          },
+          {
+            "allocated_bytes": 0,
+            "allocation_calls": 0,
+            "elapsed_us": 0,
+            "live_rust_bytes": 463094217,
+            "peak_rss_bytes": 665649152,
+            "peak_rust_bytes": 463094217,
+            "rss_bytes": 665649152,
+            "stage": "resident_idle"
+          },
+          {
+            "allocated_bytes": 30141879,
+            "allocation_calls": 89238,
+            "elapsed_us": 68226,
+            "live_rust_bytes": 463127097,
+            "peak_rss_bytes": 675168256,
+            "peak_rust_bytes": 474913328,
+            "rss_bytes": 675168256,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 30141879,
+            "allocation_calls": 89238,
+            "elapsed_us": 65460,
+            "live_rust_bytes": 463127998,
+            "peak_rss_bytes": 675184640,
+            "peak_rust_bytes": 474914229,
+            "rss_bytes": 675184640,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 30141879,
+            "allocation_calls": 89238,
+            "elapsed_us": 63318,
+            "live_rust_bytes": 463128003,
+            "peak_rss_bytes": 679264256,
+            "peak_rust_bytes": 474914234,
+            "rss_bytes": 679264256,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 30141879,
+            "allocation_calls": 89238,
+            "elapsed_us": 61920,
+            "live_rust_bytes": 463128008,
+            "peak_rss_bytes": 683343872,
+            "peak_rust_bytes": 474914239,
+            "rss_bytes": 683343872,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 30141879,
+            "allocation_calls": 89238,
+            "elapsed_us": 67221,
+            "live_rust_bytes": 463128013,
+            "peak_rss_bytes": 687407104,
+            "peak_rust_bytes": 474914244,
+            "rss_bytes": 687407104,
+            "stage": "query"
+          }
+        ],
+        "symbols": 59374
+      },
+      "cache_bytes": 154613742,
+      "fresh_resident_profile": {
+        "allocator": "Rust System allocations; excludes native Tree-sitter allocations",
+        "resident_only": true,
+        "rss": "ps RSS after each stage; peak RSS is process lifetime getrusage high water",
+        "schema": 1,
+        "source_bytes": 100000000,
+        "stages": [
+          {
+            "allocated_bytes": 2978395596,
+            "allocation_calls": 24166084,
+            "elapsed_us": 1498928,
+            "live_rust_bytes": 463091630,
+            "peak_rss_bytes": 596590592,
+            "peak_rust_bytes": 465496098,
+            "rss_bytes": 596590592,
+            "stage": "resident_open"
+          },
+          {
+            "allocated_bytes": 0,
+            "allocation_calls": 0,
+            "elapsed_us": 0,
+            "live_rust_bytes": 463093583,
+            "peak_rss_bytes": 596590592,
+            "peak_rust_bytes": 463093583,
+            "rss_bytes": 596590592,
+            "stage": "resident_idle"
+          },
+          {
+            "allocated_bytes": 30141879,
+            "allocation_calls": 89238,
+            "elapsed_us": 68255,
+            "live_rust_bytes": 463126463,
+            "peak_rss_bytes": 608157696,
+            "peak_rust_bytes": 474912694,
+            "rss_bytes": 608157696,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 30141879,
+            "allocation_calls": 89238,
+            "elapsed_us": 66102,
+            "live_rust_bytes": 463126468,
+            "peak_rss_bytes": 608174080,
+            "peak_rust_bytes": 474912699,
+            "rss_bytes": 608174080,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 30141879,
+            "allocation_calls": 89238,
+            "elapsed_us": 66612,
+            "live_rust_bytes": 463126473,
+            "peak_rss_bytes": 612237312,
+            "peak_rust_bytes": 474912704,
+            "rss_bytes": 612237312,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 30141879,
+            "allocation_calls": 89238,
+            "elapsed_us": 66822,
+            "live_rust_bytes": 463126926,
+            "peak_rss_bytes": 616300544,
+            "peak_rust_bytes": 474913157,
+            "rss_bytes": 616300544,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 30141879,
+            "allocation_calls": 89238,
+            "elapsed_us": 65919,
+            "live_rust_bytes": 463126931,
+            "peak_rss_bytes": 620363776,
+            "peak_rust_bytes": 474913162,
+            "rss_bytes": 620363776,
+            "stage": "query"
+          }
+        ],
+        "symbols": 59374
+      }
+    },
+    {
+      "source_bytes": 1000000000,
+      "fixture": "sparse discovery probe",
+      "mode": "guard-only",
+      "elapsed_seconds": 0.2284297920014069,
+      "exit_code": 1,
+      "error": "Error: repository limit exceeded: scanned 1049 files, 268544000 source bytes (limits: 100000 source files, 268435456 bytes); narrow the root or explicitly raise limits"
+    },
+    {
+      "source_bytes": 10000000000,
+      "fixture": "sparse discovery probe",
+      "mode": "guard-only",
+      "elapsed_seconds": 0.0080513749999227,
+      "exit_code": 1,
+      "error": "Error: repository limit exceeded: scanned 1049 files, 268544000 source bytes (limits: 100000 source files, 268435456 bytes); narrow the root or explicitly raise limits"
+    }
+  ]
+}

@@ -50,9 +50,9 @@ fn stdio_lifecycle_errors_and_repeated_queries() {
     )
     .unwrap();
     let mut session = SearchSession::open(dir.path(), false).unwrap();
-    let requests = [
+    let mut requests = vec![
         json!({"jsonrpc":"2.0","id":0,"method":"tools/list"}),
-        json!({"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"test","version":"1"}}}),
+        json!({"jsonrpc":"2.0","id":1,"method":"server/discover"}),
         json!({"jsonrpc":"2.0","method":"notifications/initialized"}),
         json!({"jsonrpc":"2.0","id":2,"method":"tools/list"}),
         json!({"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"code_search","arguments":{"query":"auth","budget":128}}}),
@@ -61,6 +61,15 @@ fn stdio_lifecycle_errors_and_repeated_queries() {
         json!({"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"refresh_index","arguments":{}}}),
         json!({"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"code_search","arguments":{"query":"!!!"}}}),
     ];
+    for request in &mut requests {
+        if request["id"].is_null() {
+            continue;
+        }
+        if !request["params"].is_object() {
+            request["params"] = json!({});
+        }
+        request["params"]["_meta"] = json!({"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}});
+    }
     let input = requests
         .iter()
         .map(|r| serde_json::to_string(r).unwrap())
@@ -75,8 +84,11 @@ fn stdio_lifecycle_errors_and_repeated_queries() {
         .map(|line| serde_json::from_str(line).unwrap())
         .collect();
     assert_eq!(responses.len(), 9);
-    assert_eq!(responses[0]["error"]["code"], -32002);
-    assert_eq!(responses[1]["result"]["protocolVersion"], "2025-11-25");
+    assert_eq!(responses[0]["result"]["resultType"], "complete");
+    assert_eq!(
+        responses[1]["result"]["supportedVersions"],
+        json!(["2026-07-28", "2025-06-18"])
+    );
     assert_eq!(responses[2]["result"]["tools"].as_array().unwrap().len(), 2);
     for response in &responses[3..5] {
         assert_eq!(
@@ -125,7 +137,7 @@ fn graph_does_not_resolve_loader_or_external_types_to_unrelated_locals() {
     assert!(
         relations
             .iter()
-            .any(|r| r.kind == "imports" && r.symbol == "Document")
+            .any(|r| r.kind == "file_import" && r.symbol == "Document")
     );
     assert!(
         relations
