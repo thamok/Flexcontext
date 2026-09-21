@@ -1,6 +1,4 @@
-# flexcontext
-
-This is flexcontext, the fast lexical context generator for agents.
+This is `flexcontext`, the fast lexical context generator for agents.
 
 Find useful code **before you know the right files or symbols**. flexcontext uses Tree-sitter, lexical ranking, and syntactic relationships to retrieve structural source units and fit them into a context budget.
 
