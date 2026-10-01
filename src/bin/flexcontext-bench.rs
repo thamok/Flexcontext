@@ -92,6 +92,7 @@ fn main() -> Result<()> {
             max_bytes: args.max_bytes,
             max_results: 12,
             use_cache: true,
+            ..Default::default()
         })?;
         let flexcontext_latency_us = started.elapsed().as_micros();
         comparisons.push(Comparison {
@@ -172,6 +173,7 @@ fn measure_quality(args: &Args, path: &PathBuf) -> Result<Vec<QualityMeasurement
                 max_bytes: args.max_bytes,
                 max_results: args.quality_k,
                 use_cache: true,
+                ..Default::default()
             })?;
             let top = &response.results[..response.results.len().min(args.quality_k)];
             let is_relevant =

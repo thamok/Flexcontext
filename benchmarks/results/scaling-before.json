@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "rayon_threads": 4,
+  "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "measured_at": "2026-09-16T15:44:58.470062+00:00",
+  "binary_sha256": "453a2dbfadffe47a4f4e4e0edefb1a92344858817c7952821ebd9ade9c78a85a",
+  "runs": [
+    {
+      "source_bytes": 10000000,
+      "fixture": "dense synthetic TypeScript",
+      "mode": "full profile",
+      "elapsed_seconds": 3.0406675419981184,
+      "exit_code": 0,
+      "profile": {
+        "allocator": "Rust System allocations; excludes native Tree-sitter allocations",
+        "rss": "ps RSS after each stage; peak RSS is process lifetime getrusage high water",
+        "schema": 1,
+        "source_bytes": 10000000,
+        "stages": [
+          {
+            "allocated_bytes": 373890,
+            "allocation_calls": 2465,
+            "elapsed_us": 6327,
+            "live_rust_bytes": 41385,
+            "peak_rss_bytes": 4063232,
+            "peak_rust_bytes": 69521,
+            "rss_bytes": 4063232,
+            "stage": "discovery"
+          },
+          {
+            "allocated_bytes": 685680499,
+            "allocation_calls": 11980522,
+            "elapsed_us": 1306104,
+            "live_rust_bytes": 29682696,
+            "peak_rss_bytes": 95420416,
+            "peak_rust_bytes": 54344980,
+            "rss_bytes": 95420416,
+            "stage": "cold_indexing"
+          },
+          {
+            "allocated_bytes": 685655657,
+            "allocation_calls": 11980464,
+            "elapsed_us": 1177899,
+            "live_rust_bytes": 29682709,
+            "peak_rss_bytes": 103366656,
+            "peak_rust_bytes": 54344993,
+            "rss_bytes": 103366656,
+            "stage": "populate_cache"
+          },
+          {
+            "allocated_bytes": 91753422,
+            "allocation_calls": 140231,
+            "elapsed_us": 21103,
+            "live_rust_bytes": 29685561,
+            "peak_rss_bytes": 155336704,
+            "peak_rust_bytes": 55108739,
+            "rss_bytes": 155336704,
+            "stage": "cache_load"
+          },
+          {
+            "allocated_bytes": 255644392,
+            "allocation_calls": 2323491,
+            "elapsed_us": 118403,
+            "live_rust_bytes": 58012335,
+            "peak_rss_bytes": 188547072,
+            "peak_rust_bytes": 58018731,
+            "rss_bytes": 188547072,
+            "stage": "prepared_index"
+          },
+          {
+            "allocated_bytes": 1899772,
+            "allocation_calls": 38992,
+            "elapsed_us": 1273,
+            "live_rust_bytes": 58580694,
+            "peak_rss_bytes": 188694528,
+            "peak_rust_bytes": 58655128,
+            "rss_bytes": 188694528,
+            "stage": "relation_index"
+          },
+          {
+            "allocated_bytes": 349376246,
+            "allocation_calls": 2503286,
+            "elapsed_us": 137442,
+            "live_rust_bytes": 58580791,
+            "peak_rss_bytes": 188825600,
+            "peak_rust_bytes": 58663401,
+            "rss_bytes": 188825600,
+            "stage": "resident_open"
+          },
+          {
+            "allocated_bytes": 0,
+            "allocation_calls": 0,
+            "elapsed_us": 0,
+            "live_rust_bytes": 58580804,
+            "peak_rss_bytes": 188825600,
+            "peak_rust_bytes": 58580804,
+            "rss_bytes": 188825600,
+            "stage": "resident_idle"
+          },
+          {
+            "allocated_bytes": 4652628,
+            "allocation_calls": 26813,
+            "elapsed_us": 43425,
+            "live_rust_bytes": 58613393,
+            "peak_rss_bytes": 189120512,
+            "peak_rust_bytes": 59874211,
+            "rss_bytes": 189120512,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 4652628,
+            "allocation_calls": 26813,
+            "elapsed_us": 43765,
+            "live_rust_bytes": 58614294,
+            "peak_rss_bytes": 189169664,
+            "peak_rust_bytes": 59875112,
+            "rss_bytes": 189169664,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 4652628,
+            "allocation_calls": 26813,
+            "elapsed_us": 41753,
+            "live_rust_bytes": 58614299,
+            "peak_rss_bytes": 189169664,
+            "peak_rust_bytes": 59875117,
+            "rss_bytes": 189169664,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 4652628,
+            "allocation_calls": 26813,
+            "elapsed_us": 41700,
+            "live_rust_bytes": 58614304,
+            "peak_rss_bytes": 189169664,
+            "peak_rust_bytes": 59875122,
+            "rss_bytes": 189169664,
+            "stage": "query"
+          },
+          {
+            "allocated_bytes": 4652628,
+            "allocation_calls": 26813,
+            "elapsed_us": 41007,
+            "live_rust_bytes": 58614309,
+            "peak_rss_bytes": 189186048,
+            "peak_rust_bytes": 59875127,
+            "rss_bytes": 189186048,
+            "stage": "query"
+          }
+        ],
+        "symbols": 5936
+      },
+      "cache_bytes": 24884698
+    }
+  ]
+}

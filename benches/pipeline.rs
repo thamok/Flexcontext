@@ -100,6 +100,7 @@ fn pipeline_benches(criterion: &mut Criterion) {
                 max_bytes: 16_384,
                 max_results: 12,
                 use_cache: false,
+                ..Default::default()
             })
             .unwrap()
         })
@@ -111,6 +112,7 @@ fn pipeline_benches(criterion: &mut Criterion) {
         max_bytes: 16_384,
         max_results: 12,
         use_cache: true,
+        ..Default::default()
     };
     flexcontext::search(&cached_options).unwrap();
     criterion.bench_function("end_to_end_cached_retrieval", |bencher| {

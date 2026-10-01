@@ -18,3 +18,5 @@ pub use search::{SearchSession, search};
 pub mod mcp;
 
 pub mod slicing;
+
+pub mod evaluation;

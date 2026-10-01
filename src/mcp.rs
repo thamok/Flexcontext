@@ -1,4 +1,4 @@
-//! Synchronous, newline-delimited MCP stdio server (2025-11-25).
+//! MCP stdio: modern stateless requests or a negotiated 2025-06-18 session.
 use crate::SearchSession;
 use anyhow::Result;
 use serde::Deserialize;
@@ -13,6 +13,8 @@ struct QueryArgs {
     budget: usize,
     #[serde(default = "default_results")]
     max_results: usize,
+    #[serde(default)]
+    max_tokens: Option<usize>,
 }
 fn default_budget() -> usize {
     4096
@@ -21,63 +23,204 @@ fn default_results() -> usize {
     12
 }
 
+type Cancellations = std::sync::Arc<
+    std::sync::Mutex<
+        std::collections::HashMap<String, std::sync::Arc<std::sync::atomic::AtomicBool>>,
+    >,
+>;
+struct Pending {
+    value: Value,
+    parse_error: bool,
+    key: Option<String>,
+    cancelled: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    registry: Cancellations,
+}
+impl Drop for Pending {
+    fn drop(&mut self) {
+        if let Some(key) = &self.key {
+            self.registry.lock().unwrap().remove(key);
+        }
+    }
+}
+
 pub fn serve(
     session: &mut SearchSession,
-    input: impl BufRead,
+    input: impl BufRead + Send,
     mut output: impl Write,
 ) -> Result<()> {
-    let mut initialized = false;
-    let mut ready = false;
-    for line in input.lines() {
-        let line = line?;
-        let request: Value = match serde_json::from_str(&line) {
-            Ok(value) => value,
-            Err(_) => {
-                write_response(&mut output, &error(Value::Null, -32700, "Parse error"))?;
-                continue;
+    use std::sync::{
+        Arc, Mutex,
+        atomic::{AtomicBool, Ordering},
+        mpsc,
+    };
+    let registry: Cancellations = Arc::new(Mutex::new(std::collections::HashMap::new()));
+    let (sender, receiver) = mpsc::sync_channel(128);
+    std::thread::scope(|scope| {
+        scope.spawn(move || {
+            for line in input.lines() {
+                let value = line.map(|line| match serde_json::from_str::<Value>(&line) {
+                    Ok(value) => (value, false),
+                    Err(_) => (Value::Null, true),
+                });
+                match value {
+                    Ok((value, parse_error)) => {
+                        if value["jsonrpc"] == "2.0"
+                            && value["method"] == "notifications/cancelled"
+                            && value.get("id").is_none()
+                        {
+                            let key = value["params"]["requestId"].to_string();
+                            if let Some(flag) = registry.lock().unwrap().get(&key) {
+                                flag.store(true, Ordering::Relaxed);
+                            }
+                            continue;
+                        }
+                        let key = value.get("id").map(Value::to_string);
+                        let flag = Arc::new(AtomicBool::new(false));
+                        if let Some(key) = &key {
+                            registry.lock().unwrap().insert(key.clone(), flag.clone());
+                        }
+                        if sender
+                            .send(Ok(Pending {
+                                value,
+                                parse_error,
+                                key,
+                                cancelled: flag,
+                                registry: registry.clone(),
+                            }))
+                            .is_err()
+                        {
+                            return;
+                        }
+                    }
+                    Err(err) => {
+                        let _ = sender.send(Err(err));
+                        return;
+                    }
+                }
             }
-        };
+        });
+        process_requests(session, receiver, &mut output)
+    })
+}
+fn process_requests(
+    session: &mut SearchSession,
+    requests: impl IntoIterator<Item = std::io::Result<Pending>>,
+    mut output: impl Write,
+) -> Result<()> {
+    // None: no legacy handshake; Some(false): awaiting initialized notification.
+    // Modern requests always validate their own metadata, independently of this state.
+    let mut legacy_ready = None;
+    for pending in requests {
+        let pending = pending?;
+        let _scope = crate::repository::RequestCancellation::enter(pending.cancelled.clone());
+        if crate::repository::request_cancelled() {
+            continue;
+        }
+        let request = &pending.value;
+        if pending.parse_error {
+            write_response(&mut output, &error(Value::Null, -32700, "Parse error"))?;
+            continue;
+        }
         let id = request.get("id").cloned();
         let method = request.get("method").and_then(Value::as_str);
         if request.get("jsonrpc").and_then(Value::as_str) != Some("2.0")
             || method.is_none()
             || id
                 .as_ref()
-                .is_some_and(|id| !id.is_string() && !id.is_i64())
+                .is_some_and(|id| !id.is_string() && !id.is_i64() && !id.is_u64())
         {
             write_response(&mut output, &error(Value::Null, -32600, "Invalid Request"))?;
             continue;
         }
         let method = method.unwrap();
-        if id.is_none() {
-            if method == "notifications/initialized" && initialized {
-                ready = true;
+        // Notifications never receive a response.
+        let Some(id) = id else {
+            if method == "notifications/initialized" && legacy_ready == Some(false) {
+                legacy_ready = Some(true);
             }
             continue;
-        }
-        let id = id.unwrap();
+        };
         let params = &request["params"];
-        let result = match method {
-            "initialize" if !initialized => {
-                if !params["protocolVersion"].is_string()
-                    || !params["capabilities"].is_object()
-                    || !params["clientInfo"].is_object()
-                {
-                    Err((-32602, "Invalid initialization parameters"))
-                } else {
-                    initialized = true;
-                    Ok(
-                        json!({"protocolVersion":"2025-11-25", "capabilities":{"tools":{}},
-                        "serverInfo":{"name":"flexcontext", "version":env!("CARGO_PKG_VERSION")},
-                        "instructions":"Searches a resident snapshot. Call refresh_index after repository edits."}),
-                    )
-                }
+        if method == "initialize" {
+            if legacy_ready.is_some() {
+                write_response(&mut output, &error(id, -32600, "Already initialized"))?;
+                continue;
             }
+            if !params["protocolVersion"].is_string()
+                || !params["capabilities"].is_object()
+                || !params["clientInfo"]["name"].is_string()
+                || !params["clientInfo"]["version"].is_string()
+            {
+                write_response(
+                    &mut output,
+                    &error(id, -32602, "Invalid initialize parameters"),
+                )?;
+                continue;
+            }
+            // For unsupported handshake versions, propose the supported legacy
+            // version. The client must disconnect if it cannot speak that version.
+            legacy_ready = Some(false);
+            write_response(
+                &mut output,
+                &json!({"jsonrpc":"2.0","id":id,"result":{
+                    "protocolVersion":LEGACY_PROTOCOL_VERSION,
+                    "capabilities":{"tools":{}},
+                    "serverInfo":{"name":"flexcontext","version":env!("CARGO_PKG_VERSION")},
+                    "instructions":INSTRUCTIONS
+                }}),
+            )?;
+            continue;
+        }
+        let meta = &params["_meta"];
+        let modern = meta
+            .get("io.modelcontextprotocol/protocolVersion")
+            .is_some()
+            || meta
+                .get("io.modelcontextprotocol/clientCapabilities")
+                .is_some();
+        if !modern && (legacy_ready == Some(true) || method == "ping") {
+            // Other _meta entries (e.g. progressToken) are valid in legacy MCP.
+        } else if !modern && legacy_ready == Some(false) {
+            write_response(
+                &mut output,
+                &error(id, -32600, "Awaiting notifications/initialized"),
+            )?;
+            continue;
+        } else {
+            let Some(version) = meta["io.modelcontextprotocol/protocolVersion"].as_str() else {
+                write_response(
+                    &mut output,
+                    &error(
+                        id,
+                        -32602,
+                        "Missing required MCP 2026-07-28 protocolVersion metadata",
+                    ),
+                )?;
+                continue;
+            };
+            if !meta["io.modelcontextprotocol/clientCapabilities"].is_object() {
+                write_response(
+                    &mut output,
+                    &error(id, -32602, "Missing required clientCapabilities object"),
+                )?;
+                continue;
+            }
+            if version != PROTOCOL_VERSION {
+                write_response(
+                    &mut output,
+                    &json!({"jsonrpc":"2.0","id":id,"error":{"code":-32022,"message":"Unsupported protocol version","data":{"supported":[PROTOCOL_VERSION],"requested":version}}}),
+                )?;
+                continue;
+            }
+        }
+        let result = match method {
+            "server/discover" if modern => Ok(
+                json!({"supportedVersions":[PROTOCOL_VERSION,LEGACY_PROTOCOL_VERSION],"capabilities":{"tools":{}},"instructions":INSTRUCTIONS}),
+            ),
             "ping" => Ok(json!({})),
-            _ if !ready => Err((-32002, "Complete initialization first")),
             "tools/list" => Ok(json!({"tools":[
-                {"name":"code_search", "description":"Retrieve diverse structural code context from the resident repository snapshot. Budget estimates source tokens only (bytes/4); metadata adds overhead.",
-                 "inputSchema":{"type":"object", "properties":{"query":{"type":"string"},"budget":{"type":"integer","minimum":1,"default":4096},"max_results":{"type":"integer","minimum":1,"maximum":100,"default":12}},"required":["query"],"additionalProperties":false}},
+                {"name":"code_search", "description":"Retrieve diverse structural code context from the resident repository snapshot. budget selects source bytes/4; max_tokens bounds the complete serialized response estimate. Read code from structuredContent; text is a summary.",
+                 "inputSchema":{"type":"object", "properties":{"query":{"type":"string"},"budget":{"type":"integer","minimum":1,"default":4096},"max_tokens":{"type":"integer","minimum":1},"max_results":{"type":"integer","minimum":1,"maximum":100,"default":12}},"required":["query"],"additionalProperties":false}},
                 {"name":"refresh_index", "description":"Reload the repository snapshot after files are edited, added or deleted.", "inputSchema":{"type":"object","properties":{},"additionalProperties":false}}
             ]})),
             "tools/call" => match params["name"].as_str() {
@@ -86,12 +229,27 @@ pub fn serve(
                         Ok(args)
                             if args.budget > 0
                                 && (1..=100).contains(&args.max_results)
-                                && args.budget.checked_mul(4).is_some() =>
+                                && args.budget.checked_mul(4).is_some()
+                                && args
+                                    .max_tokens
+                                    .is_none_or(|n| n > 0 && n.checked_mul(4).is_some()) =>
                         {
                             match session.query(&args.query, args.budget * 4, args.max_results) {
-                                Ok(response) => Ok(
-                                    json!({"content":[{"type":"text","text":serde_json::to_string(&response)?}], "structuredContent":response, "isError":false}),
-                                ),
+                                Ok(mut response) => {
+                                    let representation = if modern {
+                                        crate::output::Representation::Mcp { id: id.clone() }
+                                    } else {
+                                        crate::output::Representation::McpLegacy { id: id.clone() }
+                                    };
+                                    match crate::output::finalize(
+                                        &mut response,
+                                        &representation,
+                                        args.max_tokens,
+                                    ) {
+                                        Ok(()) => Ok(crate::output::tool_result(&response)),
+                                        Err(err) => Ok(tool_error(&err.to_string())),
+                                    }
+                                }
                                 Err(err) => Ok(tool_error(&err.to_string())),
                             }
                         }
@@ -117,7 +275,9 @@ pub fn serve(
             _ => Err((-32601, "Method not found")),
         };
         let response = match result {
-            Ok(result) => json!({"jsonrpc":"2.0","id":id,"result":result}),
+            Ok(result) => {
+                json!({"jsonrpc":"2.0","id":id,"result":if modern { complete(result) } else { result }})
+            }
             Err((code, message)) => error(id, code, message),
         };
         write_response(&mut output, &response)?;
@@ -131,8 +291,65 @@ fn tool_error(message: &str) -> Value {
     json!({"content":[{"type":"text","text":message}],"isError":true})
 }
 fn write_response(output: &mut impl Write, response: &Value) -> Result<()> {
+    if crate::repository::request_cancelled() {
+        return Ok(());
+    }
     serde_json::to_writer(&mut *output, response)?;
     writeln!(output)?;
     output.flush()?;
     Ok(())
+}
+
+pub const PROTOCOL_VERSION: &str = "2026-07-28";
+pub const LEGACY_PROTOCOL_VERSION: &str = "2025-06-18";
+const INSTRUCTIONS: &str = "Searches the configured repository snapshot. Read code_search structuredContent. Call refresh_index after repository edits.";
+pub fn complete(mut result: Value) -> Value {
+    result["resultType"] = json!("complete");
+    result["_meta"] = json!({"io.modelcontextprotocol/serverInfo":{"name":"flexcontext","version":env!("CARGO_PKG_VERSION")}});
+    result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn cancelled_request_has_no_response_and_does_not_cancel_next_request() {
+        use std::sync::{Arc, Mutex, atomic::AtomicBool};
+        let root = tempfile::tempdir().unwrap();
+        let mut session = SearchSession::open(root.path(), false).unwrap();
+        let registry: Cancellations = Arc::new(Mutex::new(Default::default()));
+        let pending = |id: u64, cancelled| {
+            Ok(Pending {
+                value: json!({"jsonrpc":"2.0","id":id,"method":"ping","params":{"_meta":{"io.modelcontextprotocol/protocolVersion":PROTOCOL_VERSION,"io.modelcontextprotocol/clientCapabilities":{}}}}),
+                parse_error: false,
+                key: Some(id.to_string()),
+                cancelled: Arc::new(AtomicBool::new(cancelled)),
+                registry: registry.clone(),
+            })
+        };
+        let mut output = Vec::new();
+        process_requests(
+            &mut session,
+            [pending(1u64, true), pending(2, false)],
+            &mut output,
+        )
+        .unwrap();
+        let response: Value = serde_json::from_slice(&output).unwrap();
+        assert_eq!(response["id"], 2);
+        assert_eq!(response["result"]["resultType"], "complete");
+    }
+    #[test]
+    fn malformed_json_and_invalid_request_are_distinct() {
+        let root = tempfile::tempdir().unwrap();
+        let mut session = SearchSession::open(root.path(), false).unwrap();
+        let mut output = Vec::new();
+        serve(&mut session, "{\nnull\n".as_bytes(), &mut output).unwrap();
+        let lines: Vec<Value> = std::str::from_utf8(&output)
+            .unwrap()
+            .lines()
+            .map(|line| serde_json::from_str(line).unwrap())
+            .collect();
+        assert_eq!(lines[0]["error"]["code"], -32700);
+        assert_eq!(lines[1]["error"]["code"], -32600);
+    }
 }

@@ -30,6 +30,26 @@ pub fn select_context_for_query(
     max_results: usize,
     query: &Query,
 ) -> Vec<SearchResult> {
+    select_context_with_weights(
+        ranked,
+        symbols,
+        graph,
+        max_bytes,
+        max_results,
+        query,
+        &crate::ranking::RankingWeights::default(),
+    )
+}
+#[allow(clippy::too_many_arguments)]
+pub fn select_context_with_weights(
+    ranked: &[ScoredSymbol],
+    symbols: &[Symbol],
+    graph: &RelationGraph,
+    max_bytes: usize,
+    max_results: usize,
+    query: &Query,
+    weights: &crate::ranking::RankingWeights,
+) -> Vec<SearchResult> {
     let mut results = Vec::new();
     let mut used = 0;
     let mut name_clusters: HashMap<String, usize> = HashMap::new();
@@ -52,8 +72,12 @@ pub fn select_context_for_query(
                 let utility = |item: &&ScoredSymbol| {
                     let symbol = &symbols[item.symbol_id];
                     item.score
-                        - 2.0 * paths.get(symbol.path.as_str()).copied().unwrap_or(0) as f64
-                        - 0.75 * kinds.get(symbol.kind.as_str()).copied().unwrap_or(0) as f64
+                        - weights.diversity_penalty
+                            * 2.0
+                            * paths.get(symbol.path.as_str()).copied().unwrap_or(0) as f64
+                        - weights.diversity_penalty
+                            * 0.75
+                            * kinds.get(symbol.kind.as_str()).copied().unwrap_or(0) as f64
                 };
                 utility(a).total_cmp(&utility(b)).then_with(|| bi.cmp(ai))
             })
@@ -100,6 +124,9 @@ pub fn select_context_for_query(
         }
         let content_bytes = content.len();
         used += content_bytes.div_ceil(4) * 4;
+        let diversity_score = -weights.diversity_penalty
+            * (2.0 * paths.get(symbol.path.as_str()).copied().unwrap_or(0) as f64
+                + 0.75 * kinds.get(symbol.kind.as_str()).copied().unwrap_or(0) as f64);
         *paths.entry(&symbol.path).or_default() += 1;
         *kinds.entry(&symbol.kind).or_default() += 1;
         *name_clusters.entry(name_cluster).or_default() += 1;
@@ -114,8 +141,15 @@ pub fn select_context_for_query(
             end_byte: symbol.end_byte,
             start_line: symbol.start_line,
             end_line: symbol.end_line,
-            signature: symbol.signature.clone(),
+            signature: symbol.signature().to_owned(),
             score: scored.score,
+            lexical_score: scored.signals.total()
+                - scored.signals.structural_priority
+                - scored.signals.structural_relation,
+            structural_score: scored.signals.structural_priority
+                + scored.signals.structural_relation,
+            diversity_score,
+            final_score: scored.score + diversity_score,
             signals: scored.signals.clone(),
             content,
             content_bytes,
@@ -134,9 +168,9 @@ fn budgeted_content(
     container_limit: usize,
     query: &Query,
 ) -> (String, bool, Vec<crate::model::SourceSpan>) {
-    if symbol.content.len() <= remaining && symbol.content.len() <= container_limit {
+    if symbol.content().len() <= remaining && symbol.content().len() <= container_limit {
         return (
-            symbol.content.clone(),
+            symbol.content().to_owned(),
             false,
             vec![crate::model::SourceSpan {
                 start_byte: symbol.start_byte,
@@ -161,10 +195,10 @@ fn budgeted_content(
     // Keep small non-containers whole if they fit the overall budget.
     if !is_container(&symbol.kind)
         && !matches!(symbol.kind.as_str(), "function" | "method")
-        && symbol.content.len() <= remaining
+        && symbol.content().len() <= remaining
     {
         return (
-            symbol.content.clone(),
+            symbol.content().to_owned(),
             false,
             vec![crate::model::SourceSpan {
                 start_byte: symbol.start_byte,
@@ -179,11 +213,11 @@ fn budgeted_content(
 
 fn compact_container(symbol: &Symbol) -> String {
     let mut content = String::new();
-    if !symbol.comments.is_empty() {
-        content.push_str(&symbol.comments);
+    if !symbol.comments().is_empty() {
+        content.push_str(&symbol.comments());
         content.push('\n');
     }
-    content.push_str(symbol.signature.trim_end());
+    content.push_str(symbol.signature().trim_end());
     if symbol.language == crate::model::Language::Python {
         content.push_str("\n    # … members omitted by context budget");
     } else {
@@ -222,11 +256,16 @@ mod tests {
             end_byte: 10_000,
             start_line: 1,
             end_line: 500,
-            signature: "struct Large".to_owned(),
-            body: "x".repeat(10_000),
-            comments: String::new(),
-            content: "x".repeat(10_000),
-            imports: Vec::new(),
+            source: std::sync::Arc::from(format!(
+                "{}{}",
+                "x".repeat(10_000),
+                "struct Large".to_owned()
+            )),
+            signature_range: ("x".repeat(10_000)).len()
+                ..("x".repeat(10_000)).len() + ("struct Large".to_owned()).len(),
+            body_range: 0..("x".repeat(10_000)).len(),
+            comment_ranges: Vec::new(),
+            imports: std::sync::Arc::from([]),
             identifiers: Vec::new(),
             type_references: Vec::new(),
             calls: Vec::new(),
@@ -257,11 +296,16 @@ mod tests {
             end_byte: 18,
             start_line: 1,
             end_line: 1,
-            signature: "const auth: bool".to_owned(),
-            body: String::new(),
-            comments: String::new(),
-            content: "const auth = true;".to_owned(),
-            imports: Vec::new(),
+            source: std::sync::Arc::from(format!(
+                "{}{}",
+                "const auth = true;".to_owned(),
+                "const auth: bool".to_owned()
+            )),
+            signature_range: ("const auth = true;".to_owned()).len()
+                ..("const auth = true;".to_owned()).len() + ("const auth: bool".to_owned()).len(),
+            body_range: 0..(String::new()).len(),
+            comment_ranges: Vec::new(),
+            imports: std::sync::Arc::from([]),
             identifiers: vec!["auth".to_owned()],
             type_references: Vec::new(),
             calls: Vec::new(),

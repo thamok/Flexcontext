@@ -7,12 +7,14 @@ use crate::cache::load_indexed_repository;
 use crate::lexical::Query;
 use crate::model::{SearchOptions, SearchResponse, SearchStats};
 use crate::ranking::{PreparedIndex, rank_indexed_candidates, rank_prepared_candidates};
-use crate::relations::{RelationIndex, build_relation_graph_for, expand_ranked};
-use crate::repository::discover_source_paths;
-use crate::selection::select_context_for_query;
+use crate::relations::{RelationIndex, build_relation_graph_for, expand_ranked_with_weights};
+use crate::repository::{ScanLimits, ScanStats, discover_with_limits};
+use crate::selection::select_context_with_weights;
 
 pub fn search(options: &SearchOptions) -> Result<SearchResponse> {
     let started = Instant::now();
+    crate::repository::check_cancelled()?;
+    options.ranking_weights.validate()?;
     let query = Query::parse(&options.query);
     if query.is_empty() {
         bail!("query must contain at least one letter or number");
@@ -26,17 +28,17 @@ pub fn search(options: &SearchOptions) -> Result<SearchResponse> {
         .with_context(|| format!("cannot access repository root {}", options.root.display()))?;
 
     let stage = Instant::now();
-    let (paths, files_scanned) = discover_source_paths(&root)?;
+    let discovery = discover_with_limits(&root, &options.scan_limits)?;
     let traversal_us = stage.elapsed().as_micros();
 
-    let repository = load_indexed_repository(&root, &paths, options.use_cache)?;
+    let repository = load_indexed_repository(&root, &discovery.paths, options.use_cache)?;
     search_repository(
         options,
         &root,
         &repository,
         None,
         None,
-        files_scanned,
+        &discovery.stats,
         traversal_us,
         started,
         false,
@@ -51,13 +53,22 @@ pub struct SearchSession {
     prepared: PreparedIndex,
     relations: RelationIndex,
     use_cache: bool,
-    files_scanned: usize,
+    scan: ScanStats,
+    scan_limits: ScanLimits,
 }
 
 impl SearchSession {
     pub fn open(root: &std::path::Path, use_cache: bool) -> Result<Self> {
+        Self::open_with_limits(root, use_cache, &ScanLimits::default())
+    }
+    pub fn open_with_limits(
+        root: &std::path::Path,
+        use_cache: bool,
+        limits: &ScanLimits,
+    ) -> Result<Self> {
         let root = root.canonicalize()?;
-        let (paths, files_scanned) = discover_source_paths(&root)?;
+        let discovery = discover_with_limits(&root, limits)?;
+        let paths = discovery.paths;
         let repository = load_indexed_repository(&root, &paths, use_cache)?;
         let prepared = PreparedIndex::build(&repository.symbols);
         let relations = RelationIndex::build(&repository.symbols);
@@ -67,12 +78,20 @@ impl SearchSession {
             prepared,
             relations,
             use_cache,
-            files_scanned,
+            scan: discovery.stats,
+            scan_limits: limits.clone(),
         })
     }
 
+    pub fn index_summary(&self) -> serde_json::Value {
+        serde_json::json!({"files_indexed":self.repository.files_available,"source_bytes":self.repository.source_bytes,"symbols":self.repository.symbols.len(),"scan":self.scan,"files_reused":self.repository.files_reused,"files_reparsed":self.repository.files_reparsed,"cache_fingerprint":crate::cache::CACHE_FINGERPRINT})
+    }
+    pub fn symbols(&self) -> &[crate::model::Symbol] {
+        &self.repository.symbols
+    }
+
     pub fn refresh(&mut self) -> Result<()> {
-        *self = Self::open(&self.root, self.use_cache)?;
+        *self = Self::open_with_limits(&self.root, self.use_cache, &self.scan_limits)?;
         Ok(())
     }
 
@@ -82,12 +101,28 @@ impl SearchSession {
         max_bytes: usize,
         max_results: usize,
     ) -> Result<SearchResponse> {
+        self.query_with_weights(
+            query,
+            max_bytes,
+            max_results,
+            &crate::ranking::RankingWeights::default(),
+        )
+    }
+    pub fn query_with_weights(
+        &self,
+        query: &str,
+        max_bytes: usize,
+        max_results: usize,
+        weights: &crate::ranking::RankingWeights,
+    ) -> Result<SearchResponse> {
         let options = SearchOptions {
             root: self.root.clone(),
             query: query.to_owned(),
             max_bytes,
             max_results,
             use_cache: self.use_cache,
+            scan_limits: self.scan_limits.clone(),
+            ranking_weights: weights.clone(),
         };
         search_repository(
             &options,
@@ -95,7 +130,7 @@ impl SearchSession {
             &self.repository,
             Some(&self.prepared),
             Some(&self.relations),
-            self.files_scanned,
+            &self.scan,
             0,
             Instant::now(),
             true,
@@ -110,11 +145,13 @@ fn search_repository(
     repository: &crate::cache::IndexedRepository,
     prepared: Option<&PreparedIndex>,
     relations: Option<&RelationIndex>,
-    files_scanned: usize,
+    scan: &ScanStats,
     traversal_us: u128,
     started: Instant,
     resident: bool,
 ) -> Result<SearchResponse> {
+    crate::repository::check_cancelled()?;
+    options.ranking_weights.validate()?;
     let query = Query::parse(&options.query);
     if query.is_empty() {
         bail!("query must contain at least one letter or number");
@@ -124,11 +161,12 @@ fn search_repository(
     }
     let symbols = &repository.symbols;
     let stage = Instant::now();
-    let ranked = if let Some(prepared) = prepared {
+    let mut ranked = if let Some(prepared) = prepared {
         rank_prepared_candidates(symbols, &query, &repository.index, prepared)
     } else {
         rank_indexed_candidates(symbols, &query, &repository.index)
     };
+    crate::ranking::apply_weights(&mut ranked, symbols, &options.ranking_weights);
     let candidate_symbols = ranked.len();
     let candidate_and_ranking_us = stage.elapsed().as_micros();
 
@@ -143,23 +181,27 @@ fn search_repository(
         || build_relation_graph_for(symbols, &shortlist),
         |index| index.graph_for(symbols, &shortlist),
     );
-    let ranked = expand_ranked(ranked, &graph, symbols);
+    let ranked = expand_ranked_with_weights(ranked, &graph, symbols, &options.ranking_weights);
     let relationship_us = stage.elapsed().as_micros();
 
     let stage = Instant::now();
-    let results = select_context_for_query(
+    let results = select_context_with_weights(
         &ranked,
         symbols,
         &graph,
         options.max_bytes,
         options.max_results,
         &query,
+        &options.ranking_weights,
     );
+    crate::repository::check_cancelled()?;
     let selection_us = stage.elapsed().as_micros();
     let returned_bytes = results.iter().map(|result| result.content_bytes).sum();
     let approximate_tokens = results.iter().map(|result| result.approximate_tokens).sum();
     let stats = SearchStats {
-        files_scanned,
+        scan: scan.clone(),
+        skipped_binary_or_unreadable_files: repository.files_skipped,
+        files_scanned: scan.files_scanned,
         files_parsed: if resident {
             0
         } else {
@@ -220,12 +262,12 @@ fn search_repository(
         ("retrieval".to_owned(), "structural lexical".to_owned()),
         (
             "token_estimate".to_owned(),
-            "bytes divided by four, rounded up per result".to_owned(),
+            "serialized UTF-8 bytes / 4 rounded up; heuristic, not a model tokenizer".to_owned(),
         ),
         (
             "cache".to_owned(),
             if options.use_cache {
-                ".flexcontext/index-v3.json"
+                ".flexcontext/index.json"
             } else {
                 "disabled"
             }
@@ -233,16 +275,16 @@ fn search_repository(
         ),
     ]);
     let mut response = SearchResponse {
+        context_cost: crate::model::ContextCost {
+            selection_budget: options.max_bytes,
+            ..Default::default()
+        },
         query: options.query.clone(),
         root: root.to_string_lossy().into_owned(),
         results,
         stats,
         metadata,
     };
-    for _ in 0..4 {
-        response.stats.elapsed_us = started.elapsed().as_micros();
-        response.stats.human_payload_bytes = crate::output::render_human(&response).len();
-        response.stats.json_payload_bytes = serde_json::to_vec_pretty(&response)?.len() + 1;
-    }
+    crate::output::finalize(&mut response, &crate::output::Representation::Json, None)?;
     Ok(response)
 }

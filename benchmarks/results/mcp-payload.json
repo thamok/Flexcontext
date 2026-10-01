@@ -1,0 +1,17 @@
+{
+  "protocol": "2026-07-28",
+  "query": "parse HTTP request",
+  "actual_mcp_bytes": 7635,
+  "same_payload_with_duplicate_text_bytes": 15723,
+  "bytes_removed_by_single_payload": 8088,
+  "reduction_fraction": 0.5144056477771418,
+  "context_cost": {
+    "estimated_tokens": 1909,
+    "representation": "mcp-jsonrpc",
+    "selection_budget": 16384,
+    "serialized_bytes": 7635,
+    "source_bytes": 560,
+    "token_budget": 2048
+  },
+  "method": "Actual modern stdio response compared to the identical payload with serialized structuredContent substituted into content[0].text. This isolates duplication; it is not an old binary measurement."
+}

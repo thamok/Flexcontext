@@ -117,7 +117,7 @@ impl RelationIndex {
                     .flatten()
                     .take(8)
                 {
-                    add_edge(&mut graph, &mut seen, symbol.id, import_id, "imports");
+                    add_edge(&mut graph, &mut seen, symbol.id, import_id, "file_import");
                 }
             }
             if crate::language::is_container(&symbol.kind) {
@@ -137,9 +137,22 @@ impl RelationIndex {
 }
 
 pub fn expand_ranked(
+    ranked: Vec<ScoredSymbol>,
+    graph: &RelationGraph,
+    symbols: &[Symbol],
+) -> Vec<ScoredSymbol> {
+    expand_ranked_with_weights(
+        ranked,
+        graph,
+        symbols,
+        &crate::ranking::RankingWeights::default(),
+    )
+}
+pub fn expand_ranked_with_weights(
     mut ranked: Vec<ScoredSymbol>,
     graph: &RelationGraph,
     symbols: &[Symbol],
+    weights: &crate::ranking::RankingWeights,
 ) -> Vec<ScoredSymbol> {
     let seeds: Vec<_> = ranked.iter().take(8).cloned().collect();
     let mut positions: HashMap<usize, usize> = ranked
@@ -153,13 +166,16 @@ pub fn expand_ranked(
         };
         for relation in relations {
             let boost = match relation.kind {
-                "calls" => 4.0,
-                "enclosed_by" => 3.0,
+                "calls" => weights.call_edge_weight,
+                "enclosed_by" => weights.container_edge_weight,
                 "type_reference" => 2.5,
-                "contains" => 2.0,
-                "imports" => 0.75,
+                "contains" => weights.container_edge_weight * (2.0 / 3.0),
+                "imports" => weights.import_edge_weight,
                 _ => 0.0,
             };
+            if boost <= 0.0 {
+                continue;
+            }
             if let Some(&index) = positions.get(&relation.target_id) {
                 let item = &mut ranked[index];
                 item.signals.structural_relation =

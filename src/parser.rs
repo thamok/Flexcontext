@@ -1,4 +1,5 @@
 use std::collections::{BTreeSet, HashMap};
+use std::sync::Arc;
 
 use anyhow::{Context, Result, anyhow};
 use tree_sitter::{Node, Parser};
@@ -37,10 +38,7 @@ impl SymbolExtractor {
             .parse(&file.source, None)
             .ok_or_else(|| anyhow!("Tree-sitter cancelled parsing {}", file.relative_path))?;
         let root = tree.root_node();
-        let imports = collect_imports(root, file);
-        let mut symbols = Vec::new();
-        collect_units(root, file, &imports, next_id, &mut symbols)?;
-        Ok(symbols)
+        collect_file(root, file, next_id)
     }
 }
 
@@ -50,109 +48,166 @@ impl Default for SymbolExtractor {
     }
 }
 
-fn collect_units(
-    node: Node<'_>,
-    file: &SourceFile,
-    imports: &[String],
-    next_id: &mut usize,
-    symbols: &mut Vec<Symbol>,
-) -> Result<()> {
-    let containing_node = nearest_structural_ancestor(node, file.language);
-    let parent_kind = containing_node.map(|ancestor| ancestor.kind());
-    if let Some(kind) = structural_kind(file.language, node.kind(), parent_kind)
-        && let Some(symbol) = build_symbol(node, kind, containing_node, file, imports, *next_id)?
-    {
-        *next_id += 1;
-        symbols.push(symbol);
-    }
-
-    let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        collect_units(child, file, imports, next_id, symbols)?;
-    }
-    Ok(())
-}
-
-fn build_symbol(
-    node: Node<'_>,
-    kind: &str,
-    containing_node: Option<Node<'_>>,
-    file: &SourceFile,
-    imports: &[String],
-    id: usize,
-) -> Result<Option<Symbol>> {
-    let content_node = if node
-        .parent()
-        .is_some_and(|parent| parent.kind() == "decorated_definition")
-    {
-        node.parent().unwrap_or(node)
-    } else {
-        node
-    };
-    let name = symbol_name(node, kind, &file.source);
-    if name.is_empty() {
-        return Ok(None);
-    }
-    let containing_symbol = containing_node
-        .map(|ancestor| symbol_name(ancestor, "container", &file.source))
-        .filter(|name| !name.is_empty());
-    let mut comments = attached_comments(content_node, &file.source);
-    if let Some(docstring) = python_docstring(node, file.language, &file.source) {
-        if !comments.is_empty() {
-            comments.push('\n');
+/// One traversal produces units and positional facts. Local views use range
+/// lookups afterwards; nested containers never recursively rescan an AST.
+fn collect_file(root: Node<'_>, file: &SourceFile, next_id: &mut usize) -> Result<Vec<Symbol>> {
+    let source: Arc<str> = Arc::from(file.source.as_str());
+    let line_starts: Vec<_> = std::iter::once(0)
+        .chain(
+            source
+                .bytes()
+                .enumerate()
+                .filter_map(|(i, b)| (b == b'\n').then_some(i + 1)),
+        )
+        .collect();
+    let mut units = Vec::new();
+    let mut facts: Vec<(usize, usize, u8, &str)> = Vec::new();
+    let mut imports = Vec::new();
+    let mut stack = vec![(root, None::<Node<'_>>, 0)];
+    let mut visited = 0usize;
+    while let Some((node, container, depth)) = stack.pop() {
+        visited += 1;
+        anyhow::ensure!(
+            visited <= 1_000_000 && depth <= 256,
+            "AST complexity limit exceeded in {}",
+            file.relative_path
+        );
+        if visited.is_multiple_of(1024) {
+            crate::repository::check_cancelled()?;
         }
-        comments.push_str(docstring);
-    }
-    let content_start =
-        comment_start_byte(content_node, &file.source).unwrap_or(content_node.start_byte());
-    let content = source_slice(&file.source, content_start, content_node.end_byte())?.to_owned();
-    let body_node = node.child_by_field_name("body");
-    let signature_end = body_node.map_or(node.end_byte(), |body| body.start_byte());
-    let signature = source_slice(&file.source, node.start_byte(), signature_end)?
-        .trim()
-        .to_owned();
-    let body = body_node
-        .map(|body| source_slice(&file.source, body.start_byte(), body.end_byte()))
-        .transpose()?
-        .unwrap_or("")
-        .to_owned();
-    let identifiers = collect_identifiers(node, &file.source);
-    let type_references = collect_type_references(node, &file.source);
-    let calls = collect_calls(node, file.language, &file.source);
-
-    Ok(Some(Symbol {
-        id,
-        path: file.relative_path.clone(),
-        language: file.language,
-        normalized_name: normalize_identifier(&name),
-        name,
-        kind: kind.to_owned(),
-        containing_symbol,
-        structural_depth: structural_depth(node, file.language),
-        start_byte: content_start,
-        end_byte: content_node.end_byte(),
-        start_line: byte_line(&file.source, content_start),
-        end_line: content_node.end_position().row + 1,
-        signature,
-        body,
-        comments,
-        content,
-        imports: imports.to_vec(),
-        identifiers,
-        type_references,
-        calls,
-    }))
-}
-
-fn nearest_structural_ancestor(node: Node<'_>, language: Language) -> Option<Node<'_>> {
-    let mut parent = node.parent();
-    while let Some(ancestor) = parent {
-        if structural_kind(language, ancestor.kind(), None).is_some() {
-            return Some(ancestor);
+        let kind = structural_kind(file.language, node.kind(), container.map(|n| n.kind()));
+        if kind == Some("import") {
+            imports.push(node.utf8_text(source.as_bytes())?.trim().to_owned());
         }
-        parent = ancestor.parent();
+        if let Some(kind) = kind {
+            let name = symbol_name(node, kind, &source);
+            if !name.is_empty() {
+                let content_node = node
+                    .parent()
+                    .filter(|p| p.kind() == "decorated_definition")
+                    .unwrap_or(node);
+                let start =
+                    comment_start_byte(content_node, &source).unwrap_or(content_node.start_byte());
+                let body = node.child_by_field_name("body");
+                let mut comment_ranges = Vec::new();
+                if start < content_node.start_byte() {
+                    comment_ranges.push(start..content_node.start_byte());
+                }
+                if file.language == Language::Python
+                    && let Some(body) = body
+                    && let Some(statement) = body.named_child(0)
+                    && statement.kind() == "expression_statement"
+                    && let Some(string) = statement.named_child(0)
+                    && string.kind() == "string"
+                {
+                    comment_ranges.push(string.byte_range());
+                }
+                let symbol = Symbol {
+                    id: *next_id,
+                    path: file.relative_path.clone(),
+                    language: file.language,
+                    normalized_name: normalize_identifier(&name),
+                    name,
+                    kind: kind.into(),
+                    containing_symbol: container
+                        .map(|n| symbol_name(n, "container", &source))
+                        .filter(|s| !s.is_empty()),
+                    structural_depth: depth,
+                    start_byte: start,
+                    end_byte: content_node.end_byte(),
+                    start_line: line_starts.partition_point(|&offset| offset <= start),
+                    end_line: content_node.end_position().row + 1,
+                    source: source.clone(),
+                    signature_range: node.start_byte()
+                        ..body.map_or(node.end_byte(), |b| b.start_byte()),
+                    body_range: body.map_or(0..0, |b| b.byte_range()),
+                    comment_ranges,
+                    imports: Arc::from([]),
+                    identifiers: Vec::new(),
+                    type_references: Vec::new(),
+                    calls: Vec::new(),
+                };
+                *next_id += 1;
+                units.push((symbol, node.byte_range()));
+            }
+        }
+        if is_identifier_kind(node.kind()) {
+            let text = node.utf8_text(source.as_bytes())?;
+            if text.len() <= 160 {
+                let flags = if matches!(node.kind(), "type_identifier" | "namespace_identifier") {
+                    3
+                } else {
+                    1
+                };
+                facts.push((node.start_byte(), node.end_byte(), flags, text));
+            }
+        }
+        let target = match node.kind() {
+            "call_expression" | "call" => node
+                .child_by_field_name("function")
+                .or_else(|| node.named_child(0)),
+            "macro_invocation" if file.language == Language::Rust => node
+                .child_by_field_name("macro")
+                .or_else(|| node.named_child(0)),
+            _ => None,
+        };
+        if let Some(target) = target
+            && let Some(name) = last_identifier(target, &source)
+        {
+            facts.push((node.start_byte(), node.end_byte(), 4, name));
+        }
+        let next_container = if kind.is_some() {
+            Some(node)
+        } else {
+            container
+        };
+        let next_depth = depth + usize::from(kind.is_some());
+        let mut cursor = node.walk();
+        if cursor.goto_last_child() {
+            loop {
+                let child = cursor.node();
+                if child.is_named() {
+                    stack.push((child, next_container, next_depth));
+                }
+                if !cursor.goto_previous_sibling() {
+                    break;
+                }
+            }
+        }
     }
-    None
+    imports.sort();
+    imports.dedup();
+    let imports: Arc<[String]> = imports.into();
+    facts.sort_by_key(|fact| fact.0);
+    Ok(units
+        .into_iter()
+        .map(|(mut symbol, range)| {
+            let first = facts.partition_point(|f| f.0 < range.start);
+            let end = facts.partition_point(|f| f.0 < range.end);
+            let mut identifiers = BTreeSet::new();
+            let mut types = BTreeSet::new();
+            let mut calls = BTreeSet::new();
+            for (_, stop, flags, text) in &facts[first..end] {
+                if *stop > range.end {
+                    continue;
+                }
+                if flags & 1 != 0 {
+                    identifiers.insert(*text);
+                }
+                if flags & 2 != 0 {
+                    types.insert(*text);
+                }
+                if flags & 4 != 0 {
+                    calls.insert(*text);
+                }
+            }
+            symbol.imports = imports.clone();
+            symbol.identifiers = identifiers.into_iter().map(ToOwned::to_owned).collect();
+            symbol.type_references = types.into_iter().map(ToOwned::to_owned).collect();
+            symbol.calls = calls.into_iter().map(ToOwned::to_owned).collect();
+            symbol
+        })
+        .collect())
 }
 
 fn symbol_name(node: Node<'_>, kind: &str, source: &str) -> String {
@@ -191,97 +246,50 @@ fn import_name(node: Node<'_>, source: &str) -> String {
 }
 
 fn first_identifier(node: Node<'_>, source: &str) -> Option<String> {
-    if is_identifier_kind(node.kind()) {
-        return node
-            .utf8_text(source.as_bytes())
-            .ok()
-            .map(ToOwned::to_owned);
-    }
-    let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        if let Some(identifier) = first_identifier(child, source) {
-            return Some(identifier);
+    let mut stack = vec![node];
+    while let Some(node) = stack.pop() {
+        if is_identifier_kind(node.kind()) {
+            return node
+                .utf8_text(source.as_bytes())
+                .ok()
+                .map(ToOwned::to_owned);
         }
+        let mut cursor = node.walk();
+        let children: Vec<_> = node.named_children(&mut cursor).collect();
+        stack.extend(children.into_iter().rev());
     }
     None
 }
 
-fn collect_identifiers(node: Node<'_>, source: &str) -> Vec<String> {
-    let mut identifiers = BTreeSet::new();
-    visit(node, &mut |child| {
-        if is_identifier_kind(child.kind())
-            && let Ok(text) = child.utf8_text(source.as_bytes())
-            && text.len() <= 160
-        {
-            identifiers.insert(text.to_owned());
-        }
-    });
-    identifiers.into_iter().collect()
-}
-
-fn collect_type_references(node: Node<'_>, source: &str) -> Vec<String> {
-    let mut identifiers = BTreeSet::new();
-    visit(node, &mut |child| {
-        if matches!(child.kind(), "type_identifier" | "namespace_identifier")
-            && let Ok(text) = child.utf8_text(source.as_bytes())
-            && text.len() <= 160
-        {
-            identifiers.insert(text.to_owned());
-        }
-    });
-    identifiers.into_iter().collect()
-}
-
-fn structural_depth(node: Node<'_>, language: Language) -> usize {
-    let mut depth = 0;
-    let mut parent = node.parent();
-    while let Some(ancestor) = parent {
-        if structural_kind(language, ancestor.kind(), None).is_some() {
-            depth += 1;
-        }
-        parent = ancestor.parent();
-    }
-    depth
-}
-
-fn collect_calls(node: Node<'_>, language: Language, source: &str) -> Vec<String> {
-    let mut calls = BTreeSet::new();
-    visit(node, &mut |child| {
-        let target = match child.kind() {
-            "call_expression" => child
-                .child_by_field_name("function")
-                .or_else(|| child.named_child(0)),
-            "macro_invocation" if language == Language::Rust => child
-                .child_by_field_name("macro")
-                .or_else(|| child.named_child(0)),
-            _ => None,
-        };
-        if let Some(target) = target
-            && let Some(identifier) = last_identifier(target, source)
-        {
-            calls.insert(identifier);
-        }
-    });
-    calls.into_iter().collect()
-}
-
-fn last_identifier(node: Node<'_>, source: &str) -> Option<String> {
+fn last_identifier<'a>(node: Node<'_>, source: &'a str) -> Option<&'a str> {
     let mut found = None;
     visit(node, &mut |child| {
         if is_identifier_kind(child.kind())
             && let Ok(text) = child.utf8_text(source.as_bytes())
         {
-            found = Some(text.to_owned());
+            found = Some(text);
         }
     });
     found
 }
 
 fn visit(node: Node<'_>, callback: &mut impl FnMut(Node<'_>)) {
-    callback(node);
     let mut cursor = node.walk();
-    for child in node.named_children(&mut cursor) {
-        visit(child, callback);
+    loop {
+        if cursor.node().is_named() {
+            callback(cursor.node());
+        }
+        if cursor.goto_first_child() {
+            continue;
+        }
+        loop {
+            if cursor.goto_next_sibling() {
+                break;
+            }
+            if !cursor.goto_parent() {
+                return;
+            }
+        }
     }
 }
 
@@ -295,46 +303,6 @@ fn is_identifier_kind(kind: &str) -> bool {
             | "shorthand_property_identifier_pattern"
             | "namespace_identifier"
     )
-}
-
-fn collect_imports(root: Node<'_>, file: &SourceFile) -> Vec<String> {
-    let mut imports = Vec::new();
-    visit(root, &mut |node| {
-        if structural_kind(file.language, node.kind(), None) == Some("import")
-            && let Ok(text) = node.utf8_text(file.source.as_bytes())
-        {
-            imports.push(text.trim().to_owned());
-        }
-    });
-    imports.sort();
-    imports.dedup();
-    imports
-}
-
-fn attached_comments(node: Node<'_>, source: &str) -> String {
-    let Some(start) = comment_start_byte(node, source) else {
-        return String::new();
-    };
-    source_slice(source, start, node.start_byte())
-        .unwrap_or("")
-        .trim()
-        .to_owned()
-}
-
-fn python_docstring<'a>(node: Node<'_>, language: Language, source: &'a str) -> Option<&'a str> {
-    if language != Language::Python {
-        return None;
-    }
-    let body = node.child_by_field_name("body")?;
-    let statement = body.named_child(0)?;
-    if statement.kind() != "expression_statement" {
-        return None;
-    }
-    let string = statement.named_child(0)?;
-    if string.kind() != "string" {
-        return None;
-    }
-    string.utf8_text(source.as_bytes()).ok()
 }
 
 fn comment_start_byte(node: Node<'_>, source: &str) -> Option<usize> {
@@ -361,14 +329,6 @@ fn comment_start_byte(node: Node<'_>, source: &str) -> Option<usize> {
 
 fn is_comment_kind(kind: &str) -> bool {
     kind == "comment" || kind.contains("comment")
-}
-
-fn byte_line(source: &str, byte: usize) -> usize {
-    source.as_bytes()[..byte.min(source.len())]
-        .iter()
-        .filter(|&&value| value == b'\n')
-        .count()
-        + 1
 }
 
 fn source_slice(source: &str, start: usize, end: usize) -> Result<&str> {
