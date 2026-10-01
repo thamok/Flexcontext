@@ -1,6 +1,4 @@
-# flexcontext
-
-Structural lexical context retrieval for coding agents, using Tree-sitter and syntactic relationships. Find relevant source units before you know the right files. Supported languages are Rust, TypeScript/TSX, JavaScript/JSX and Python. Relationships are lexical evidence, not compiler semantics.
+This is `flexcontext`, the fast lexical context generator for agents.
 
 ```console
 cargo build --release --locked
@@ -105,4 +103,8 @@ cargo bench --locked --bench pipeline -- --test
 python3 scripts/bench_scaling.py --output /tmp/scaling.json
 ```
 
-CI runs formatting, lint, tests, release build and benchmark smoke tests on Linux and macOS with Rust stable. No separate MSRV promise is made. MIT licensed; see [LICENSE](LICENSE).
+Run pipeline benchmarks:
+
+```console
+cargo bench --bench pipeline
+```
