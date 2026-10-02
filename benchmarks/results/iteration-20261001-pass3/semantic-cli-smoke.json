@@ -1,0 +1,22 @@
+{
+  "query": "How are identifiers split at acronym and numeric boundaries?",
+  "budget": 2048,
+  "source_tokens": 2047,
+  "semantic": {
+    "semantic_applied": true,
+    "design_sha256": "15e6e822087326d25d3265f61c7e50ef12f0c28d8e005f1903f2e756de72c39a",
+    "model": "jev-1.13.0",
+    "candidate_count": 48,
+    "cache_hit": false,
+    "usage": {
+      "input_tokens": 17281,
+      "output_tokens": 762
+    },
+    "recorded_api_wall_ms": 555.4157090000444
+  },
+  "total_wall_ms": 710.3001670002413,
+  "binary_sha256": "46737e0667f001d554a03dcf0f2f4fc87377327514a9c9d38c6a4482ea3f1a0b",
+  "source_alignment_complete": false,
+  "returned_records": 194,
+  "scope": "One uncached live CLI integration smoke, not a repeated latency benchmark. Synthetic omission markers can have unresolved line attribution."
+}

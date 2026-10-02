@@ -1,0 +1,45 @@
+{
+  "original": {
+    "queries": 60,
+    "retrieval_metrics_symbols_order_source_bytes_identical": true,
+    "summary": {
+      "queries": 60,
+      "recall_at_k": 0.9833333333333333,
+      "mrr": 0.7680555555555556,
+      "ndcg_at_k": 0.8333987313290009,
+      "relationship_recall": 0.7,
+      "mean_source_bytes": 527.7333333333333,
+      "mean_serialized_bytes": 8411.366666666667,
+      "mean_estimated_tokens": 2103.25
+    }
+  },
+  "multilingual": {
+    "queries": 43,
+    "retrieval_metrics_symbols_order_source_bytes_identical": true,
+    "summary": {
+      "queries": 43,
+      "recall_at_k": 0.9534883720930233,
+      "mrr": 0.7228682170542634,
+      "ndcg_at_k": 0.762872980365701,
+      "relationship_recall": 0.7441860465116279,
+      "mean_source_bytes": 568.8604651162791,
+      "mean_serialized_bytes": 8953.255813953489,
+      "mean_estimated_tokens": 2238.6976744186045
+    }
+  },
+  "java": {
+    "queries": 9,
+    "retrieval_metrics_symbols_order_source_bytes_identical": true,
+    "summary": {
+      "queries": 9,
+      "recall_at_k": 1.0,
+      "mrr": 0.7037037037037037,
+      "ndcg_at_k": 0.6947129963092695,
+      "relationship_recall": 0.2222222222222222,
+      "mean_source_bytes": 729.0,
+      "mean_serialized_bytes": 8590.555555555555,
+      "mean_estimated_tokens": 2148.1111111111113
+    }
+  },
+  "eval_binary_sha256": "eba3895d193b5f373b44a7a2cffd59f75ba89eac26c50429a2970ffc33c377ff"
+}

@@ -1,0 +1,87 @@
+{
+  "scope": "WebKit/Source/WTF/wtf/text",
+  "query": "StringImpl utf8",
+  "stats": {
+    "scan": {
+      "files_scanned": 102,
+      "oversized_files": 0,
+      "excluded_directories": 0,
+      "depth_limited_directories": 0,
+      "source_bytes": 812251
+    },
+    "skipped_binary_or_unreadable_files": 0,
+    "files_scanned": 102,
+    "files_parsed": 102,
+    "files_indexed": 102,
+    "source_bytes": 812251,
+    "symbols": 5430,
+    "candidate_symbols": 2363,
+    "returned_symbols": 8,
+    "returned_bytes": 2378,
+    "human_payload_bytes": 7289,
+    "json_payload_bytes": 43067,
+    "approximate_tokens": 598,
+    "traversal_us": 4667,
+    "cache_load_us": 0,
+    "parse_and_extract_us": 58082,
+    "index_us": 107045,
+    "candidate_and_ranking_us": 41560,
+    "relationship_us": 1408,
+    "selection_us": 258,
+    "cache_write_us": 0,
+    "elapsed_us": 213448,
+    "files_reused": 0,
+    "files_reparsed": 102,
+    "index_reused": false
+  },
+  "results": [
+    {
+      "path": "StringImpl.cpp",
+      "symbol": "StringImpl",
+      "kind": "method",
+      "language": "cpp"
+    },
+    {
+      "path": "StringImpl.h",
+      "symbol": "StringImpl",
+      "kind": "class",
+      "language": "cpp"
+    },
+    {
+      "path": "StringImpl.cpp",
+      "symbol": "utf8",
+      "kind": "method",
+      "language": "cpp"
+    },
+    {
+      "path": "StringView.cpp",
+      "symbol": "utf8",
+      "kind": "method",
+      "language": "cpp"
+    },
+    {
+      "path": "StringImpl.h",
+      "symbol": "nonNullEmptyUTF8Span",
+      "kind": "function",
+      "language": "cpp"
+    },
+    {
+      "path": "WTFString.cpp",
+      "symbol": "tryGetUTF8",
+      "kind": "method",
+      "language": "cpp"
+    },
+    {
+      "path": "AtomStringImpl.cpp",
+      "symbol": "UTF16BufferTranslator",
+      "kind": "struct",
+      "language": "cpp"
+    },
+    {
+      "path": "StringView.h",
+      "symbol": "tryGetUTF8",
+      "kind": "method",
+      "language": "cpp"
+    }
+  ]
+}

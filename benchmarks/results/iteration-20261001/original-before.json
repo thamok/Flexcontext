@@ -1,0 +1,2314 @@
+{
+  "schema": 1,
+  "k": 5,
+  "selection_budget": 12000,
+  "summary": {
+    "queries": 60,
+    "recall_at_k": 0.9833333333333333,
+    "mrr": 0.7680555555555556,
+    "ndcg_at_k": 0.8333987313290009,
+    "relationship_recall": 0.7,
+    "mean_source_bytes": 527.7333333333333,
+    "mean_serialized_bytes": 8409.433333333332,
+    "mean_estimated_tokens": 2102.733333333333
+  },
+  "by_split": {
+    "dev": {
+      "queries": 36,
+      "recall_at_k": 0.9722222222222222,
+      "mrr": 0.7685185185185186,
+      "ndcg_at_k": 0.835776562508425,
+      "relationship_recall": 0.75,
+      "mean_source_bytes": 519.75,
+      "mean_serialized_bytes": 8319.361111111111,
+      "mean_estimated_tokens": 2080.25
+    },
+    "test": {
+      "queries": 24,
+      "recall_at_k": 1.0,
+      "mrr": 0.767361111111111,
+      "ndcg_at_k": 0.8298319845598652,
+      "relationship_recall": 0.625,
+      "mean_source_bytes": 539.7083333333334,
+      "mean_serialized_bytes": 8544.541666666666,
+      "mean_estimated_tokens": 2136.4583333333335
+    }
+  },
+  "measurements": [
+    {
+      "id": "rust-01-1",
+      "query": "where is the bearer prefix removed",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.52129602861432,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 770,
+      "serialized_bytes": 9561,
+      "estimated_tokens": 2391,
+      "results": [
+        {
+          "path": "cache.rs",
+          "symbol": "is_fresh",
+          "kind": "function"
+        },
+        {
+          "path": "auth.rs",
+          "symbol": "decode_bearer",
+          "kind": "function"
+        },
+        {
+          "path": "cache.rs",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        },
+        {
+          "path": "auth.rs",
+          "symbol": "authenticate_request",
+          "kind": "function"
+        },
+        {
+          "path": "retry.rs",
+          "symbol": "should_retry",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "rust-01-2",
+      "query": "reject expired credentials using current time",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.58688267143572,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 543,
+      "serialized_bytes": 8696,
+      "estimated_tokens": 2174,
+      "results": [
+        {
+          "path": "cache.rs",
+          "symbol": "is_fresh",
+          "kind": "function"
+        },
+        {
+          "path": "auth.rs",
+          "symbol": "Claims",
+          "kind": "struct"
+        },
+        {
+          "path": "auth.rs",
+          "symbol": "validate_expiry",
+          "kind": "function"
+        },
+        {
+          "path": "cache.rs",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        },
+        {
+          "path": "config.rs",
+          "symbol": "parse_port",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "rust-01-3",
+      "query": "authenticate request from authorization header",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 782,
+      "serialized_bytes": 9605,
+      "estimated_tokens": 2402,
+      "results": [
+        {
+          "path": "auth.rs",
+          "symbol": "authenticate_request",
+          "kind": "function"
+        },
+        {
+          "path": "auth.rs",
+          "symbol": "Claims",
+          "kind": "struct"
+        },
+        {
+          "path": "auth.rs",
+          "symbol": "decode_bearer",
+          "kind": "function"
+        },
+        {
+          "path": "config.rs",
+          "symbol": "parse_port",
+          "kind": "function"
+        },
+        {
+          "path": "cache.rs",
+          "symbol": "evict_expired",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "rust-02-1",
+      "query": "cache hit must respect ttl expiration",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.58688267143572,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 389,
+      "serialized_bytes": 6362,
+      "estimated_tokens": 1591,
+      "results": [
+        {
+          "path": "cache.rs",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        },
+        {
+          "path": "cache.rs",
+          "symbol": "is_fresh",
+          "kind": "function"
+        },
+        {
+          "path": "cache.rs",
+          "symbol": "lookup_cache",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "rust-02-2",
+      "query": "remove stale cache entries",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.6885288809404666,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 356,
+      "serialized_bytes": 6219,
+      "estimated_tokens": 1555,
+      "results": [
+        {
+          "path": "cache.rs",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        },
+        {
+          "path": "cache.rs",
+          "symbol": "is_fresh",
+          "kind": "function"
+        },
+        {
+          "path": "cache.rs",
+          "symbol": "evict_expired",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "rust-02-3",
+      "query": "compare cache expiry timestamp",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 1,
+      "relationship_recall": 0.0,
+      "source_bytes": 593,
+      "serialized_bytes": 9025,
+      "estimated_tokens": 2257,
+      "results": [
+        {
+          "path": "cache.rs",
+          "symbol": "is_fresh",
+          "kind": "function"
+        },
+        {
+          "path": "cache.rs",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        },
+        {
+          "path": "auth.rs",
+          "symbol": "validate_expiry",
+          "kind": "function"
+        },
+        {
+          "path": "auth.rs",
+          "symbol": "decode_bearer",
+          "kind": "function"
+        },
+        {
+          "path": "cache.rs",
+          "symbol": "cache_directory_label",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "rust-03-1",
+      "query": "exponential backoff delay calculation",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 455,
+      "serialized_bytes": 6432,
+      "estimated_tokens": 1608,
+      "results": [
+        {
+          "path": "retry.rs",
+          "symbol": "retry_delay",
+          "kind": "function"
+        },
+        {
+          "path": "retry.rs",
+          "symbol": "RetryPolicy",
+          "kind": "struct"
+        },
+        {
+          "path": "retry.rs",
+          "symbol": "schedule_retry",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "rust-03-2",
+      "query": "stop retries after maximum attempts",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.7967075809905066,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 398,
+      "serialized_bytes": 6167,
+      "estimated_tokens": 1542,
+      "results": [
+        {
+          "path": "retry.rs",
+          "symbol": "RetryPolicy",
+          "kind": "struct"
+        },
+        {
+          "path": "retry.rs",
+          "symbol": "should_retry",
+          "kind": "function"
+        },
+        {
+          "path": "retry.rs",
+          "symbol": "retry_delay",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "rust-03-3",
+      "query": "schedule another failed job attempt",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.6590018048024133,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 455,
+      "serialized_bytes": 6523,
+      "estimated_tokens": 1631,
+      "results": [
+        {
+          "path": "retry.rs",
+          "symbol": "RetryPolicy",
+          "kind": "struct"
+        },
+        {
+          "path": "retry.rs",
+          "symbol": "schedule_retry",
+          "kind": "function"
+        },
+        {
+          "path": "retry.rs",
+          "symbol": "retry_delay",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "rust-04-1",
+      "query": "reject zero or invalid server port",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.7967075809905066,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 599,
+      "serialized_bytes": 9018,
+      "estimated_tokens": 2255,
+      "results": [
+        {
+          "path": "config.rs",
+          "symbol": "ServerConfig",
+          "kind": "struct"
+        },
+        {
+          "path": "config.rs",
+          "symbol": "parse_port",
+          "kind": "function"
+        },
+        {
+          "path": "config.rs",
+          "symbol": "load_server_config",
+          "kind": "function"
+        },
+        {
+          "path": "auth.rs",
+          "symbol": "validate_expiry",
+          "kind": "function"
+        },
+        {
+          "path": "auth.rs",
+          "symbol": "Claims",
+          "kind": "struct"
+        }
+      ]
+    },
+    {
+      "id": "rust-04-2",
+      "query": "load server config from environment",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 636,
+      "serialized_bytes": 9220,
+      "estimated_tokens": 2305,
+      "results": [
+        {
+          "path": "config.rs",
+          "symbol": "load_server_config",
+          "kind": "function"
+        },
+        {
+          "path": "config.rs",
+          "symbol": "ServerConfig",
+          "kind": "struct"
+        },
+        {
+          "path": "config.rs",
+          "symbol": "parse_port",
+          "kind": "function"
+        },
+        {
+          "path": "cache.rs",
+          "symbol": "evict_expired",
+          "kind": "function"
+        },
+        {
+          "path": "cache.rs",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        }
+      ]
+    },
+    {
+      "id": "rust-04-3",
+      "query": "format listener host and port address",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 709,
+      "serialized_bytes": 9379,
+      "estimated_tokens": 2345,
+      "results": [
+        {
+          "path": "config.rs",
+          "symbol": "bind_address",
+          "kind": "function"
+        },
+        {
+          "path": "config.rs",
+          "symbol": "ServerConfig",
+          "kind": "struct"
+        },
+        {
+          "path": "config.rs",
+          "symbol": "parse_port",
+          "kind": "function"
+        },
+        {
+          "path": "storage.rs",
+          "symbol": "encode_record",
+          "kind": "function"
+        },
+        {
+          "path": "auth.rs",
+          "symbol": "authenticate_request",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "rust-05-1",
+      "query": "atomic save records via temporary file rename",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 515,
+      "serialized_bytes": 6494,
+      "estimated_tokens": 1624,
+      "results": [
+        {
+          "path": "storage.rs",
+          "symbol": "save_records",
+          "kind": "function"
+        },
+        {
+          "path": "storage.rs",
+          "symbol": "Record",
+          "kind": "struct"
+        },
+        {
+          "path": "storage.rs",
+          "symbol": "encode_record",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "rust-05-2",
+      "query": "tab separated record encoding",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.7967075809905066,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 401,
+      "serialized_bytes": 6127,
+      "estimated_tokens": 1532,
+      "results": [
+        {
+          "path": "storage.rs",
+          "symbol": "Record",
+          "kind": "struct"
+        },
+        {
+          "path": "storage.rs",
+          "symbol": "encode_record",
+          "kind": "function"
+        },
+        {
+          "path": "storage.rs",
+          "symbol": "decode_record",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "rust-05-3",
+      "query": "decode persisted key value line",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 677,
+      "serialized_bytes": 9121,
+      "estimated_tokens": 2281,
+      "results": [
+        {
+          "path": "storage.rs",
+          "symbol": "decode_record",
+          "kind": "function"
+        },
+        {
+          "path": "storage.rs",
+          "symbol": "Record",
+          "kind": "struct"
+        },
+        {
+          "path": "auth.rs",
+          "symbol": "decode_bearer",
+          "kind": "function"
+        },
+        {
+          "path": "cache.rs",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        },
+        {
+          "path": "cache.rs",
+          "symbol": "is_fresh",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "typescript-01-1",
+      "query": "parse HTTP request line method path",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.7967075809905066,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 512,
+      "serialized_bytes": 9402,
+      "estimated_tokens": 2351,
+      "results": [
+        {
+          "path": "request.ts",
+          "symbol": "ParsedRequest",
+          "kind": "interface"
+        },
+        {
+          "path": "request.ts",
+          "symbol": "parseRequest",
+          "kind": "function"
+        },
+        {
+          "path": "request.ts",
+          "symbol": "normalizeMethod",
+          "kind": "function"
+        },
+        {
+          "path": "pagination.ts",
+          "symbol": "decodeCursor",
+          "kind": "function"
+        },
+        {
+          "path": "pagination.ts",
+          "symbol": "parsePage",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "typescript-01-2",
+      "query": "trim and uppercase HTTP method",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 288,
+      "serialized_bytes": 6070,
+      "estimated_tokens": 1518,
+      "results": [
+        {
+          "path": "request.ts",
+          "symbol": "normalizeMethod",
+          "kind": "function"
+        },
+        {
+          "path": "request.ts",
+          "symbol": "parseRequest",
+          "kind": "function"
+        },
+        {
+          "path": "request.ts",
+          "symbol": "ParsedRequest",
+          "kind": "interface"
+        }
+      ]
+    },
+    {
+      "id": "typescript-01-3",
+      "query": "reject unsupported request methods",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 0.0,
+      "reciprocal_rank": 0.0,
+      "ndcg_at_k": 0.27541155237618664,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 288,
+      "serialized_bytes": 6075,
+      "estimated_tokens": 1519,
+      "results": [
+        {
+          "path": "request.ts",
+          "symbol": "normalizeMethod",
+          "kind": "function"
+        },
+        {
+          "path": "request.ts",
+          "symbol": "parseRequest",
+          "kind": "function"
+        },
+        {
+          "path": "request.ts",
+          "symbol": "ParsedRequest",
+          "kind": "interface"
+        }
+      ]
+    },
+    {
+      "id": "typescript-02-1",
+      "query": "decode pagination cursor from query string",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 398,
+      "serialized_bytes": 8903,
+      "estimated_tokens": 2226,
+      "results": [
+        {
+          "path": "pagination.ts",
+          "symbol": "decodeCursor",
+          "kind": "function"
+        },
+        {
+          "path": "pagination.ts",
+          "symbol": "Page",
+          "kind": "interface"
+        },
+        {
+          "path": "pagination.ts",
+          "symbol": "parsePage",
+          "kind": "function"
+        },
+        {
+          "path": "request.ts",
+          "symbol": "ParsedRequest",
+          "kind": "interface"
+        },
+        {
+          "path": "webhook.ts",
+          "symbol": "webhookSettingsTitle",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "typescript-02-2",
+      "query": "bound requested page size to hundred",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.944847956559586,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 408,
+      "serialized_bytes": 8934,
+      "estimated_tokens": 2234,
+      "results": [
+        {
+          "path": "pagination.ts",
+          "symbol": "clampPageSize",
+          "kind": "function"
+        },
+        {
+          "path": "request.ts",
+          "symbol": "ParsedRequest",
+          "kind": "interface"
+        },
+        {
+          "path": "request.ts",
+          "symbol": "normalizeMethod",
+          "kind": "function"
+        },
+        {
+          "path": "pagination.ts",
+          "symbol": "Page",
+          "kind": "interface"
+        },
+        {
+          "path": "pagination.ts",
+          "symbol": "parsePage",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "typescript-02-3",
+      "query": "parse cursor and page size parameters",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 428,
+      "serialized_bytes": 9123,
+      "estimated_tokens": 2281,
+      "results": [
+        {
+          "path": "pagination.ts",
+          "symbol": "parsePage",
+          "kind": "function"
+        },
+        {
+          "path": "pagination.ts",
+          "symbol": "clampPageSize",
+          "kind": "function"
+        },
+        {
+          "path": "request.ts",
+          "symbol": "ParsedRequest",
+          "kind": "interface"
+        },
+        {
+          "path": "upload.ts",
+          "symbol": "validateUploadSize",
+          "kind": "function"
+        },
+        {
+          "path": "pagination.ts",
+          "symbol": "Page",
+          "kind": "interface"
+        }
+      ]
+    },
+    {
+      "id": "typescript-03-1",
+      "query": "expired login session timestamp comparison",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 286,
+      "serialized_bytes": 6233,
+      "estimated_tokens": 1559,
+      "results": [
+        {
+          "path": "session.ts",
+          "symbol": "sessionExpired",
+          "kind": "function"
+        },
+        {
+          "path": "session.ts",
+          "symbol": "Session",
+          "kind": "interface"
+        },
+        {
+          "path": "session.ts",
+          "symbol": "sessionUser",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "typescript-03-2",
+      "query": "get authenticated user from active session",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.58688267143572,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 485,
+      "serialized_bytes": 9186,
+      "estimated_tokens": 2297,
+      "results": [
+        {
+          "path": "session.ts",
+          "symbol": "Session",
+          "kind": "interface"
+        },
+        {
+          "path": "session.ts",
+          "symbol": "sessionExpired",
+          "kind": "function"
+        },
+        {
+          "path": "session.ts",
+          "symbol": "sessionUser",
+          "kind": "function"
+        },
+        {
+          "path": "request.ts",
+          "symbol": "isAllowedMethod",
+          "kind": "function"
+        },
+        {
+          "path": "request.ts",
+          "symbol": "normalizeMethod",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "typescript-03-3",
+      "query": "refresh session expiry preserving user",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.7967075809905066,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 299,
+      "serialized_bytes": 6283,
+      "estimated_tokens": 1571,
+      "results": [
+        {
+          "path": "session.ts",
+          "symbol": "Session",
+          "kind": "interface"
+        },
+        {
+          "path": "session.ts",
+          "symbol": "refreshSession",
+          "kind": "function"
+        },
+        {
+          "path": "session.ts",
+          "symbol": "sessionUser",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "typescript-04-1",
+      "query": "reject uploads exceeding byte limit",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.7967075809905066,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 430,
+      "serialized_bytes": 9117,
+      "estimated_tokens": 2280,
+      "results": [
+        {
+          "path": "upload.ts",
+          "symbol": "Upload",
+          "kind": "interface"
+        },
+        {
+          "path": "upload.ts",
+          "symbol": "validateUploadSize",
+          "kind": "function"
+        },
+        {
+          "path": "upload.ts",
+          "symbol": "safeUploadName",
+          "kind": "function"
+        },
+        {
+          "path": "pagination.ts",
+          "symbol": "Page",
+          "kind": "interface"
+        },
+        {
+          "path": "pagination.ts",
+          "symbol": "parsePage",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "typescript-04-2",
+      "query": "strip directories from uploaded filename",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.52129602861432,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 255,
+      "serialized_bytes": 5848,
+      "estimated_tokens": 1462,
+      "results": [
+        {
+          "path": "upload.ts",
+          "symbol": "Upload",
+          "kind": "interface"
+        },
+        {
+          "path": "upload.ts",
+          "symbol": "safeUploadName",
+          "kind": "function"
+        },
+        {
+          "path": "upload.ts",
+          "symbol": "validateUploadSize",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "typescript-04-3",
+      "query": "prepare validated upload storage name",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 294,
+      "serialized_bytes": 6253,
+      "estimated_tokens": 1564,
+      "results": [
+        {
+          "path": "upload.ts",
+          "symbol": "prepareUpload",
+          "kind": "function"
+        },
+        {
+          "path": "upload.ts",
+          "symbol": "Upload",
+          "kind": "interface"
+        },
+        {
+          "path": "upload.ts",
+          "symbol": "safeUploadName",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "typescript-05-1",
+      "query": "deduplicate webhook delivery by event id",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.6885288809404666,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 437,
+      "serialized_bytes": 9147,
+      "estimated_tokens": 2287,
+      "results": [
+        {
+          "path": "webhook.ts",
+          "symbol": "WebhookEvent",
+          "kind": "interface"
+        },
+        {
+          "path": "webhook.ts",
+          "symbol": "markDelivered",
+          "kind": "function"
+        },
+        {
+          "path": "webhook.ts",
+          "symbol": "alreadyDelivered",
+          "kind": "function"
+        },
+        {
+          "path": "session.ts",
+          "symbol": "Session",
+          "kind": "interface"
+        },
+        {
+          "path": "session.ts",
+          "symbol": "sessionUser",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "typescript-05-2",
+      "query": "record successful webhook delivery",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.7967075809905066,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 251,
+      "serialized_bytes": 6047,
+      "estimated_tokens": 1512,
+      "results": [
+        {
+          "path": "webhook.ts",
+          "symbol": "WebhookEvent",
+          "kind": "interface"
+        },
+        {
+          "path": "webhook.ts",
+          "symbol": "markDelivered",
+          "kind": "function"
+        },
+        {
+          "path": "webhook.ts",
+          "symbol": "alreadyDelivered",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "typescript-05-3",
+      "query": "accept webhook event at most once",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.52129602861432,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 466,
+      "serialized_bytes": 9305,
+      "estimated_tokens": 2327,
+      "results": [
+        {
+          "path": "webhook.ts",
+          "symbol": "WebhookEvent",
+          "kind": "interface"
+        },
+        {
+          "path": "webhook.ts",
+          "symbol": "acceptWebhook",
+          "kind": "function"
+        },
+        {
+          "path": "session.ts",
+          "symbol": "Session",
+          "kind": "interface"
+        },
+        {
+          "path": "webhook.ts",
+          "symbol": "markDelivered",
+          "kind": "function"
+        },
+        {
+          "path": "session.ts",
+          "symbol": "sessionExpired",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-01-1",
+      "query": "derive salted password digest pbkdf2",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 514,
+      "serialized_bytes": 7153,
+      "estimated_tokens": 1789,
+      "results": [
+        {
+          "path": "passwords.py",
+          "symbol": "hash_password",
+          "kind": "function"
+        },
+        {
+          "path": "passwords.py",
+          "symbol": "verify_password",
+          "kind": "function"
+        },
+        {
+          "path": "passwords.py",
+          "symbol": "password_needs_upgrade",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-01-2",
+      "query": "verify supplied password against stored digest",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 514,
+      "serialized_bytes": 7152,
+      "estimated_tokens": 1788,
+      "results": [
+        {
+          "path": "passwords.py",
+          "symbol": "verify_password",
+          "kind": "function"
+        },
+        {
+          "path": "passwords.py",
+          "symbol": "hash_password",
+          "kind": "function"
+        },
+        {
+          "path": "passwords.py",
+          "symbol": "password_needs_upgrade",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-01-3",
+      "query": "password work factor needs upgrade",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 839,
+      "serialized_bytes": 10501,
+      "estimated_tokens": 2626,
+      "results": [
+        {
+          "path": "passwords.py",
+          "symbol": "password_needs_upgrade",
+          "kind": "function"
+        },
+        {
+          "path": "paths.py",
+          "symbol": "resolve_workspace",
+          "kind": "function"
+        },
+        {
+          "path": "passwords.py",
+          "symbol": "hash_password",
+          "kind": "function"
+        },
+        {
+          "path": "paths.py",
+          "symbol": "is_within_workspace",
+          "kind": "function"
+        },
+        {
+          "path": "passwords.py",
+          "symbol": "verify_password",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-02-1",
+      "query": "queued job scheduled time has arrived",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 1,
+      "relationship_recall": 0.0,
+      "source_bytes": 401,
+      "serialized_bytes": 5854,
+      "estimated_tokens": 1464,
+      "results": [
+        {
+          "path": "jobs.py",
+          "symbol": "job_ready",
+          "kind": "function"
+        },
+        {
+          "path": "jobs.py",
+          "symbol": "cancel_job",
+          "kind": "function"
+        },
+        {
+          "path": "jobs.py",
+          "symbol": "job_dashboard_title",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-02-2",
+      "query": "select jobs eligible for execution",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 647,
+      "serialized_bytes": 9234,
+      "estimated_tokens": 2309,
+      "results": [
+        {
+          "path": "jobs.py",
+          "symbol": "take_ready_jobs",
+          "kind": "function"
+        },
+        {
+          "path": "jobs.py",
+          "symbol": "job_ready",
+          "kind": "function"
+        },
+        {
+          "path": "csv_reader.py",
+          "symbol": "import_contacts",
+          "kind": "function"
+        },
+        {
+          "path": "csv_reader.py",
+          "symbol": "parse_csv_rows",
+          "kind": "function"
+        },
+        {
+          "path": "jobs.py",
+          "symbol": "job_dashboard_title",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-02-3",
+      "query": "cancel queued job without interrupting running",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 820,
+      "serialized_bytes": 9613,
+      "estimated_tokens": 2404,
+      "results": [
+        {
+          "path": "jobs.py",
+          "symbol": "cancel_job",
+          "kind": "function"
+        },
+        {
+          "path": "jobs.py",
+          "symbol": "job_ready",
+          "kind": "function"
+        },
+        {
+          "path": "rate_limit.py",
+          "symbol": "remaining_quota",
+          "kind": "function"
+        },
+        {
+          "path": "csv_reader.py",
+          "symbol": "import_contacts",
+          "kind": "function"
+        },
+        {
+          "path": "passwords.py",
+          "symbol": "hash_password",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-03-1",
+      "query": "read csv records keyed by column header",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 1,
+      "relationship_recall": 0.0,
+      "source_bytes": 729,
+      "serialized_bytes": 10009,
+      "estimated_tokens": 2503,
+      "results": [
+        {
+          "path": "csv_reader.py",
+          "symbol": "parse_csv_rows",
+          "kind": "function"
+        },
+        {
+          "path": "jobs.py",
+          "symbol": "job_ready",
+          "kind": "function"
+        },
+        {
+          "path": "csv_reader.py",
+          "symbol": "valid_email_row",
+          "kind": "function"
+        },
+        {
+          "path": "paths.py",
+          "symbol": "read_workspace_file",
+          "kind": "function"
+        },
+        {
+          "path": "csv_reader.py",
+          "symbol": "csv_export_filename",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-03-2",
+      "query": "validate imported contact email row",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 690,
+      "serialized_bytes": 9712,
+      "estimated_tokens": 2428,
+      "results": [
+        {
+          "path": "csv_reader.py",
+          "symbol": "valid_email_row",
+          "kind": "function"
+        },
+        {
+          "path": "csv_reader.py",
+          "symbol": "import_contacts",
+          "kind": "function"
+        },
+        {
+          "path": "passwords.py",
+          "symbol": "verify_password",
+          "kind": "function"
+        },
+        {
+          "path": "paths.py",
+          "symbol": "Path",
+          "kind": "import"
+        },
+        {
+          "path": "passwords.py",
+          "symbol": "hash_password",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-03-3",
+      "query": "import contacts filtering invalid email addresses",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 690,
+      "serialized_bytes": 9751,
+      "estimated_tokens": 2438,
+      "results": [
+        {
+          "path": "csv_reader.py",
+          "symbol": "import_contacts",
+          "kind": "function"
+        },
+        {
+          "path": "csv_reader.py",
+          "symbol": "valid_email_row",
+          "kind": "function"
+        },
+        {
+          "path": "passwords.py",
+          "symbol": "verify_password",
+          "kind": "function"
+        },
+        {
+          "path": "paths.py",
+          "symbol": "Path",
+          "kind": "import"
+        },
+        {
+          "path": "passwords.py",
+          "symbol": "hash_password",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-04-1",
+      "query": "remaining request quota never negative",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 330,
+      "serialized_bytes": 5988,
+      "estimated_tokens": 1497,
+      "results": [
+        {
+          "path": "rate_limit.py",
+          "symbol": "remaining_quota",
+          "kind": "function"
+        },
+        {
+          "path": "rate_limit.py",
+          "symbol": "allow_request",
+          "kind": "function"
+        },
+        {
+          "path": "rate_limit.py",
+          "symbol": "rate_limit_chart_label",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-04-2",
+      "query": "allow request only below rate limit",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 752,
+      "serialized_bytes": 9955,
+      "estimated_tokens": 2489,
+      "results": [
+        {
+          "path": "rate_limit.py",
+          "symbol": "allow_request",
+          "kind": "function"
+        },
+        {
+          "path": "rate_limit.py",
+          "symbol": "remaining_quota",
+          "kind": "function"
+        },
+        {
+          "path": "rate_limit.py",
+          "symbol": "rate_limit_chart_label",
+          "kind": "function"
+        },
+        {
+          "path": "csv_reader.py",
+          "symbol": "import_contacts",
+          "kind": "function"
+        },
+        {
+          "path": "paths.py",
+          "symbol": "read_workspace_file",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-04-3",
+      "query": "retry after seconds until quota reset",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.944847956559586,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 786,
+      "serialized_bytes": 9416,
+      "estimated_tokens": 2354,
+      "results": [
+        {
+          "path": "rate_limit.py",
+          "symbol": "retry_after",
+          "kind": "function"
+        },
+        {
+          "path": "rate_limit.py",
+          "symbol": "remaining_quota",
+          "kind": "function"
+        },
+        {
+          "path": "paths.py",
+          "symbol": "read_workspace_file",
+          "kind": "function"
+        },
+        {
+          "path": "rate_limit.py",
+          "symbol": "allow_request",
+          "kind": "function"
+        },
+        {
+          "path": "paths.py",
+          "symbol": "resolve_workspace",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-05-1",
+      "query": "resolve relative workspace filename",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 781,
+      "serialized_bytes": 10231,
+      "estimated_tokens": 2558,
+      "results": [
+        {
+          "path": "paths.py",
+          "symbol": "resolve_workspace",
+          "kind": "function"
+        },
+        {
+          "path": "paths.py",
+          "symbol": "read_workspace_file",
+          "kind": "function"
+        },
+        {
+          "path": "paths.py",
+          "symbol": "is_within_workspace",
+          "kind": "function"
+        },
+        {
+          "path": "csv_reader.py",
+          "symbol": "csv_export_filename",
+          "kind": "function"
+        },
+        {
+          "path": "passwords.py",
+          "symbol": "password_needs_upgrade",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-05-2",
+      "query": "reject directory traversal outside workspace",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.7967075809905066,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 722,
+      "serialized_bytes": 8769,
+      "estimated_tokens": 2193,
+      "results": [
+        {
+          "path": "paths.py",
+          "symbol": "resolve_workspace",
+          "kind": "function"
+        },
+        {
+          "path": "paths.py",
+          "symbol": "is_within_workspace",
+          "kind": "function"
+        },
+        {
+          "path": "paths.py",
+          "symbol": "read_workspace_file",
+          "kind": "function"
+        },
+        {
+          "path": "passwords.py",
+          "symbol": "password_needs_upgrade",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "python-05-3",
+      "query": "read workspace file after path validation",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.944847956559586,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 839,
+      "serialized_bytes": 10251,
+      "estimated_tokens": 2563,
+      "results": [
+        {
+          "path": "paths.py",
+          "symbol": "read_workspace_file",
+          "kind": "function"
+        },
+        {
+          "path": "paths.py",
+          "symbol": "resolve_workspace",
+          "kind": "function"
+        },
+        {
+          "path": "csv_reader.py",
+          "symbol": "valid_email_row",
+          "kind": "function"
+        },
+        {
+          "path": "paths.py",
+          "symbol": "is_within_workspace",
+          "kind": "function"
+        },
+        {
+          "path": "csv_reader.py",
+          "symbol": "parse_csv_rows",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-01-1",
+      "query": "order total integer cents quantity price",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 447,
+      "serialized_bytes": 9041,
+      "estimated_tokens": 2261,
+      "results": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "order_total",
+          "kind": "function"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "Order",
+          "kind": "struct"
+        },
+        {
+          "path": "web/orders.ts",
+          "symbol": "OrderView",
+          "kind": "interface"
+        },
+        {
+          "path": "web/orders.ts",
+          "symbol": "formatOrderPrice",
+          "kind": "function"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "validate_order",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-01-2",
+      "query": "reject empty orders before checkout",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.7967075809905066,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 532,
+      "serialized_bytes": 9208,
+      "estimated_tokens": 2302,
+      "results": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "Order",
+          "kind": "struct"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "validate_order",
+          "kind": "function"
+        },
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_order_row",
+          "kind": "function"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "checkout_order",
+          "kind": "function"
+        },
+        {
+          "path": "web/orders.ts",
+          "symbol": "OrderView",
+          "kind": "interface"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-01-3",
+      "query": "checkout validated order and charge total",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 567,
+      "serialized_bytes": 9300,
+      "estimated_tokens": 2325,
+      "results": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "checkout_order",
+          "kind": "function"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "order_total",
+          "kind": "function"
+        },
+        {
+          "path": "web/orders.ts",
+          "symbol": "OrderView",
+          "kind": "interface"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "Order",
+          "kind": "struct"
+        },
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_order_row",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-02-1",
+      "query": "display order price with two decimal places",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.6590018048024133,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 495,
+      "serialized_bytes": 9217,
+      "estimated_tokens": 2305,
+      "results": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "Order",
+          "kind": "struct"
+        },
+        {
+          "path": "web/orders.ts",
+          "symbol": "formatOrderPrice",
+          "kind": "function"
+        },
+        {
+          "path": "web/orders.ts",
+          "symbol": "OrderView",
+          "kind": "interface"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "order_total",
+          "kind": "function"
+        },
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_order_row",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-02-2",
+      "query": "render checkout order summary text",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 545,
+      "serialized_bytes": 9396,
+      "estimated_tokens": 2349,
+      "results": [
+        {
+          "path": "web/orders.ts",
+          "symbol": "renderOrderSummary",
+          "kind": "function"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "Order",
+          "kind": "struct"
+        },
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_order_row",
+          "kind": "function"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "checkout_order",
+          "kind": "function"
+        },
+        {
+          "path": "web/orders.ts",
+          "symbol": "OrderView",
+          "kind": "interface"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-02-3",
+      "query": "build encoded order detail route",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.6278397607958708,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 464,
+      "serialized_bytes": 8899,
+      "estimated_tokens": 2225,
+      "results": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "Order",
+          "kind": "struct"
+        },
+        {
+          "path": "web/orders.ts",
+          "symbol": "orderDetailUrl",
+          "kind": "function"
+        },
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_order_row",
+          "kind": "function"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "validate_order",
+          "kind": "function"
+        },
+        {
+          "path": "web/orders.ts",
+          "symbol": "OrderView",
+          "kind": "interface"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-03-1",
+      "query": "encode order row for warehouse export",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 546,
+      "serialized_bytes": 8821,
+      "estimated_tokens": 2206,
+      "results": [
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_order_row",
+          "kind": "function"
+        },
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_orders",
+          "kind": "function"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "Order",
+          "kind": "struct"
+        },
+        {
+          "path": "web/orders.ts",
+          "symbol": "OrderView",
+          "kind": "interface"
+        },
+        {
+          "path": "worker/orders.py",
+          "symbol": "pending_exports",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-03-2",
+      "query": "batch export orders to warehouse",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 546,
+      "serialized_bytes": 8792,
+      "estimated_tokens": 2198,
+      "results": [
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_orders",
+          "kind": "function"
+        },
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_order_row",
+          "kind": "function"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "Order",
+          "kind": "struct"
+        },
+        {
+          "path": "worker/orders.py",
+          "symbol": "pending_exports",
+          "kind": "function"
+        },
+        {
+          "path": "web/orders.ts",
+          "symbol": "OrderView",
+          "kind": "interface"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-03-3",
+      "query": "find orders awaiting warehouse export",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.531730627995306,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 592,
+      "serialized_bytes": 9045,
+      "estimated_tokens": 2262,
+      "results": [
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_order_row",
+          "kind": "function"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "Order",
+          "kind": "struct"
+        },
+        {
+          "path": "worker/orders.py",
+          "symbol": "pending_exports",
+          "kind": "function"
+        },
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_orders",
+          "kind": "function"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "validate_order",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-04-1",
+      "query": "available inventory after reservations",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 467,
+      "serialized_bytes": 9032,
+      "estimated_tokens": 2258,
+      "results": [
+        {
+          "path": "api/inventory.rs",
+          "symbol": "available_stock",
+          "kind": "function"
+        },
+        {
+          "path": "web/inventory.ts",
+          "symbol": "StockView",
+          "kind": "interface"
+        },
+        {
+          "path": "api/inventory.rs",
+          "symbol": "Stock",
+          "kind": "struct"
+        },
+        {
+          "path": "web/inventory.ts",
+          "symbol": "stockLabel",
+          "kind": "function"
+        },
+        {
+          "path": "web/inventory.ts",
+          "symbol": "canAddToCart",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-04-2",
+      "query": "reserve inventory only if sufficient stock",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.5196610607458307,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 582,
+      "serialized_bytes": 9371,
+      "estimated_tokens": 2343,
+      "results": [
+        {
+          "path": "api/inventory.rs",
+          "symbol": "Stock",
+          "kind": "struct"
+        },
+        {
+          "path": "web/inventory.ts",
+          "symbol": "StockView",
+          "kind": "interface"
+        },
+        {
+          "path": "api/inventory.rs",
+          "symbol": "reserve_stock",
+          "kind": "function"
+        },
+        {
+          "path": "web/inventory.ts",
+          "symbol": "stockLabel",
+          "kind": "function"
+        },
+        {
+          "path": "api/inventory.rs",
+          "symbol": "available_stock",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-04-3",
+      "query": "release reservation for cancelled order",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.25,
+      "ndcg_at_k": 0.35583989829307827,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 607,
+      "serialized_bytes": 9225,
+      "estimated_tokens": 2307,
+      "results": [
+        {
+          "path": "api/orders.rs",
+          "symbol": "Order",
+          "kind": "struct"
+        },
+        {
+          "path": "worker/orders.py",
+          "symbol": "export_order_row",
+          "kind": "function"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "validate_order",
+          "kind": "function"
+        },
+        {
+          "path": "api/inventory.rs",
+          "symbol": "release_stock",
+          "kind": "function"
+        },
+        {
+          "path": "api/orders.rs",
+          "symbol": "order_total",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-05-1",
+      "query": "product page remaining stock label",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 467,
+      "serialized_bytes": 9024,
+      "estimated_tokens": 2256,
+      "results": [
+        {
+          "path": "web/inventory.ts",
+          "symbol": "stockLabel",
+          "kind": "function"
+        },
+        {
+          "path": "api/inventory.rs",
+          "symbol": "Stock",
+          "kind": "struct"
+        },
+        {
+          "path": "web/inventory.ts",
+          "symbol": "StockView",
+          "kind": "interface"
+        },
+        {
+          "path": "api/inventory.rs",
+          "symbol": "available_stock",
+          "kind": "function"
+        },
+        {
+          "path": "web/inventory.ts",
+          "symbol": "canAddToCart",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-05-2",
+      "query": "disable add to cart when sold out",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 438,
+      "serialized_bytes": 9232,
+      "estimated_tokens": 2308,
+      "results": [
+        {
+          "path": "web/inventory.ts",
+          "symbol": "canAddToCart",
+          "kind": "function"
+        },
+        {
+          "path": "web/inventory.ts",
+          "symbol": "renderInventory",
+          "kind": "function"
+        },
+        {
+          "path": "web/inventory.ts",
+          "symbol": "StockView",
+          "kind": "interface"
+        },
+        {
+          "path": "web/orders.ts",
+          "symbol": "formatOrderPrice",
+          "kind": "function"
+        },
+        {
+          "path": "api/inventory.rs",
+          "symbol": "Stock",
+          "kind": "struct"
+        }
+      ]
+    },
+    {
+      "id": "mixed-monorepo-05-3",
+      "query": "render product inventory purchase availability",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 512,
+      "serialized_bytes": 9499,
+      "estimated_tokens": 2375,
+      "results": [
+        {
+          "path": "web/inventory.ts",
+          "symbol": "renderInventory",
+          "kind": "function"
+        },
+        {
+          "path": "web/inventory.ts",
+          "symbol": "StockView",
+          "kind": "interface"
+        },
+        {
+          "path": "api/inventory.rs",
+          "symbol": "available_stock",
+          "kind": "function"
+        },
+        {
+          "path": "api/inventory.rs",
+          "symbol": "Stock",
+          "kind": "struct"
+        },
+        {
+          "path": "web/orders.ts",
+          "symbol": "renderOrderSummary",
+          "kind": "function"
+        }
+      ]
+    }
+  ]
+}

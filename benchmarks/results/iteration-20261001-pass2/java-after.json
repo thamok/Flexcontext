@@ -1,0 +1,363 @@
+{
+  "schema": 1,
+  "k": 5,
+  "selection_budget": 12000,
+  "summary": {
+    "queries": 9,
+    "recall_at_k": 1.0,
+    "mrr": 0.7037037037037037,
+    "ndcg_at_k": 0.6947129963092695,
+    "relationship_recall": 0.2222222222222222,
+    "mean_source_bytes": 729.0,
+    "mean_serialized_bytes": 8591.888888888889,
+    "mean_estimated_tokens": 2148.222222222222
+  },
+  "by_split": {
+    "dev": {
+      "queries": 3,
+      "recall_at_k": 1.0,
+      "mrr": 0.8333333333333334,
+      "ndcg_at_k": 0.7704903730198444,
+      "relationship_recall": 0.6666666666666666,
+      "mean_source_bytes": 767.3333333333334,
+      "mean_serialized_bytes": 9344.333333333334,
+      "mean_estimated_tokens": 2336.3333333333335
+    },
+    "test": {
+      "queries": 6,
+      "recall_at_k": 1.0,
+      "mrr": 0.6388888888888888,
+      "ndcg_at_k": 0.6568243079539822,
+      "relationship_recall": 0.0,
+      "mean_source_bytes": 709.8333333333334,
+      "mean_serialized_bytes": 8215.666666666666,
+      "mean_estimated_tokens": 2054.1666666666665
+    }
+  },
+  "measurements": [
+    {
+      "id": "java-01-1",
+      "query": "reject blank bearer tokens before checking expiry",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 1151,
+      "serialized_bytes": 10601,
+      "estimated_tokens": 2651,
+      "results": [
+        {
+          "path": "Session.java",
+          "symbol": "authenticateBearer",
+          "kind": "method"
+        },
+        {
+          "path": "PathPolicy.java",
+          "symbol": "PathPolicy",
+          "kind": "interface"
+        },
+        {
+          "path": "Session.java",
+          "symbol": "hasExpired",
+          "kind": "method"
+        },
+        {
+          "path": "PathPolicy.java",
+          "symbol": "allowsRelativePath",
+          "kind": "method"
+        },
+        {
+          "path": "PathPolicy.java",
+          "symbol": "matchesDirectoryPrefix",
+          "kind": "method"
+        }
+      ]
+    },
+    {
+      "id": "java-01-2",
+      "query": "check whether session expiry is at or before the current instant",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.52129602861432,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 786,
+      "serialized_bytes": 11040,
+      "estimated_tokens": 2760,
+      "results": [
+        {
+          "path": "Session.java",
+          "symbol": "Session",
+          "kind": "class"
+        },
+        {
+          "path": "Session.java",
+          "symbol": "hasExpired",
+          "kind": "method"
+        },
+        {
+          "path": "Session.java",
+          "symbol": "Session",
+          "kind": "method"
+        },
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "shouldRetry",
+          "kind": "method"
+        },
+        {
+          "path": "PathPolicy.java",
+          "symbol": "matchesDirectoryPrefix",
+          "kind": "method"
+        }
+      ]
+    },
+    {
+      "id": "java-01-3",
+      "query": "authenticateBearer",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 365,
+      "serialized_bytes": 6392,
+      "estimated_tokens": 1598,
+      "results": [
+        {
+          "path": "Session.java",
+          "symbol": "authenticateBearer",
+          "kind": "method"
+        },
+        {
+          "path": "Session.java",
+          "symbol": "authenticationHeading",
+          "kind": "method"
+        },
+        {
+          "path": "Session.java",
+          "symbol": "example",
+          "kind": "module"
+        }
+      ]
+    },
+    {
+      "id": "java-02-1",
+      "query": "retry transient failures only below the maximum attempt count",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.52129602861432,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 884,
+      "serialized_bytes": 10531,
+      "estimated_tokens": 2633,
+      "results": [
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "RetryPolicy",
+          "kind": "class"
+        },
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "shouldRetry",
+          "kind": "method"
+        },
+        {
+          "path": "Session.java",
+          "symbol": "hasExpired",
+          "kind": "method"
+        },
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "RetryPolicy",
+          "kind": "method"
+        },
+        {
+          "path": "PathPolicy.java",
+          "symbol": "matchesDirectoryPrefix",
+          "kind": "method"
+        }
+      ]
+    },
+    {
+      "id": "java-02-2",
+      "query": "double retry backoff with a thirty second cap",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.41311732856427996,
+      "distractors_at_k": 1,
+      "relationship_recall": 0.0,
+      "source_bytes": 771,
+      "serialized_bytes": 10439,
+      "estimated_tokens": 2610,
+      "results": [
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "RetryPolicy",
+          "kind": "class"
+        },
+        {
+          "path": "PathPolicy.java",
+          "symbol": "PathPolicy",
+          "kind": "interface"
+        },
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "backoffMillis",
+          "kind": "method"
+        },
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "retryHeading",
+          "kind": "method"
+        },
+        {
+          "path": "PathPolicy.java",
+          "symbol": "matchesDirectoryPrefix",
+          "kind": "method"
+        }
+      ]
+    },
+    {
+      "id": "java-02-3",
+      "query": "shouldRetry",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 1,
+      "relationship_recall": 0.0,
+      "source_bytes": 301,
+      "serialized_bytes": 5738,
+      "estimated_tokens": 1435,
+      "results": [
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "shouldRetry",
+          "kind": "method"
+        },
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "retryHeading",
+          "kind": "method"
+        },
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "example",
+          "kind": "module"
+        }
+      ]
+    },
+    {
+      "id": "java-03-1",
+      "query": "reject absolute paths and parent traversal components",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.52129602861432,
+      "distractors_at_k": 1,
+      "relationship_recall": 0.0,
+      "source_bytes": 937,
+      "serialized_bytes": 10456,
+      "estimated_tokens": 2614,
+      "results": [
+        {
+          "path": "PathPolicy.java",
+          "symbol": "PathPolicy",
+          "kind": "interface"
+        },
+        {
+          "path": "PathPolicy.java",
+          "symbol": "allowsRelativePath",
+          "kind": "method"
+        },
+        {
+          "path": "Session.java",
+          "symbol": "hasExpired",
+          "kind": "method"
+        },
+        {
+          "path": "PathPolicy.java",
+          "symbol": "pathHeading",
+          "kind": "method"
+        },
+        {
+          "path": "Session.java",
+          "symbol": "authenticateBearer",
+          "kind": "method"
+        }
+      ]
+    },
+    {
+      "id": "java-03-2",
+      "query": "match directory prefix using a slash component boundary",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.6590018048024133,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 754,
+      "serialized_bytes": 7207,
+      "estimated_tokens": 1802,
+      "results": [
+        {
+          "path": "PathPolicy.java",
+          "symbol": "PathPolicy",
+          "kind": "interface"
+        },
+        {
+          "path": "PathPolicy.java",
+          "symbol": "matchesDirectoryPrefix",
+          "kind": "method"
+        },
+        {
+          "path": "PathPolicy.java",
+          "symbol": "allowsRelativePath",
+          "kind": "method"
+        }
+      ]
+    },
+    {
+      "id": "java-03-3",
+      "query": "matchesDirectoryPrefix",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 612,
+      "serialized_bytes": 4923,
+      "estimated_tokens": 1231,
+      "results": [
+        {
+          "path": "PathPolicy.java",
+          "symbol": "matchesDirectoryPrefix",
+          "kind": "method"
+        },
+        {
+          "path": "PathPolicy.java",
+          "symbol": "allowsRelativePath",
+          "kind": "method"
+        }
+      ]
+    }
+  ]
+}
