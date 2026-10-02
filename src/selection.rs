@@ -1,9 +1,103 @@
-use std::collections::HashMap;
+use std::cmp::Ordering;
+use std::collections::{BinaryHeap, HashMap};
 
 use crate::language::is_container;
 use crate::lexical::{Query, normalize_identifier};
 use crate::model::{ScoredSymbol, SearchResult, Symbol};
 use crate::relations::{RelationGraph, serializable_relations};
+
+#[derive(Debug)]
+struct Priority {
+    rank: usize,
+    utility: f64,
+    path_count: usize,
+    kind_count: usize,
+}
+impl PartialEq for Priority {
+    fn eq(&self, other: &Self) -> bool {
+        self.cmp(other) == Ordering::Equal
+    }
+}
+impl Eq for Priority {}
+impl PartialOrd for Priority {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl Ord for Priority {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.utility
+            .total_cmp(&other.utility)
+            .then_with(|| other.rank.cmp(&self.rank))
+    }
+}
+
+/// Diversity counts only increase after a successful selection. Cached utility
+/// is therefore an upper bound: update stale heap entries when they reach the
+/// front, retaining the exact greedy order and original-rank tie breaking.
+struct DiversityQueue {
+    heap: BinaryHeap<Priority>,
+    penalty: f64,
+}
+impl DiversityQueue {
+    fn new(ranked: &[ScoredSymbol], limit: usize, penalty: f64) -> Self {
+        Self {
+            heap: ranked
+                .iter()
+                .take(limit)
+                .enumerate()
+                .map(|(rank, item)| Priority {
+                    rank,
+                    utility: item.score - penalty * 2.0 * 0.0 - penalty * 0.75 * 0.0,
+                    path_count: 0,
+                    kind_count: 0,
+                })
+                .collect(),
+            penalty,
+        }
+    }
+    fn pop(
+        &mut self,
+        ranked: &[ScoredSymbol],
+        symbols: &[Symbol],
+        paths: &HashMap<&str, usize>,
+        kinds: &HashMap<&str, usize>,
+    ) -> Option<usize> {
+        let counts_and_utility = |rank: usize| {
+            let item = &ranked[rank];
+            let symbol = &symbols[item.symbol_id];
+            let path_count = paths.get(symbol.path.as_str()).copied().unwrap_or(0);
+            let kind_count = kinds.get(symbol.kind.as_str()).copied().unwrap_or(0);
+            let utility = item.score
+                - self.penalty * 2.0 * path_count as f64
+                - self.penalty * 0.75 * kind_count as f64;
+            (path_count, kind_count, utility)
+        };
+        // Public low-level selection callers can bypass weight validation.
+        // Preserve their exhaustive ordering if utility is not monotone.
+        if !self.penalty.is_finite() || self.penalty < 0.0 {
+            let best = self.heap.iter().map(|p| p.rank).max_by(|&a, &b| {
+                counts_and_utility(a)
+                    .2
+                    .total_cmp(&counts_and_utility(b).2)
+                    .then_with(|| b.cmp(&a))
+            })?;
+            self.heap.retain(|p| p.rank != best);
+            return Some(best);
+        }
+        while let Some(mut entry) = self.heap.pop() {
+            let (path_count, kind_count, utility) = counts_and_utility(entry.rank);
+            if entry.path_count == path_count && entry.kind_count == kind_count {
+                return Some(entry.rank);
+            }
+            entry.path_count = path_count;
+            entry.kind_count = kind_count;
+            entry.utility = utility;
+            self.heap.push(entry);
+        }
+        None
+    }
+}
 
 /// Canonical ordering for the stable-only ablation retains the old quotas and
 /// soft diversity. There is deliberately no source budget in this planning step.
@@ -145,35 +239,18 @@ pub fn select_context_config(
     let mut name_clusters: HashMap<String, usize> = HashMap::new();
     let mut structural_clusters: HashMap<(String, String), usize> = HashMap::new();
     let per_container_limit = (max_bytes / 4).clamp(256, 8 * 1024);
-    let mut pending: Vec<_> = ranked
-        .iter()
-        .take(max_results.saturating_mul(32).clamp(64, 4096))
-        .collect();
+    let mut pending = DiversityQueue::new(
+        ranked,
+        max_results.saturating_mul(32).clamp(64, 4096),
+        weights.diversity_penalty,
+    );
     let mut paths: HashMap<&str, usize> = HashMap::new();
     let mut kinds: HashMap<&str, usize> = HashMap::new();
 
-    while !pending.is_empty() {
+    while let Some(next) = pending.pop(ranked, symbols, &paths, &kinds) {
         // Soft diversity: keep the first lexical anchor, then discount repeated paths/kinds.
         // Original rank wins ties; reported lexical scores remain unchanged.
-        let next = pending
-            .iter()
-            .enumerate()
-            .max_by(|(ai, a), (bi, b)| {
-                let utility = |item: &&ScoredSymbol| {
-                    let symbol = &symbols[item.symbol_id];
-                    item.score
-                        - weights.diversity_penalty
-                            * 2.0
-                            * paths.get(symbol.path.as_str()).copied().unwrap_or(0) as f64
-                        - weights.diversity_penalty
-                            * 0.75
-                            * kinds.get(symbol.kind.as_str()).copied().unwrap_or(0) as f64
-                };
-                utility(a).total_cmp(&utility(b)).then_with(|| bi.cmp(ai))
-            })
-            .map(|(index, _)| index)
-            .unwrap();
-        let scored = pending.remove(next);
+        let scored = &ranked[next];
         if results.len() >= max_results || used >= max_bytes {
             break;
         }
@@ -393,6 +470,64 @@ mod tests {
     use crate::model::{Language, ScoreSignals};
 
     use super::*;
+
+    #[test]
+    fn lazy_diversity_order_matches_exhaustive_selection_with_rejections() {
+        // Ties, repeated paths/kinds, skips without count updates, and large
+        // penalties stress stale upper bounds and original-rank tie breaking.
+        let dir = tempfile::tempdir().unwrap();
+        for file in 0..5 {
+            std::fs::write(
+                dir.path().join(format!("group{file}.rs")),
+                (0..24)
+                    .map(|n| format!("fn operation_{file}_{n}() {{}}\n"))
+                    .collect::<String>(),
+            )
+            .unwrap();
+        }
+        let session = crate::SearchSession::open(dir.path(), false).unwrap();
+        let symbols = session.symbols();
+        let ranked: Vec<_> = symbols
+            .iter()
+            .enumerate()
+            .map(|(i, s)| ScoredSymbol {
+                symbol_id: s.id,
+                score: (i % 7) as f64 * 0.5,
+                signals: ScoreSignals::default(),
+            })
+            .collect();
+        for penalty in [0.0, 0.5, 100.0, -0.5] {
+            let mut queue = DiversityQueue::new(&ranked, ranked.len(), penalty);
+            let mut oracle: Vec<_> = (0..ranked.len()).collect();
+            let mut paths = HashMap::new();
+            let mut kinds = HashMap::new();
+            for round in 0..ranked.len() {
+                let utility = |rank: usize| {
+                    let s = &symbols[ranked[rank].symbol_id];
+                    ranked[rank].score
+                        - penalty * 2.0 * paths.get(s.path.as_str()).copied().unwrap_or(0) as f64
+                        - penalty * 0.75 * kinds.get(s.kind.as_str()).copied().unwrap_or(0) as f64
+                };
+                let expected = oracle
+                    .iter()
+                    .copied()
+                    .max_by(|&a, &b| utility(a).total_cmp(&utility(b)).then_with(|| b.cmp(&a)))
+                    .unwrap();
+                assert_eq!(
+                    queue.pop(&ranked, symbols, &paths, &kinds),
+                    Some(expected),
+                    "penalty={penalty} round={round}"
+                );
+                oracle.retain(|&r| r != expected);
+                if round % 3 != 0 {
+                    let s = &symbols[ranked[expected].symbol_id];
+                    *paths.entry(s.path.as_str()).or_default() += 1;
+                    *kinds.entry(s.kind.as_str()).or_default() += 1;
+                }
+            }
+            assert!(queue.pop(&ranked, symbols, &paths, &kinds).is_none());
+        }
+    }
 
     #[test]
     fn skips_whole_oversized_container_in_favor_of_compact_declaration() {

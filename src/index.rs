@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, HashSet};
 
 use serde::{Deserialize, Serialize};
 
@@ -41,18 +41,26 @@ impl LexicalIndex {
     }
 
     pub fn candidates(&self, query: &Query) -> Vec<usize> {
-        let mut candidates = BTreeSet::new();
+        let mut candidates = HashSet::new();
         if let Some(ids) = self.postings.get(&format!("n:{}", query.normalized)) {
             candidates.extend(ids);
         }
-        for token in &query.tokens {
-            for key in token_keys(token) {
-                if let Some(ids) = self.postings.get(&key) {
-                    candidates.extend(ids);
-                }
+        let keys: BTreeSet<_> = query
+            .tokens
+            .iter()
+            .flat_map(|token| token_keys(token))
+            .collect();
+        for key in keys {
+            if let Some(ids) = self.postings.get(&key) {
+                candidates.extend(ids);
             }
         }
-        candidates.into_iter().collect()
+        // Deduplicate in a flat hash table before sorting: memory scales with
+        // distinct candidates rather than the sum of overlapping posting lists.
+        // Ascending IDs preserve the previous tree union's exact ordering.
+        let mut candidates: Vec<_> = candidates.into_iter().collect();
+        candidates.sort_unstable();
+        candidates
     }
 
     pub fn posting_count(&self) -> usize {
@@ -80,6 +88,44 @@ mod tests {
     use crate::model::Language;
 
     use super::*;
+
+    #[test]
+    fn bulk_posting_union_matches_tree_union_with_overlapping_aliases() {
+        let mut postings = BTreeMap::new();
+        for (term, modulus) in [("auth", 2), ("authentication", 3), ("token", 5)] {
+            for key in token_keys(term) {
+                postings
+                    .entry(key)
+                    .or_insert_with(Vec::new)
+                    .extend((0..4096).filter(|id| id % modulus == 0));
+            }
+        }
+        postings.insert("n:authtoken".into(), vec![3, 9999]);
+        let index = LexicalIndex { postings };
+        for input in [
+            "auth token",
+            "auth auth",
+            "authentication",
+            "absent",
+            "",
+            &"auth ".repeat(70),
+        ] {
+            let query = Query::parse(input);
+            let mut reference = BTreeSet::new();
+            if let Some(ids) = index.postings.get(&format!("n:{}", query.normalized)) {
+                reference.extend(ids.iter().copied());
+            }
+            for token in &query.tokens {
+                for key in token_keys(token) {
+                    reference.extend(index.postings.get(&key).into_iter().flatten().copied());
+                }
+            }
+            assert_eq!(
+                index.candidates(&query),
+                reference.into_iter().collect::<Vec<_>>()
+            );
+        }
+    }
 
     #[test]
     fn retrieves_morphological_candidates_without_scanning() {
