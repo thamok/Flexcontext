@@ -1,0 +1,529 @@
+{
+  "schema_version": 1,
+  "provenance": {
+    "author": "separate Codex competitor_eval agent",
+    "review": "source reviewed; not independently human adjudicated",
+    "frozen_before_retrieval": true,
+    "retrieval_for_these_questions_before_freeze": false,
+    "selection": "Three behavioral questions per repository, in modules absent from optimization corpus; source-file inspection only. Author had seen historical aggregate competitor scores, not retrieval outputs for these new questions.",
+    "intended_use": "Single confirmatory evaluation after all candidate prompts and policies are fixed on development data. Do not tune on these cases after revealing results.",
+    "frozen_source_root": ".benchmark-results/optimization-focused-20260916/snapshots",
+    "source_file_sha256": {
+      "flexcontext/src/repository.rs": "499b58623b8e94dfce0dcebba1b3afcbd8a0f0b2e9d241f609c0eee511a891a0",
+      "flexcontext/src/output.rs": "b8347fba6cbb54497d7f8530caee4e69ec04033c803dac3c50d8768059775b8f",
+      "flexcontext/src/relations.rs": "33603e0281b9ed77eb96527525b490502e8d800eb07f21fe7c19562d6ad0fbb5",
+      "agentx/lib/github-version-fetcher.ts": "3b7f7bb70c31bd7a456b3ed32613f5709c440e3d38345468b0b5e032086e1b43",
+      "agentx/lib/environment-utils.ts": "4e60deb90b3d4373f883aba9c7e6dacc01d529851cb22035c3610485ccdeaf61",
+      "agentx/lib/credentials-generator.ts": "55a389727ec61676b3f653b1d2359b612d8f4bcbc682d6ad7dd4929216947a6a",
+      "webkitpy/Tools/Scripts/webkitpy/common/read_checksum_from_png.py": "2df6b788c10f3e2e969f01c6786ec4871f4c321f16662e8aae4bf725051b7f4e",
+      "webkitpy/Tools/Scripts/webkitpy/common/attribute_saver.py": "9c94c01c7c1de192f38e24c540be539cf20cf2877b72da71857da30b69ec062f",
+      "webkitpy/Tools/Scripts/webkitpy/common/watchlist/amountchangedpattern.py": "282041b26a30fe545f6c25b2e394df2413da803cc7a2755f6af262d26c6a55c8"
+    }
+  },
+  "cases": [
+    {
+      "id": "confirm-source-read",
+      "repo": "flexcontext",
+      "split": "heldout",
+      "partition": "confirmation-20261001",
+      "module": "src/repository.rs",
+      "question": "When loading a discovered source file, how are files that grew too large, contain zero bytes, or cannot be decoded as UTF-8 handled?",
+      "evidence": [
+        {
+          "id": "bounded_read",
+          "spans": [
+            {
+              "path": "src/repository.rs",
+              "start": 159,
+              "end": 161,
+              "sha256": "9fcc7e11990a552d200fc9000f7a2f722b9d76f8c68b3408166b40b5d02d23ed"
+            }
+          ]
+        },
+        {
+          "id": "size_and_binary_rejection",
+          "spans": [
+            {
+              "path": "src/repository.rs",
+              "start": 162,
+              "end": 164,
+              "sha256": "bf3110bbb9900db67ab5c56c077239595692a2266151dd155c50aeb7207e3af4"
+            }
+          ]
+        },
+        {
+          "id": "encoding_rejection",
+          "spans": [
+            {
+              "path": "src/repository.rs",
+              "start": 165,
+              "end": 168,
+              "sha256": "4a93fab717d6cf511a7614efd4b8e7ef739ea00b6def891a3b233f0411216425"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/repository.rs",
+          "start": 150,
+          "end": 180,
+          "sha256": "a6f468088820682cd68acb1d838f3c5e24248359f46c1c0baa2bd6a866eea299"
+        }
+      ],
+      "answer_notes": "Reads at most 2 MiB plus one byte; returns no source file for oversized or NUL-containing bytes; UTF-8 decoding failure also returns no source file."
+    },
+    {
+      "id": "confirm-output-limit",
+      "repo": "flexcontext",
+      "split": "heldout",
+      "partition": "confirmation-20261001",
+      "module": "src/output.rs",
+      "question": "How does final response formatting enforce the token limit on the entire serialized output, and what happens when even response metadata cannot fit?",
+      "evidence": [
+        {
+          "id": "byte_budget",
+          "spans": [
+            {
+              "path": "src/output.rs",
+              "start": 123,
+              "end": 125,
+              "sha256": "cdcfcd94462bf1fe58be49a78831ca787d99d0cdb6987c5a82d6a46069b2f32a"
+            }
+          ]
+        },
+        {
+          "id": "rendered_cost",
+          "spans": [
+            {
+              "path": "src/output.rs",
+              "start": 147,
+              "end": 149,
+              "sha256": "f01ddde6e0e2d76832667e0f26afec3f6c49f95d0758a74d4898b9a38303022c"
+            }
+          ]
+        },
+        {
+          "id": "drop_or_error",
+          "spans": [
+            {
+              "path": "src/output.rs",
+              "start": 162,
+              "end": 169,
+              "sha256": "f1554deaba4308041580d023b4e7cf55d51a681e3912e7103d07f4f69d04fc96"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/output.rs",
+          "start": 112,
+          "end": 171,
+          "sha256": "943907178f2fa055b8addf6e55dfd5caa6536e21c81b730256ec517fc87fab79"
+        }
+      ],
+      "answer_notes": "Token budget is checked-multiplied by four into a serialized byte cap; serialized cost converges including metadata, then trailing results are popped until output fits; if metadata alone exceeds cap it errors."
+    },
+    {
+      "id": "confirm-relation-resolution",
+      "repo": "flexcontext",
+      "split": "heldout",
+      "partition": "confirmation-20261001",
+      "module": "src/relations.rs",
+      "question": "When several symbols share a name, when is a relation connected to a definition in the same file, and when are cross-file enclosure or require links suppressed?",
+      "evidence": [
+        {
+          "id": "same_file_filter",
+          "spans": [
+            {
+              "path": "src/relations.rs",
+              "start": 235,
+              "end": 239,
+              "sha256": "308543ff2e168fff4ba8231666b86d33fa87f6cadf6ca99e4c5a8bbf8ccd4561"
+            }
+          ]
+        },
+        {
+          "id": "unique_local_target",
+          "spans": [
+            {
+              "path": "src/relations.rs",
+              "start": 240,
+              "end": 243,
+              "sha256": "c29816ce7d8a6303e7cfa494a6205b71c763d80c1e75eefe14841360f8c21ded"
+            }
+          ]
+        },
+        {
+          "id": "suppress_fallback",
+          "spans": [
+            {
+              "path": "src/relations.rs",
+              "start": 244,
+              "end": 246,
+              "sha256": "9f99015933712f494fb694b068c906acbbc319bc529d420f0deb790f5865647c"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/relations.rs",
+          "start": 222,
+          "end": 263,
+          "sha256": "5589b9387f47c4bb2cba46ef39d6a6b385df495c22c4befea47b81c0c3276bba"
+        }
+      ],
+      "answer_notes": "Excludes self; prefers exactly one definition from same file and returns after linking. If that cannot resolve the relation, enclosed_by and require return without cross-file fallback."
+    },
+    {
+      "id": "confirm-release-fallback",
+      "repo": "agentx",
+      "split": "heldout",
+      "partition": "confirmation-20261001",
+      "module": "lib/github-version-fetcher.ts",
+      "question": "How does fetching the latest GitHub release recover from a failed latest-release response or a tag that does not match the requested pattern, and how is no matching release reported?",
+      "evidence": [
+        {
+          "id": "direct_match",
+          "spans": [
+            {
+              "path": "lib/github-version-fetcher.ts",
+              "start": 141,
+              "end": 145,
+              "sha256": "ef892af29176b7a10b3bc93bb85d6b7a4211555cf35399d2c68f2e0a751e771f"
+            }
+          ]
+        },
+        {
+          "id": "fallback_list",
+          "spans": [
+            {
+              "path": "lib/github-version-fetcher.ts",
+              "start": 149,
+              "end": 152,
+              "sha256": "9b41f06c3f44f174e644219de25cc7d28905e3e4933c9575625a8d2e803a6cf8"
+            }
+          ]
+        },
+        {
+          "id": "first_matching_or_error",
+          "spans": [
+            {
+              "path": "lib/github-version-fetcher.ts",
+              "start": 154,
+              "end": 158,
+              "sha256": "9cf7b13e36ae08f706c01ade5694e64106698b0c5495d6e39a5f1e7a0b8506ec"
+            },
+            {
+              "path": "lib/github-version-fetcher.ts",
+              "start": 160,
+              "end": 160,
+              "sha256": "72555e83594b4ffd5bd23e081d7511221721c46c77b1e36b90fefb383813ac66"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "lib/github-version-fetcher.ts",
+          "start": 129,
+          "end": 161,
+          "sha256": "0efa9cb83beeb0cd7c7e805aed88549dc2a1c4ae01287239fbbcf9296757ea3f"
+        }
+      ],
+      "answer_notes": "Uses latest endpoint if successful and pattern-compatible; otherwise lists twenty releases with requested prerelease option, returns first pattern match, or throws No matching releases found."
+    },
+    {
+      "id": "confirm-environment-loading",
+      "repo": "agentx",
+      "split": "heldout",
+      "partition": "confirmation-20261001",
+      "module": "lib/environment-utils.ts",
+      "question": "How does loading an environment file handle comments, malformed entries, values containing equals signs, surrounding quotes, and variables already present in the process?",
+      "evidence": [
+        {
+          "id": "skip_nonentries",
+          "spans": [
+            {
+              "path": "lib/environment-utils.ts",
+              "start": 30,
+              "end": 32,
+              "sha256": "b351f1cd3c953bcab3f25cb526f0f0ad1912a7b02197ee5bb60bdb43de7b5794"
+            },
+            {
+              "path": "lib/environment-utils.ts",
+              "start": 34,
+              "end": 37,
+              "sha256": "1c9bc94dcf8122a435024a81557293898c3684207f2fa7a416134046e76f7403"
+            }
+          ]
+        },
+        {
+          "id": "first_equals_and_quotes",
+          "spans": [
+            {
+              "path": "lib/environment-utils.ts",
+              "start": 39,
+              "end": 40,
+              "sha256": "386aa4a0faf4f2e5abb083c21af68ea7bdd18ae4081628805e49d6af116a4ab9"
+            },
+            {
+              "path": "lib/environment-utils.ts",
+              "start": 43,
+              "end": 43,
+              "sha256": "0fd78c15d1b7ea8dd511c636e58506282a7be3357297caa4a85d6635d6d179d7"
+            }
+          ]
+        },
+        {
+          "id": "preserve_truthy_existing",
+          "spans": [
+            {
+              "path": "lib/environment-utils.ts",
+              "start": 57,
+              "end": 61,
+              "sha256": "4a66d7f06d871367a182b9c320685d7f2ed12ca3fb342897477434cc46a7726f"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "lib/environment-utils.ts",
+          "start": 16,
+          "end": 63,
+          "sha256": "10859e3592c43a914c81dd7a68578cb2668c9c4f26cff7c79ab55d61080e2fc3"
+        }
+      ],
+      "answer_notes": "Trims and skips comments, empty lines and lines without equals; splits at first equals, trims key/value and removes leading/trailing quote characters. Loads only keys whose current process value is falsy; empty existing strings may be replaced."
+    },
+    {
+      "id": "confirm-unique-credentials",
+      "repo": "agentx",
+      "split": "heldout",
+      "partition": "confirmation-20261001",
+      "module": "lib/credentials-generator.ts",
+      "question": "When generating credentials for several environments, what counts as a duplicate set and what prevents invalid environment counts or endless retries?",
+      "evidence": [
+        {
+          "id": "any_shared_key",
+          "spans": [
+            {
+              "path": "lib/credentials-generator.ts",
+              "start": 237,
+              "end": 243,
+              "sha256": "ea14f31e748d38b3c96722b81759986d951abb9aaf828d3da19e3e9a9ec6d830"
+            },
+            {
+              "path": "lib/credentials-generator.ts",
+              "start": 245,
+              "end": 245,
+              "sha256": "e52153c07be3136d835e638612713ca325ac5c1401dafa9f501fc0867df08c8e"
+            }
+          ]
+        },
+        {
+          "id": "environment_count",
+          "spans": [
+            {
+              "path": "lib/credentials-generator.ts",
+              "start": 255,
+              "end": 259,
+              "sha256": "0ab47525611e894377f46b950aca6ccc09bc8523b9fd893deae25f3f09c148c6"
+            }
+          ]
+        },
+        {
+          "id": "retry_bound",
+          "spans": [
+            {
+              "path": "lib/credentials-generator.ts",
+              "start": 262,
+              "end": 262,
+              "sha256": "3a359fd26441211f06667442fb1661dd9156dca34aa06e778d172d35e8d22a8e"
+            },
+            {
+              "path": "lib/credentials-generator.ts",
+              "start": 268,
+              "end": 270,
+              "sha256": "1d5d0f990529c462e3fa814edb2ce121ce98a2e605229ac53361e09ab31dcbbf"
+            },
+            {
+              "path": "lib/credentials-generator.ts",
+              "start": 272,
+              "end": 280,
+              "sha256": "123a6f8414b5659734d4a3f98827423ff470b0131d95ee542c0b50cfcc989947"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "lib/credentials-generator.ts",
+          "start": 233,
+          "end": 287,
+          "sha256": "b3a52ae0d7594fbbdfb7e27114c84e7afffefb3dfd0fd479c842d88197fa0bb6"
+        }
+      ],
+      "answer_notes": "Any shared CREDS_KEY, CREDS_IV, JWT_SECRET, JWT_REFRESH_SECRET or MEILI_MASTER_KEY triggers regeneration; session secret is not compared. Environment count must be 1 to 10. After incrementing attempts, attempts greater than 100 throws before duplicate checking."
+    },
+    {
+      "id": "confirm-png-checksum",
+      "repo": "webkitpy",
+      "split": "heldout",
+      "partition": "confirmation-20261001",
+      "module": "Tools/Scripts/webkitpy/common/read_checksum_from_png.py",
+      "question": "How is a checksum comment extracted from a PNG stream, how much input is inspected, and what happens if the checksum marker is absent?",
+      "evidence": [
+        {
+          "id": "bounded_input",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/read_checksum_from_png.py",
+              "start": 34,
+              "end": 34,
+              "sha256": "d13111eed1154972620d67b6525f878999de85435699f4c4d2036da231c7ef3c"
+            }
+          ]
+        },
+        {
+          "id": "marker_missing",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/read_checksum_from_png.py",
+              "start": 35,
+              "end": 38,
+              "sha256": "8cc5875927429b99bb11cbd0ea55f69753e68219bd9c7f3282796685f87e8bd6"
+            }
+          ]
+        },
+        {
+          "id": "checksum_slice",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/read_checksum_from_png.py",
+              "start": 40,
+              "end": 41,
+              "sha256": "601bb4e7b9cfad477a1ac275e8bb5b0888c366d496e529732bbc77eae57e4ca1"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/read_checksum_from_png.py",
+          "start": 32,
+          "end": 41,
+          "sha256": "4bf7c77a27f4678a338961cb3a04e643fbc7ed56b59a925ea85f3fbe1e784c72"
+        }
+      ],
+      "answer_notes": "Reads first 2048 units from handle and encodes them, searches for tEXtchecksum NUL marker, returns None if missing, otherwise decodes next 32 bytes as str."
+    },
+    {
+      "id": "confirm-attribute-restore",
+      "repo": "webkitpy",
+      "split": "heldout",
+      "partition": "confirmation-20261001",
+      "module": "Tools/Scripts/webkitpy/common/attribute_saver.py",
+      "question": "How does the context manager temporarily replace an object attribute, restore its prior value afterward, and handle an exception from the managed block?",
+      "evidence": [
+        {
+          "id": "save_before_entry",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/attribute_saver.py",
+              "start": 42,
+              "end": 46,
+              "sha256": "4511d7d449e7421fccccef9be46cee38a1cd8ab2cd137afaee0bfa730cf0e741"
+            }
+          ]
+        },
+        {
+          "id": "replace_on_entry",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/attribute_saver.py",
+              "start": 48,
+              "end": 49,
+              "sha256": "a1d4b2445b4589646f25a0aef35a45da6b2b414fb3b5af748ebbde189250c679"
+            }
+          ]
+        },
+        {
+          "id": "restore_without_suppression",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/attribute_saver.py",
+              "start": 51,
+              "end": 53,
+              "sha256": "5b73230e26be9dbcd86fb7a1ffb7afb82327b41af0813cfd9f4087a6da95cb33"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/attribute_saver.py",
+          "start": 41,
+          "end": 53,
+          "sha256": "0843b7ac45567fe9e1427c48ac910946bc7438f7e1176ebe6c157431c1e773c0"
+        }
+      ],
+      "answer_notes": "Construction saves getattr and replacement (default None); entry sets new value; exit restores saved value and returns None, so exceptions are not suppressed."
+    },
+    {
+      "id": "confirm-watchlist-change-count",
+      "repo": "webkitpy",
+      "split": "heldout",
+      "partition": "confirmation-20261001",
+      "module": "Tools/Scripts/webkitpy/common/watchlist/amountchangedpattern.py",
+      "question": "How does a watchlist change pattern decide that a matched string increased in a diff, while avoiding duplicate work and ignoring unchanged lines?",
+      "evidence": [
+        {
+          "id": "positive_change_and_dedup",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/watchlist/amountchangedpattern.py",
+              "start": 43,
+              "end": 49,
+              "sha256": "d6450f2ade858aca256f79b137e636d60ab75e185da47fdb4de35ff72a817865"
+            }
+          ]
+        },
+        {
+          "id": "ignore_unchanged",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/watchlist/amountchangedpattern.py",
+              "start": 59,
+              "end": 60,
+              "sha256": "345c4cd9781280a92e54f2d1a1a984b4a1fb07f2c438c461a1e7a73f1ae4162a"
+            }
+          ]
+        },
+        {
+          "id": "count_occurrences",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/watchlist/amountchangedpattern.py",
+              "start": 63,
+              "end": 69,
+              "sha256": "23e4a4268c523bf961d06642666ae734ea59ba164951cdbbd61cdc4bf004d3d0"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/watchlist/amountchangedpattern.py",
+          "start": 35,
+          "end": 70,
+          "sha256": "f17bcc17d480e33c02b833dfa668db23ee3d6d4c9494a6c57df53ea1576ef162"
+        }
+      ],
+      "answer_notes": "Extracts regex matches from candidate diff lines, avoids revisiting same matching string, and returns true only for positive instance difference. Unchanged lines are skipped; each non-overlapping occurrence increments or decrements according to which diff side is zero."
+    }
+  ]
+}
