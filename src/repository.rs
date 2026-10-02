@@ -174,7 +174,7 @@ pub fn load_source_file(root: &Path, path: &Path) -> Result<Option<SourceFile>> 
     Ok(Some(SourceFile {
         absolute_path: path.to_owned(),
         relative_path,
-        language,
+        language: crate::language::language_for_source(path, &source, language),
         source,
     }))
 }

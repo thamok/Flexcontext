@@ -386,6 +386,7 @@ mod tests {
                 ..(body.to_owned()).len() + (format!("fn {name}()")).len(),
             body_range: 0..(body.to_owned()).len(),
             comment_ranges: Vec::new(),
+            excerpt_ranges: Vec::new(),
             imports: std::sync::Arc::from([]),
             identifiers: identifier_tokens(body),
             type_references: Vec::new(),

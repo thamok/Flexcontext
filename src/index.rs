@@ -105,6 +105,7 @@ mod tests {
                 ..("{}".to_owned()).len() + ("fn authenticate_user()".to_owned()).len(),
             body_range: 0..("{}".to_owned()).len(),
             comment_ranges: Vec::new(),
+            excerpt_ranges: Vec::new(),
             imports: std::sync::Arc::from([]),
             identifiers: Vec::new(),
             type_references: Vec::new(),

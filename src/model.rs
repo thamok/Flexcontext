@@ -36,6 +36,21 @@ pub enum Language {
     Tsx,
     JavaScript,
     Python,
+    Java,
+    Apex,
+    Go,
+    C,
+    #[serde(rename = "csharp")]
+    CSharp,
+    Cpp,
+    #[serde(rename = "objective-c")]
+    ObjectiveC,
+    Metal,
+    Cuda,
+    Kotlin,
+    Dart,
+    Vue,
+    Lua,
 }
 
 #[derive(Debug, Clone)]
@@ -65,6 +80,9 @@ pub struct Symbol {
     pub signature_range: std::ops::Range<usize>,
     pub body_range: std::ops::Range<usize>,
     pub comment_ranges: Vec<std::ops::Range<usize>>,
+    /// Complete AST statements in original-file coordinates, cached at indexing time.
+    #[serde(default)]
+    pub excerpt_ranges: Vec<std::ops::Range<usize>>,
     #[serde(skip)]
     pub imports: std::sync::Arc<[String]>,
     pub identifiers: Vec<String>,
@@ -127,7 +145,7 @@ pub struct Relation {
 }
 
 /// Exact original-file ranges included as source excerpts (exclusive end byte).
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct SourceSpan {
     pub start_byte: usize,
     pub end_byte: usize,
@@ -244,5 +262,15 @@ impl Symbol {
                 .comment_ranges
                 .iter()
                 .all(|r| self.source.get(r.clone()).is_some())
+            && self.excerpt_ranges.iter().all(|r| {
+                self.body_range.start <= r.start
+                    && r.end <= self.body_range.end
+                    && r.start < r.end
+                    && self.source.get(r.clone()).is_some()
+            })
+            && self
+                .excerpt_ranges
+                .windows(2)
+                .all(|r| r[0].start <= r[1].start)
     }
 }

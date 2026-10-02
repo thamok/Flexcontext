@@ -50,6 +50,31 @@ pub fn select_context_with_weights(
     query: &Query,
     weights: &crate::ranking::RankingWeights,
 ) -> Vec<SearchResult> {
+    select_context_config(
+        ranked,
+        symbols,
+        graph,
+        max_bytes,
+        max_results,
+        query,
+        weights,
+        true,
+    )
+    .0
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn select_context_config(
+    ranked: &[ScoredSymbol],
+    symbols: &[Symbol],
+    graph: &RelationGraph,
+    max_bytes: usize,
+    max_results: usize,
+    query: &Query,
+    weights: &crate::ranking::RankingWeights,
+    quotas: bool,
+) -> (Vec<SearchResult>, HashMap<usize, String>) {
+    let mut decisions = HashMap::new();
     let mut results = Vec::new();
     let mut used = 0;
     let mut name_clusters: HashMap<String, usize> = HashMap::new();
@@ -90,7 +115,8 @@ pub fn select_context_with_weights(
         let symbol = &symbols[scored.symbol_id];
         let name_cluster = normalize_identifier(&symbol.name);
         let name_limit = if symbol.kind == "declaration" { 1 } else { 2 };
-        if name_clusters.get(&name_cluster).copied().unwrap_or(0) >= name_limit {
+        if quotas && name_clusters.get(&name_cluster).copied().unwrap_or(0) >= name_limit {
+            decisions.insert(scored.symbol_id, "name quota".into());
             continue;
         }
         let structural_cluster = (
@@ -105,21 +131,44 @@ pub fn select_context_with_weights(
         } else {
             3
         };
-        if structural_clusters
-            .get(&structural_cluster)
-            .copied()
-            .unwrap_or(0)
-            >= structural_limit
+        if quotas
+            && structural_clusters
+                .get(&structural_cluster)
+                .copied()
+                .unwrap_or(0)
+                >= structural_limit
         {
+            decisions.insert(scored.symbol_id, "file/container quota".into());
             continue;
         }
         if overlaps_selected(symbol, &results) {
+            decisions.insert(scored.symbol_id, "overlapping source".into());
             continue;
         }
         let remaining = (max_bytes - used) / 4 * 4;
-        let (content, truncated, source_spans) =
-            budgeted_content(symbol, remaining, per_container_limit, query);
+        // A complete container would consume and suppress its more precise
+        // member hits. Keep its declaration alongside independently ranked members.
+        let has_member_candidate = is_container(&symbol.kind)
+            && ranked.iter().any(|item| {
+                let member = &symbols[item.symbol_id];
+                member.id != symbol.id
+                    && member.path == symbol.path
+                    && member.start_byte >= symbol.start_byte
+                    && member.end_byte <= symbol.end_byte
+                    && matches!(member.kind.as_str(), "function" | "method")
+            });
+        let (content, truncated, source_spans) = if has_member_candidate {
+            let compact = compact_container(symbol);
+            if compact.len() > remaining.min(per_container_limit) {
+                (String::new(), false, Vec::new())
+            } else {
+                (compact, true, compact_spans(symbol))
+            }
+        } else {
+            budgeted_content(symbol, remaining, per_container_limit, query)
+        };
         if content.is_empty() {
+            decisions.insert(scored.symbol_id, "excerpt does not fit".into());
             continue;
         }
         let content_bytes = content.len();
@@ -131,6 +180,7 @@ pub fn select_context_with_weights(
         *kinds.entry(&symbol.kind).or_default() += 1;
         *name_clusters.entry(name_cluster).or_default() += 1;
         *structural_clusters.entry(structural_cluster).or_default() += 1;
+        decisions.insert(scored.symbol_id, "selected".into());
         results.push(SearchResult {
             path: symbol.path.clone(),
             language: symbol.language,
@@ -159,7 +209,19 @@ pub fn select_context_with_weights(
             relations: serializable_relations(symbol.id, graph, symbols),
         });
     }
-    results
+    for (i, item) in ranked.iter().enumerate() {
+        decisions.entry(item.symbol_id).or_insert_with(|| {
+            if i >= max_results.saturating_mul(32).clamp(64, 4096) {
+                "candidate pool limit"
+            } else if results.len() >= max_results {
+                "result limit"
+            } else {
+                "source budget"
+            }
+            .into()
+        });
+    }
+    (results, decisions)
 }
 
 fn budgeted_content(
@@ -180,7 +242,8 @@ fn budgeted_content(
             }],
         );
     }
-    if matches!(symbol.kind.as_str(), "function" | "method")
+    if (matches!(symbol.kind.as_str(), "function" | "method")
+        || (symbol.kind == "declaration" && !symbol.body_range.is_empty()))
         && let Some((content, spans)) =
             crate::slicing::slice_symbol(symbol, query, remaining.min(container_limit))
     {
@@ -189,7 +252,7 @@ fn budgeted_content(
     if is_container(&symbol.kind) {
         let compact = compact_container(symbol);
         if compact.len() <= remaining.min(container_limit) {
-            return (compact, true, Vec::new());
+            return (compact, true, compact_spans(symbol));
         }
     }
     // Keep small non-containers whole if they fit the overall budget.
@@ -226,12 +289,37 @@ fn compact_container(symbol: &Symbol) -> String {
     content
 }
 
+fn compact_spans(symbol: &Symbol) -> Vec<crate::model::SourceSpan> {
+    let raw = &symbol.source[symbol.signature_range.clone()];
+    let start = symbol.signature_range.start + raw.len() - raw.trim_start().len();
+    let mut spans: Vec<_> = symbol
+        .comment_ranges
+        .iter()
+        .map(|r| {
+            let raw = &symbol.source[r.clone()];
+            let start = r.start + raw.len() - raw.trim_start().len();
+            crate::slicing::span_for_range(symbol, start..start + raw.trim().len())
+        })
+        .collect();
+    spans.push(crate::slicing::span_for_range(
+        symbol,
+        start..start + symbol.signature().len(),
+    ));
+    spans
+}
+
 fn overlaps_selected(symbol: &Symbol, selected: &[SearchResult]) -> bool {
     selected.iter().any(|result| {
         result.path == symbol.path
-            && !result.content_truncated
-            && ((symbol.start_byte >= result.start_byte && symbol.end_byte <= result.end_byte)
-                || (result.start_byte >= symbol.start_byte && result.end_byte <= symbol.end_byte))
+            && if result.content_truncated {
+                result.source_spans.iter().any(|span| {
+                    symbol.start_byte < span.end_byte && span.start_byte < symbol.end_byte
+                })
+            } else {
+                (symbol.start_byte >= result.start_byte && symbol.end_byte <= result.end_byte)
+                    || (result.start_byte >= symbol.start_byte
+                        && result.end_byte <= symbol.end_byte)
+            }
     })
 }
 
@@ -265,6 +353,7 @@ mod tests {
                 ..("x".repeat(10_000)).len() + ("struct Large".to_owned()).len(),
             body_range: 0..("x".repeat(10_000)).len(),
             comment_ranges: Vec::new(),
+            excerpt_ranges: Vec::new(),
             imports: std::sync::Arc::from([]),
             identifiers: Vec::new(),
             type_references: Vec::new(),
@@ -305,6 +394,7 @@ mod tests {
                 ..("const auth = true;".to_owned()).len() + ("const auth: bool".to_owned()).len(),
             body_range: 0..(String::new()).len(),
             comment_ranges: Vec::new(),
+            excerpt_ranges: Vec::new(),
             imports: std::sync::Arc::from([]),
             identifiers: vec!["auth".to_owned()],
             type_references: Vec::new(),

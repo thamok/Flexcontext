@@ -1,0 +1,1755 @@
+{
+  "schema": 1,
+  "queries": [
+    {
+      "id": "multilingual-01-1",
+      "query": "fetch active accounts while excluding deleted customer records",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "accounts.cls",
+          "symbol": "loadActiveAccounts",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "accounts.cls",
+          "symbol": "validAccountName",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "accounts.cls",
+          "symbol": "accountHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": []
+    },
+    {
+      "id": "multilingual-01-2",
+      "query": "reject an account name that is null or blank",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "accounts.cls",
+          "symbol": "validAccountName",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "accounts.cls",
+          "symbol": "loadActiveAccounts",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "accounts.cls",
+          "symbol": "accountHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": []
+    },
+    {
+      "id": "multilingual-01-3",
+      "query": "loadActiveAccounts",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "accounts.cls",
+          "symbol": "loadActiveAccounts",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "accounts.cls",
+          "symbol": "validAccountName",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "accounts.cls",
+          "symbol": "accountHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": []
+    },
+    {
+      "id": "multilingual-02-1",
+      "query": "reject an expired session before extending its lifetime",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "session.go",
+          "symbol": "RenewSession",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "session.go",
+          "symbol": "isExpired",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "session.go",
+          "symbol": "sessionHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "session.go",
+            "symbol": "RenewSession",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "session.go",
+            "symbol": "isExpired",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-02-2",
+      "query": "compare expiry against the current time",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "session.go",
+          "symbol": "isExpired",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "session.go",
+          "symbol": "RenewSession",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "session.go",
+          "symbol": "sessionHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "session.go",
+            "symbol": "RenewSession",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "session.go",
+            "symbol": "isExpired",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-02-3",
+      "query": "RenewSession",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "session.go",
+          "symbol": "RenewSession",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "session.go",
+          "symbol": "isExpired",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "session.go",
+          "symbol": "sessionHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "session.go",
+            "symbol": "RenewSession",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "session.go",
+            "symbol": "isExpired",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-03-1",
+      "query": "reject an absolute upload path or parent traversal",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "path.c",
+          "symbol": "validate_upload_path",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "path.c",
+          "symbol": "contains_parent",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "path.c",
+          "symbol": "path_heading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "path.c",
+            "symbol": "validate_upload_path",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "path.c",
+            "symbol": "contains_parent",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-03-2",
+      "query": "detect a parent directory in a relative path",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "path.c",
+          "symbol": "contains_parent",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "path.c",
+          "symbol": "validate_upload_path",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "path.c",
+          "symbol": "path_heading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "path.c",
+            "symbol": "validate_upload_path",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "path.c",
+            "symbol": "contains_parent",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-03-3",
+      "query": "validate_upload_path",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "path.c",
+          "symbol": "validate_upload_path",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "path.c",
+          "symbol": "contains_parent",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "path.c",
+          "symbol": "path_heading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "path.c",
+            "symbol": "validate_upload_path",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "path.c",
+            "symbol": "contains_parent",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-04-1",
+      "query": "retry throttled or failed requests with a maximum attempt limit",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "retry.cs",
+          "symbol": "RetryRequest",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "retry.cs",
+          "symbol": "DelayMilliseconds",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "retry.cs",
+          "symbol": "RetryHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "retry.cs",
+            "symbol": "RetryRequest",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "retry.cs",
+            "symbol": "DelayMilliseconds",
+            "kind": "method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-04-2",
+      "query": "cap exponential delay at thirty seconds",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "retry.cs",
+          "symbol": "DelayMilliseconds",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "retry.cs",
+          "symbol": "RetryRequest",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "retry.cs",
+          "symbol": "RetryHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "retry.cs",
+            "symbol": "RetryRequest",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "retry.cs",
+            "symbol": "DelayMilliseconds",
+            "kind": "method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-04-3",
+      "query": "RetryRequest",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "retry.cs",
+          "symbol": "RetryRequest",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "retry.cs",
+          "symbol": "DelayMilliseconds",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "retry.cs",
+          "symbol": "RetryHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "retry.cs",
+            "symbol": "RetryRequest",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "retry.cs",
+            "symbol": "DelayMilliseconds",
+            "kind": "method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-05-1",
+      "query": "return a cache miss when an entry has expired",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "cache.cpp",
+          "symbol": "read_cache",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "cache.cpp",
+          "symbol": "expired_entry",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "cache.cpp",
+          "symbol": "cache_heading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "cache.cpp",
+            "symbol": "read_cache",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "cache.cpp",
+            "symbol": "expired_entry",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-05-2",
+      "query": "compare cache expiry to current time",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "cache.cpp",
+          "symbol": "expired_entry",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "cache.cpp",
+          "symbol": "read_cache",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "cache.cpp",
+          "symbol": "cache_heading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "cache.cpp",
+            "symbol": "read_cache",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "cache.cpp",
+            "symbol": "expired_entry",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-05-3",
+      "query": "read_cache",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "cache.cpp",
+          "symbol": "read_cache",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "cache.cpp",
+          "symbol": "expired_entry",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "cache.cpp",
+          "symbol": "cache_heading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "cache.cpp",
+            "symbol": "read_cache",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "cache.cpp",
+            "symbol": "expired_entry",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-06-1",
+      "query": "persist a preference value after validating its key",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "preferences.m",
+          "symbol": "saveValue:forKey:",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "preferences.m",
+          "symbol": "validKey:",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "preferences.m",
+          "symbol": "preferencesHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "preferences.m",
+            "symbol": "saveValue:forKey:",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "preferences.m",
+            "symbol": "validKey:",
+            "kind": "method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-06-2",
+      "query": "reject a nil or empty preference key",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "preferences.m",
+          "symbol": "validKey:",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "preferences.m",
+          "symbol": "saveValue:forKey:",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "preferences.m",
+          "symbol": "preferencesHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "preferences.m",
+            "symbol": "saveValue:forKey:",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "preferences.m",
+            "symbol": "validKey:",
+            "kind": "method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-06-3",
+      "query": "saveValue forKey",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "preferences.m",
+          "symbol": "saveValue:forKey:",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "preferences.m",
+          "symbol": "validKey:",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "preferences.m",
+          "symbol": "preferencesHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "preferences.m",
+            "symbol": "saveValue:forKey:",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "preferences.m",
+            "symbol": "validKey:",
+            "kind": "method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-07-1",
+      "query": "normalize pixel samples before writing them on the GPU",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "pixel.metal",
+          "symbol": "normalizePixels",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "pixel.metal",
+          "symbol": "clampSample",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "pixel.metal",
+          "symbol": "pixelHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "pixel.metal",
+            "symbol": "normalizePixels",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "pixel.metal",
+            "symbol": "clampSample",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-07-2",
+      "query": "clamp a sample value between zero and one",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "pixel.metal",
+          "symbol": "clampSample",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "pixel.metal",
+          "symbol": "normalizePixels",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "pixel.metal",
+          "symbol": "pixelHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "pixel.metal",
+            "symbol": "normalizePixels",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "pixel.metal",
+            "symbol": "clampSample",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-07-3",
+      "query": "normalizePixels",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "pixel.metal",
+          "symbol": "normalizePixels",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "pixel.metal",
+          "symbol": "clampSample",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "pixel.metal",
+          "symbol": "pixelHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "pixel.metal",
+            "symbol": "normalizePixels",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "pixel.metal",
+            "symbol": "clampSample",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-08-1",
+      "query": "scale vector elements on the GPU without writing beyond the count",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "vector.cu",
+          "symbol": "scaleVector",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "vector.cu",
+          "symbol": "scaleElement",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "vector.cu",
+          "symbol": "vectorHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "vector.cu",
+            "symbol": "scaleVector",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "vector.cu",
+            "symbol": "scaleElement",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-08-2",
+      "query": "multiply an element by the scale factor",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "vector.cu",
+          "symbol": "scaleElement",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "vector.cu",
+          "symbol": "scaleVector",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "vector.cu",
+          "symbol": "vectorHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "vector.cu",
+            "symbol": "scaleVector",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "vector.cu",
+            "symbol": "scaleElement",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-08-3",
+      "query": "scaleVector",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "vector.cu",
+          "symbol": "scaleVector",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "vector.cu",
+          "symbol": "scaleElement",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "vector.cu",
+          "symbol": "vectorHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "vector.cu",
+            "symbol": "scaleVector",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "vector.cu",
+            "symbol": "scaleElement",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-09-1",
+      "query": "refund an invoice only when the amount is positive and within the total",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "invoice.kt",
+          "symbol": "refundInvoice",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "invoice.kt",
+          "symbol": "validRefund",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "invoice.kt",
+          "symbol": "invoiceHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "invoice.kt",
+            "symbol": "refundInvoice",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "invoice.kt",
+            "symbol": "validRefund",
+            "kind": "method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-09-2",
+      "query": "validate a refund amount against the invoice total",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "invoice.kt",
+          "symbol": "validRefund",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "invoice.kt",
+          "symbol": "refundInvoice",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "invoice.kt",
+          "symbol": "invoiceHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "invoice.kt",
+            "symbol": "refundInvoice",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "invoice.kt",
+            "symbol": "validRefund",
+            "kind": "method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-09-3",
+      "query": "refundInvoice",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "invoice.kt",
+          "symbol": "refundInvoice",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "invoice.kt",
+          "symbol": "validRefund",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "invoice.kt",
+          "symbol": "invoiceHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "invoice.kt",
+            "symbol": "refundInvoice",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "invoice.kt",
+            "symbol": "validRefund",
+            "kind": "method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-10-1",
+      "query": "return rows after a cursor with a capped page size",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "page.dart",
+          "symbol": "nextPage",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "page.dart",
+          "symbol": "clampPageSize",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "page.dart",
+          "symbol": "pageHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "page.dart",
+            "symbol": "nextPage",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "page.dart",
+            "symbol": "clampPageSize",
+            "kind": "method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-10-2",
+      "query": "limit the requested page size to one through one hundred",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "page.dart",
+          "symbol": "clampPageSize",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "page.dart",
+          "symbol": "nextPage",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "page.dart",
+          "symbol": "pageHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "page.dart",
+            "symbol": "nextPage",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "page.dart",
+            "symbol": "clampPageSize",
+            "kind": "method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-10-3",
+      "query": "nextPage",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "page.dart",
+          "symbol": "nextPage",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "page.dart",
+          "symbol": "clampPageSize",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "page.dart",
+          "symbol": "pageHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "page.dart",
+            "symbol": "nextPage",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "page.dart",
+            "symbol": "clampPageSize",
+            "kind": "method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-11-1",
+      "query": "prevent submitting an empty or oversized upload",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "Upload.vue",
+          "symbol": "submitUpload",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "Upload.vue",
+          "symbol": "validUpload",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "Upload.vue",
+          "symbol": "uploadHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "Upload.vue",
+            "symbol": "submitUpload",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "Upload.vue",
+            "symbol": "validUpload",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-11-2",
+      "query": "validate upload bytes against a one megabyte limit",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "Upload.vue",
+          "symbol": "validUpload",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "Upload.vue",
+          "symbol": "submitUpload",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "Upload.vue",
+          "symbol": "uploadHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "Upload.vue",
+            "symbol": "submitUpload",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "Upload.vue",
+            "symbol": "validUpload",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-11-3",
+      "query": "submitUpload",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "Upload.vue",
+          "symbol": "submitUpload",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "Upload.vue",
+          "symbol": "validUpload",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "Upload.vue",
+          "symbol": "uploadHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "Upload.vue",
+            "symbol": "submitUpload",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "Upload.vue",
+            "symbol": "validUpload",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-12-1",
+      "query": "stop a job when retry attempts reach the maximum",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "jobs.lua",
+          "symbol": "runJob",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "jobs.lua",
+          "symbol": "shouldRetry",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "jobs.lua",
+          "symbol": "jobsHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "jobs.lua",
+            "symbol": "runJob",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "jobs.lua",
+            "symbol": "shouldRetry",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-12-2",
+      "query": "compare retry attempt count against the maximum",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "jobs.lua",
+          "symbol": "shouldRetry",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "jobs.lua",
+          "symbol": "runJob",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "jobs.lua",
+          "symbol": "jobsHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "jobs.lua",
+            "symbol": "runJob",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "jobs.lua",
+            "symbol": "shouldRetry",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-12-3",
+      "query": "runJob",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "jobs.lua",
+          "symbol": "runJob",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "jobs.lua",
+          "symbol": "shouldRetry",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "jobs.lua",
+          "symbol": "jobsHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "jobs.lua",
+            "symbol": "runJob",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "jobs.lua",
+            "symbol": "shouldRetry",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-13-1",
+      "query": "render a selection list that toggles items when clicked",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "Selection.jsx",
+          "symbol": "SelectionList",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "Selection.jsx",
+          "symbol": "useSelection",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "Selection.jsx",
+          "symbol": "selectionHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "Selection.jsx",
+            "symbol": "SelectionList",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "Selection.jsx",
+            "symbol": "useSelection",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-13-2",
+      "query": "toggle a selected item and expose the updated selection",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "Selection.jsx",
+          "symbol": "useSelection",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "Selection.jsx",
+          "symbol": "SelectionList",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "Selection.jsx",
+          "symbol": "selectionHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "Selection.jsx",
+            "symbol": "SelectionList",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "Selection.jsx",
+            "symbol": "useSelection",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-13-3",
+      "query": "SelectionList",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "Selection.jsx",
+          "symbol": "SelectionList",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "Selection.jsx",
+          "symbol": "useSelection",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "Selection.jsx",
+          "symbol": "selectionHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "Selection.jsx",
+            "symbol": "SelectionList",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "Selection.jsx",
+            "symbol": "useSelection",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-14-1",
+      "query": "render filtered search suggestions alongside the input",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "Search.tsx",
+          "symbol": "SearchBox",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "Search.tsx",
+          "symbol": "filterSuggestions",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "Search.tsx",
+          "symbol": "searchHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "Search.tsx",
+            "symbol": "SearchBox",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "Search.tsx",
+            "symbol": "filterSuggestions",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-14-2",
+      "query": "filter suggestions by a case insensitive query prefix",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "Search.tsx",
+          "symbol": "filterSuggestions",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "Search.tsx",
+          "symbol": "SearchBox",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "Search.tsx",
+          "symbol": "searchHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "Search.tsx",
+            "symbol": "SearchBox",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "Search.tsx",
+            "symbol": "filterSuggestions",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-14-3",
+      "query": "SearchBox",
+      "fixture": "fixtures/multilingual",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "Search.tsx",
+          "symbol": "SearchBox",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "Search.tsx",
+          "symbol": "filterSuggestions",
+          "kind": "function"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "Search.tsx",
+          "symbol": "searchHeading",
+          "kind": "function"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "Search.tsx",
+            "symbol": "SearchBox",
+            "kind": "function"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "Search.tsx",
+            "symbol": "filterSuggestions",
+            "kind": "function"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multilingual-apex-trigger",
+      "query": "reject blank account names before insert and update",
+      "fixture": "fixtures/multilingual",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "accounts.trigger",
+          "symbol": "RejectEmptyAccount",
+          "kind": "function"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "accounts.cls",
+          "symbol": "validAccountName",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "accounts.cls",
+          "symbol": "accountHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": []
+    }
+  ]
+}
