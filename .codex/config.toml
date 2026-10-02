@@ -1,6 +1,0 @@
-[mcp_servers.flexcontext]
-command = "/Volumes/ssd/thamo/Repos/flexcontext/target/release/flexcontext"
-args = ["serve", "/Volumes/ssd/thamo/Repos/flexcontext"]
-enabled = true
-startup_timeout_sec = 30
-tool_timeout_sec = 30

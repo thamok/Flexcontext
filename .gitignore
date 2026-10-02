@@ -2,3 +2,9 @@
 .flexcontext/
 .DS_Store
 *.profraw
+/.benchmark-bootstrap/
+/.benchmark-venv/
+/.benchmark-tools/
+/.benchmark-results/
+__pycache__/
+/.codex/config.toml
