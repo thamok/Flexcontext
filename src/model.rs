@@ -3,6 +3,119 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, clap::ValueEnum)]
+#[serde(rename_all = "lowercase")]
+pub enum ScopeMode {
+    #[default]
+    Auto,
+    Repository,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SearchScope {
+    #[serde(default)]
+    pub scope: ScopeMode,
+    #[serde(default)]
+    pub include_paths: Vec<String>,
+    #[serde(default)]
+    pub exclude_paths: Vec<String>,
+}
+impl SearchScope {
+    pub fn validate(&self) -> anyhow::Result<()> {
+        for path in self.include_paths.iter().chain(&self.exclude_paths) {
+            anyhow::ensure!(
+                !path.is_empty()
+                    && !path.starts_with('/')
+                    && !path.contains('\\')
+                    && !path.contains(':')
+                    && path
+                        .trim_end_matches('/')
+                        .split('/')
+                        .all(|p| !p.is_empty() && p != "." && p != ".."),
+                "scope paths must be repository-relative files or directory prefixes without traversal"
+            );
+        }
+        Ok(())
+    }
+    pub fn allows(&self, path: &str) -> bool {
+        let matches = |prefix: &String| {
+            let prefix = prefix.trim_end_matches('/');
+            path == prefix
+                || path
+                    .strip_prefix(prefix)
+                    .is_some_and(|suffix| suffix.starts_with('/'))
+        };
+        (self.include_paths.is_empty() || self.include_paths.iter().any(matches))
+            && !self.exclude_paths.iter().any(matches)
+    }
+}
+
+/// Experimental retrieval policies remain explicit until the acceptance gate passes.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, clap::ValueEnum)]
+#[serde(rename_all = "lowercase")]
+pub enum RetrievalPolicy {
+    #[default]
+    Baseline,
+    Relations,
+    Quotas,
+    Diversity,
+    Idf,
+    Direct,
+    Implementation,
+    Focus,
+    Stable,
+    Cutoff,
+    Focused,
+}
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, clap::ValueEnum)]
+#[serde(rename_all = "lowercase")]
+pub enum Detail {
+    #[default]
+    Compact,
+    Full,
+}
+
+#[derive(Debug, Clone)]
+pub struct QueryOptions {
+    pub query: String,
+    pub max_bytes: usize,
+    pub max_results: usize,
+    pub scope: SearchScope,
+    pub policy: RetrievalPolicy,
+    pub cutoff: f64,
+    pub explain: bool,
+    pub detail: Detail,
+}
+impl Default for QueryOptions {
+    fn default() -> Self {
+        Self {
+            query: String::new(),
+            max_bytes: 16384,
+            max_results: 12,
+            scope: SearchScope::default(),
+            policy: RetrievalPolicy::default(),
+            cutoff: 0.25,
+            explain: false,
+            detail: Detail::default(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RetrievalTrace {
+    pub path: String,
+    pub symbol: String,
+    pub start_line: usize,
+    pub direct_rank: Option<usize>,
+    pub direct_score: f64,
+    pub relationship_rank: usize,
+    pub relationship_boost: f64,
+    pub decision: String,
+    pub truncated: bool,
+    pub scope_promotion: f64,
+}
+
 #[derive(Debug, Clone)]
 pub struct SearchOptions {
     pub root: PathBuf,
@@ -12,6 +125,7 @@ pub struct SearchOptions {
     pub use_cache: bool,
     pub scan_limits: crate::repository::ScanLimits,
     pub ranking_weights: crate::ranking::RankingWeights,
+    pub retrieval: QueryOptions,
 }
 
 impl Default for SearchOptions {
@@ -24,6 +138,10 @@ impl Default for SearchOptions {
             use_cache: true,
             scan_limits: Default::default(),
             ranking_weights: Default::default(),
+            retrieval: QueryOptions {
+                detail: Detail::Full,
+                ..Default::default()
+            },
         }
     }
 }
@@ -211,6 +329,10 @@ pub struct SearchStats {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SearchResponse {
+    #[serde(default)]
+    pub policy: RetrievalPolicy,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub focused_files: Vec<String>,
     pub context_cost: ContextCost,
     pub query: String,
     pub root: String,
@@ -218,6 +340,10 @@ pub struct SearchResponse {
     pub stats: SearchStats,
     #[serde(skip_serializing_if = "BTreeMap::is_empty", default)]
     pub metadata: BTreeMap<String, String>,
+    #[serde(default)]
+    pub scope: SearchScope,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub trace: Vec<RetrievalTrace>,
 }
 
 /// Cost of the emitted representation, including metadata and protocol framing.

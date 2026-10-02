@@ -15,6 +15,23 @@ struct QueryArgs {
     max_results: usize,
     #[serde(default)]
     max_tokens: Option<usize>,
+    #[serde(default)]
+    detail: crate::model::Detail,
+    #[serde(default)]
+    scope: crate::model::ScopeMode,
+    #[serde(default)]
+    include_paths: Vec<String>,
+    #[serde(default)]
+    exclude_paths: Vec<String>,
+    #[serde(default)]
+    policy: crate::model::RetrievalPolicy,
+    #[serde(default = "default_cutoff")]
+    cutoff: f64,
+    #[serde(default)]
+    explain: bool,
+}
+fn default_cutoff() -> f64 {
+    0.25
 }
 fn default_budget() -> usize {
     4096
@@ -220,7 +237,14 @@ fn process_requests(
             "ping" => Ok(json!({})),
             "tools/list" => Ok(json!({"tools":[
                 {"name":"code_search", "description":"Retrieve diverse structural code context from the resident repository snapshot. budget selects source bytes/4; max_tokens bounds the complete serialized response estimate. Read code from structuredContent; text is a summary.",
-                 "inputSchema":{"type":"object", "properties":{"query":{"type":"string"},"budget":{"type":"integer","minimum":1,"default":4096},"max_tokens":{"type":"integer","minimum":1},"max_results":{"type":"integer","minimum":1,"maximum":100,"default":12}},"required":["query"],"additionalProperties":false}},
+                 "inputSchema":{"type":"object", "properties":{"query":{"type":"string"},"budget":{"type":"integer","minimum":1,"default":4096},"max_tokens":{"type":"integer","minimum":1},"max_results":{"type":"integer","minimum":1,"maximum":100,"default":12},
+                    "detail":{"type":"string","enum":["compact","full"],"default":"compact"},
+                    "scope":{"type":"string","enum":["auto","repository"],"default":"auto"},
+                    "include_paths":{"type":"array","items":{"type":"string"},"description":"Repository-relative exact file or directory subtree"},
+                    "exclude_paths":{"type":"array","items":{"type":"string"},"description":"Exclusions override includes"},
+                    "policy":{"type":"string","enum":["baseline","relations","quotas","diversity","idf","direct","implementation","focus","stable","cutoff","focused"],"default":"baseline"},
+                    "cutoff":{"type":"number","minimum":0,"maximum":1,"default":0.25},
+                    "explain":{"type":"boolean","default":false,"description":"Candidate diagnostic trace; implies full detail"}},"required":["query"],"additionalProperties":false}},
                 {"name":"refresh_index", "description":"Reload the repository snapshot after files are edited, added or deleted.", "inputSchema":{"type":"object","properties":{},"additionalProperties":false}}
             ]})),
             "tools/call" => match params["name"].as_str() {
@@ -234,19 +258,40 @@ fn process_requests(
                                     .max_tokens
                                     .is_none_or(|n| n > 0 && n.checked_mul(4).is_some()) =>
                         {
-                            match session.query(&args.query, args.budget * 4, args.max_results) {
+                            let detail = if args.explain {
+                                crate::model::Detail::Full
+                            } else {
+                                args.detail
+                            };
+                            let options = crate::model::QueryOptions {
+                                query: args.query,
+                                max_bytes: args.budget * 4,
+                                max_results: args.max_results,
+                                detail,
+                                policy: args.policy,
+                                cutoff: args.cutoff,
+                                explain: args.explain,
+                                scope: crate::model::SearchScope {
+                                    scope: args.scope,
+                                    include_paths: args.include_paths,
+                                    exclude_paths: args.exclude_paths,
+                                },
+                            };
+                            match session.query_with_options(&options) {
                                 Ok(mut response) => {
-                                    let representation = if modern {
-                                        crate::output::Representation::Mcp { id: id.clone() }
-                                    } else {
-                                        crate::output::Representation::McpLegacy { id: id.clone() }
-                                    };
+                                    let representation = crate::output::Representation::mcp(
+                                        detail,
+                                        id.clone(),
+                                        modern,
+                                    );
                                     match crate::output::finalize(
                                         &mut response,
                                         &representation,
                                         args.max_tokens,
                                     ) {
-                                        Ok(()) => Ok(crate::output::tool_result(&response)),
+                                        Ok(()) => {
+                                            Ok(crate::output::tool_result_detail(&response, detail))
+                                        }
                                         Err(err) => Ok(tool_error(&err.to_string())),
                                     }
                                 }

@@ -5,6 +5,71 @@ use crate::lexical::{Query, normalize_identifier};
 use crate::model::{ScoredSymbol, SearchResult, Symbol};
 use crate::relations::{RelationGraph, serializable_relations};
 
+/// Canonical ordering for the stable-only ablation retains the old quotas and
+/// soft diversity. There is deliberately no source budget in this planning step.
+pub fn constrained_order(
+    ranked: &[ScoredSymbol],
+    symbols: &[Symbol],
+    weights: &crate::ranking::RankingWeights,
+) -> (Vec<ScoredSymbol>, HashMap<usize, String>) {
+    let mut pending: Vec<_> = ranked.iter().take(4096).cloned().collect();
+    let mut out = Vec::new();
+    let mut rejected = HashMap::new();
+    let mut names = HashMap::<String, usize>::new();
+    let mut clusters = HashMap::<(String, Option<String>), usize>::new();
+    let mut paths = HashMap::<String, usize>::new();
+    let mut kinds = HashMap::<String, usize>::new();
+    while !pending.is_empty() && out.len() < 256 {
+        let utility = |s: &ScoredSymbol| {
+            let symbol = &symbols[s.symbol_id];
+            s.score
+                - weights.diversity_penalty
+                    * (2.0 * paths.get(&symbol.path).copied().unwrap_or(0) as f64
+                        + 0.75 * kinds.get(&symbol.kind).copied().unwrap_or(0) as f64)
+        };
+        let i = pending
+            .iter()
+            .enumerate()
+            .max_by(|(ai, a), (bi, b)| utility(a).total_cmp(&utility(b)).then(bi.cmp(ai)))
+            .unwrap()
+            .0;
+        let mut item = pending.remove(i);
+        let symbol = &symbols[item.symbol_id];
+        let name = normalize_identifier(&symbol.name);
+        let cluster = (symbol.path.clone(), symbol.containing_symbol.clone());
+        if names.get(&name).copied().unwrap_or(0)
+            >= if symbol.kind == "declaration" { 1 } else { 2 }
+        {
+            rejected.insert(item.symbol_id, "name quota".into());
+            continue;
+        }
+        if clusters.get(&cluster).copied().unwrap_or(0)
+            >= if symbol.containing_symbol.is_some() {
+                2
+            } else {
+                3
+            }
+        {
+            rejected.insert(item.symbol_id, "file/container quota".into());
+            continue;
+        }
+        item.score = utility(&item);
+        *names.entry(name).or_default() += 1;
+        *clusters.entry(cluster).or_default() += 1;
+        *paths.entry(symbol.path.clone()).or_default() += 1;
+        *kinds.entry(symbol.kind.clone()).or_default() += 1;
+        out.push(item);
+    }
+    for item in ranked {
+        if !out.iter().any(|s| s.symbol_id == item.symbol_id) {
+            rejected
+                .entry(item.symbol_id)
+                .or_insert_with(|| "candidate pool limit".into());
+        }
+    }
+    (out, rejected)
+}
+
 pub fn select_context(
     ranked: &[ScoredSymbol],
     symbols: &[Symbol],

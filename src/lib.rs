@@ -13,7 +13,10 @@ pub mod repository;
 pub mod search;
 pub mod selection;
 
-pub use model::{SearchOptions, SearchResponse};
+pub use model::{
+    Detail, QueryOptions, RetrievalPolicy, ScopeMode, SearchOptions, SearchResponse, SearchScope,
+};
+pub mod focused;
 pub use search::{SearchSession, search};
 pub mod mcp;
 

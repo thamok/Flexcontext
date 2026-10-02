@@ -5,11 +5,14 @@ use anyhow::{Context, Result, bail};
 
 use crate::cache::load_indexed_repository;
 use crate::lexical::Query;
-use crate::model::{SearchOptions, SearchResponse, SearchStats};
+use crate::model::{
+    QueryOptions, RetrievalPolicy, RetrievalTrace, ScopeMode, SearchOptions, SearchResponse,
+    SearchStats,
+};
 use crate::ranking::{PreparedIndex, rank_indexed_candidates, rank_prepared_candidates};
 use crate::relations::{RelationIndex, build_relation_graph_for, expand_ranked_with_weights};
 use crate::repository::{ScanLimits, ScanStats, discover_with_limits};
-use crate::selection::select_context_with_weights;
+use crate::selection::select_context_config;
 
 pub fn search(options: &SearchOptions) -> Result<SearchResponse> {
     let started = Instant::now();
@@ -115,14 +118,36 @@ impl SearchSession {
         max_results: usize,
         weights: &crate::ranking::RankingWeights,
     ) -> Result<SearchResponse> {
+        self.query_options_with_weights(
+            &QueryOptions {
+                query: query.into(),
+                max_bytes,
+                max_results,
+                detail: crate::model::Detail::Full,
+                ..Default::default()
+            },
+            weights,
+        )
+    }
+
+    pub fn query_with_options(&self, query: &QueryOptions) -> Result<SearchResponse> {
+        self.query_options_with_weights(query, &crate::ranking::RankingWeights::default())
+    }
+
+    fn query_options_with_weights(
+        &self,
+        query: &QueryOptions,
+        weights: &crate::ranking::RankingWeights,
+    ) -> Result<SearchResponse> {
         let options = SearchOptions {
             root: self.root.clone(),
-            query: query.to_owned(),
-            max_bytes,
-            max_results,
+            query: query.query.clone(),
+            max_bytes: query.max_bytes,
+            max_results: query.max_results,
             use_cache: self.use_cache,
             scan_limits: self.scan_limits.clone(),
             ranking_weights: weights.clone(),
+            retrieval: query.clone(),
         };
         search_repository(
             &options,
@@ -152,6 +177,12 @@ fn search_repository(
 ) -> Result<SearchResponse> {
     crate::repository::check_cancelled()?;
     options.ranking_weights.validate()?;
+    options.retrieval.scope.validate()?;
+    anyhow::ensure!(
+        options.retrieval.cutoff.is_finite() && (0.0..=1.0).contains(&options.retrieval.cutoff),
+        "cutoff must be between zero and one"
+    );
+    let policy = options.retrieval.policy;
     let query = Query::parse(&options.query);
     if query.is_empty() {
         bail!("query must contain at least one letter or number");
@@ -166,7 +197,40 @@ fn search_repository(
     } else {
         rank_indexed_candidates(symbols, &query, &repository.index)
     };
+    if matches!(
+        policy,
+        RetrievalPolicy::Idf | RetrievalPolicy::Direct | RetrievalPolicy::Focused
+    ) {
+        let owned;
+        let prepared = match prepared {
+            Some(p) => p,
+            None => {
+                owned = PreparedIndex::build(symbols);
+                &owned
+            }
+        };
+        prepared.weight_by_file_frequency(
+            &mut ranked,
+            symbols,
+            &query,
+            policy != RetrievalPolicy::Direct,
+            policy != RetrievalPolicy::Idf,
+        );
+    }
     crate::ranking::apply_weights(&mut ranked, symbols, &options.ranking_weights);
+    ranked.retain(|s| options.retrieval.scope.allows(&symbols[s.symbol_id].path));
+    if matches!(
+        policy,
+        RetrievalPolicy::Implementation | RetrievalPolicy::Focused
+    ) {
+        crate::focused::prefer_implementation(
+            &mut ranked,
+            symbols,
+            &query,
+            &options.retrieval.scope,
+        );
+    }
+    let direct = ranked.clone();
     let candidate_symbols = ranked.len();
     let candidate_and_ranking_us = stage.elapsed().as_micros();
 
@@ -181,19 +245,144 @@ fn search_repository(
         || build_relation_graph_for(symbols, &shortlist),
         |index| index.graph_for(symbols, &shortlist),
     );
-    let ranked = expand_ranked_with_weights(ranked, &graph, symbols, &options.ranking_weights);
+    let mut ranked = expand_ranked_with_weights(ranked, &graph, symbols, &options.ranking_weights);
+    ranked.retain(|s| options.retrieval.scope.allows(&symbols[s.symbol_id].path));
+    let direct_map: std::collections::HashMap<_, _> = direct
+        .iter()
+        .enumerate()
+        .map(|(i, s)| (s.symbol_id, (i, s)))
+        .collect();
+    let mut rejected = std::collections::HashMap::new();
+    if matches!(
+        policy,
+        RetrievalPolicy::Relations | RetrievalPolicy::Focused
+    ) {
+        ranked.retain_mut(|s| {
+            if let Some((_, anchor)) = direct_map.get(&s.symbol_id) {
+                let boost = if crate::focused::independent(anchor) {
+                    s.signals
+                        .structural_relation
+                        .min(anchor.score.max(0.0) * 0.2)
+                } else {
+                    0.0
+                };
+                s.signals.structural_relation = boost;
+                s.score = anchor.score + boost;
+                true
+            } else {
+                rejected.insert(s.symbol_id, "no independent lexical evidence".to_owned());
+                false
+            }
+        });
+        crate::ranking::sort_scored(&mut ranked, symbols);
+    }
+    let relationship_order: std::collections::HashMap<_, _> = ranked
+        .iter()
+        .enumerate()
+        .map(|(i, s)| (s.symbol_id, (i, s.signals.structural_relation)))
+        .collect();
+    if matches!(policy, RetrievalPolicy::Cutoff | RetrievalPolicy::Focused) {
+        let best = direct.first().map_or(0.0, |s| s.score);
+        ranked.retain(|s| {
+            let keep = direct_map.get(&s.symbol_id).is_some_and(|(_, s)| {
+                s.score >= best * options.retrieval.cutoff && crate::focused::independent(s)
+            });
+            if !keep {
+                rejected.insert(s.symbol_id, "below direct relevance cutoff".into());
+            }
+            keep
+        });
+    }
+    let focus = if matches!(policy, RetrievalPolicy::Focus | RetrievalPolicy::Focused)
+        && options.retrieval.scope.scope == ScopeMode::Auto
+    {
+        crate::focused::concentrate(&mut ranked, symbols, &query)
+    } else {
+        Default::default()
+    };
     let relationship_us = stage.elapsed().as_micros();
 
     let stage = Instant::now();
-    let results = select_context_with_weights(
-        &ranked,
-        symbols,
-        &graph,
-        options.max_bytes,
-        options.max_results,
-        &query,
-        &options.ranking_weights,
-    );
+    let mut selection_weights = options.ranking_weights.clone();
+    if matches!(
+        policy,
+        RetrievalPolicy::Diversity | RetrievalPolicy::Focused
+    ) {
+        selection_weights.diversity_penalty = 0.0;
+    }
+    let (mut results, decisions) =
+        if matches!(policy, RetrievalPolicy::Stable | RetrievalPolicy::Focused) {
+            let constrained;
+            let candidates = if policy == RetrievalPolicy::Stable {
+                let (order, reasons) =
+                    crate::selection::constrained_order(&ranked, symbols, &selection_weights);
+                constrained = order;
+                rejected.extend(reasons);
+                &constrained
+            } else {
+                &ranked
+            };
+            crate::focused::select(
+                candidates,
+                symbols,
+                &graph,
+                &query,
+                options.max_bytes,
+                options.max_results,
+            )
+        } else {
+            select_context_config(
+                &ranked,
+                symbols,
+                &graph,
+                options.max_bytes,
+                options.max_results,
+                &query,
+                &selection_weights,
+                !matches!(policy, RetrievalPolicy::Quotas),
+            )
+        };
+    for result in &mut results {
+        result
+            .relations
+            .retain(|r| options.retrieval.scope.allows(&r.path));
+    }
+    rejected.extend(decisions);
+    let trace = if options.retrieval.explain {
+        let ids: std::collections::BTreeSet<_> = direct_map
+            .keys()
+            .chain(relationship_order.keys())
+            .chain(rejected.keys())
+            .copied()
+            .collect();
+        ids.into_iter()
+            .map(|id| {
+                let symbol = &symbols[id];
+                RetrievalTrace {
+                    path: symbol.path.clone(),
+                    symbol: symbol.name.clone(),
+                    start_line: symbol.start_line,
+                    direct_rank: direct_map.get(&id).map(|(i, _)| i + 1),
+                    direct_score: direct_map.get(&id).map_or(0.0, |(_, s)| s.score),
+                    relationship_rank: relationship_order.get(&id).map_or(0, |(i, _)| i + 1),
+                    relationship_boost: relationship_order.get(&id).map_or(0.0, |(_, v)| *v),
+                    decision: rejected
+                        .get(&id)
+                        .cloned()
+                        .unwrap_or_else(|| "not selected".into()),
+                    truncated: results.iter().any(|r| {
+                        r.path == symbol.path
+                            && r.start_byte == symbol.start_byte
+                            && r.symbol == symbol.name
+                            && r.content_truncated
+                    }),
+                    scope_promotion: focus.get(&id).copied().unwrap_or(0.0),
+                }
+            })
+            .collect()
+    } else {
+        Vec::new()
+    };
     crate::repository::check_cancelled()?;
     let selection_us = stage.elapsed().as_micros();
     let returned_bytes = results.iter().map(|result| result.content_bytes).sum();
@@ -275,6 +464,13 @@ fn search_repository(
         ),
     ]);
     let mut response = SearchResponse {
+        policy,
+        focused_files: focus
+            .keys()
+            .map(|&id| symbols[id].path.clone())
+            .collect::<std::collections::BTreeSet<_>>()
+            .into_iter()
+            .collect(),
         context_cost: crate::model::ContextCost {
             selection_budget: options.max_bytes,
             ..Default::default()
@@ -284,7 +480,13 @@ fn search_repository(
         results,
         stats,
         metadata,
+        scope: options.retrieval.scope.clone(),
+        trace,
     };
-    crate::output::finalize(&mut response, &crate::output::Representation::Json, None)?;
+    crate::output::finalize(
+        &mut response,
+        &crate::output::Representation::json(options.retrieval.detail),
+        None,
+    )?;
     Ok(response)
 }
