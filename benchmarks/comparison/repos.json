@@ -1,0 +1,5 @@
+{
+  "flexcontext": {"path": ".", "include": ["src/", "tests/", "benches/", "benchmarks/fixtures/"]},
+  "agentx": {"path": "../agentx/abilex-agentx", "include": ["apps/", "lib/", "tools/"]},
+  "webkitpy": {"path": "../WebKit", "include": ["Tools/Scripts/webkitpy/"]}
+}

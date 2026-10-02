@@ -144,6 +144,23 @@ pub fn evaluate_with_weights(
     max_bytes: usize,
     weights: &crate::ranking::RankingWeights,
 ) -> Result<Report> {
+    evaluate_suites(
+        directory,
+        k,
+        max_bytes,
+        weights,
+        &["rust", "typescript", "python", "mixed-monorepo"],
+    )
+}
+
+/// Explicit suites keep expansion separate from the frozen 60-query baseline.
+pub fn evaluate_suites(
+    directory: &Path,
+    k: usize,
+    max_bytes: usize,
+    weights: &crate::ranking::RankingWeights,
+    suites: &[&str],
+) -> Result<Report> {
     weights.validate()?;
     ensure!(
         k > 0 && max_bytes > 0,
@@ -152,7 +169,17 @@ pub fn evaluate_with_weights(
     let mut measurements = Vec::new();
     let mut ids = BTreeSet::new();
     let mut sessions = BTreeMap::new();
-    for name in ["rust", "typescript", "python", "mixed-monorepo"] {
+    ensure!(
+        !suites.is_empty(),
+        "at least one evaluation suite is required"
+    );
+    for name in suites {
+        ensure!(
+            name.chars()
+                .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
+                && !name.is_empty(),
+            "invalid suite name"
+        );
         let path = directory.join(format!("{name}.json"));
         let corpus: Corpus = serde_json::from_slice(&std::fs::read(&path)?)
             .with_context(|| format!("invalid corpus {}", path.display()))?;
@@ -169,8 +196,7 @@ pub fn evaluate_with_weights(
             ensure!(
                 !case.strongly_relevant.is_empty()
                     && !case.partially_relevant.is_empty()
-                    && !case.distractors.is_empty()
-                    && !case.expected_relationships.is_empty(),
+                    && !case.distractors.is_empty(),
                 "incomplete judgments {}",
                 case.id
             );
@@ -277,7 +303,7 @@ pub fn evaluate_with_weights(
                     .filter(|r| case.distractors.iter().any(|s| s.matches(r)))
                     .count(),
                 relationship_recall: relationships as f64
-                    / case.expected_relationships.len() as f64,
+                    / case.expected_relationships.len().max(1) as f64,
                 source_bytes: response.stats.returned_bytes,
                 serialized_bytes: response.stats.json_payload_bytes,
                 estimated_tokens: response.stats.json_payload_bytes.div_ceil(4),

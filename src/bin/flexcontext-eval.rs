@@ -15,6 +15,9 @@ struct Args {
     weights: Option<PathBuf>,
     #[arg(long)]
     output: Option<PathBuf>,
+    /// Evaluate only named JSON suites (repeatable); defaults to the original four.
+    #[arg(long, conflicts_with = "tune")]
+    suite: Vec<String>,
 }
 fn main() -> Result<()> {
     let args = Args::parse();
@@ -30,11 +33,17 @@ fn main() -> Result<()> {
         } else {
             Default::default()
         };
-        serde_json::to_string_pretty(&flexcontext::evaluation::evaluate_with_weights(
+        let suites: Vec<&str> = if args.suite.is_empty() {
+            vec!["rust", "typescript", "python", "mixed-monorepo"]
+        } else {
+            args.suite.iter().map(String::as_str).collect()
+        };
+        serde_json::to_string_pretty(&flexcontext::evaluation::evaluate_suites(
             &args.corpus,
             args.k,
             args.max_bytes,
             &weights,
+            &suites,
         )?)?
     } + "\n";
     if let Some(path) = args.output {

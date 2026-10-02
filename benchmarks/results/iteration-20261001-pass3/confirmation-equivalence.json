@@ -1,0 +1,9 @@
+{
+  "binary_sha256": "46737e0667f001d554a03dcf0f2f4fc87377327514a9c9d38c6a4482ea3f1a0b",
+  "reference_binary_sha256": "06566aee38f5df57ff5886b7243ec7771df19297a503197dacf446242a88a324",
+  "cases_sha256": "a04e4ae6f7a96067c579d22384afb5be6742f877c4bb688c565fe346b5570a34",
+  "exact_pairs": 18,
+  "independent_reviewer": "competitor_eval",
+  "result": "All selected-result objects identical: fields, ordering, content, spans, metadata.",
+  "reference_artifacts": ".benchmark-results/semantic-native48-confirmation-source-20261001"
+}

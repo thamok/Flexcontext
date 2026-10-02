@@ -1,0 +1,326 @@
+{
+  "schema": 1,
+  "reviewer": "separate competitor_eval agent",
+  "completed_trials_reviewed": 27,
+  "results_sha256": "847e712e898476bace0ceb8bb6ea479a12704d162da0e698d7b67b19d19cd82f",
+  "all_changed_inventory_files_authorized": true,
+  "all_protected_inventory_files_unchanged": true,
+  "unrelated_io_environment_process_network_or_test_disabling_edits_observed": false,
+  "review_scope": "Reviewed complete source diffs against seeded fixture bytes for every distinct final patch; checked all27 final task inventories. Does not claim hostile-code containment or execution auditing beyond these inspected sources.",
+  "by_task": {
+    "lexical-digit-boundary": {
+      "trials": 9,
+      "unique_final_patches": 4,
+      "review": "Four textual variants add alphabetic-to-ASCII-digit and ASCII-digit-to-alphabetic boundaries only. Non-ASCII numeral boundaries remain outside these repairs; frozen acceptance success does not establish them."
+    },
+    "limiter-fifo": {
+      "trials": 9,
+      "unique_final_patches": 1,
+      "review": "All nine patches replace queue.pop() with queue.shift(); no other source edits."
+    },
+    "java-prefix-boundary": {
+      "trials": 9,
+      "unique_final_patches": 3,
+      "review": "Three textual variants implement equality or prefix followed by slash; all changes confined to matchesDirectoryPrefix."
+    }
+  },
+  "trials": [
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "flexcontext",
+      "repeat": 0,
+      "changed_files": [
+        {
+          "path": "src/lexical.rs",
+          "sha256": "b449c37db49a0d600e20753a66b96696dd746be80882ad6544ab0eefaafb9730"
+        }
+      ]
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "rg",
+      "repeat": 0,
+      "changed_files": [
+        {
+          "path": "src/lexical.rs",
+          "sha256": "c26f7658f6567b52bb1b5e93187c8baa4a0fade720ee22b3beb40a0a382eb475"
+        }
+      ]
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "probe",
+      "repeat": 0,
+      "changed_files": [
+        {
+          "path": "src/lexical.rs",
+          "sha256": "c26f7658f6567b52bb1b5e93187c8baa4a0fade720ee22b3beb40a0a382eb475"
+        }
+      ]
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "rg",
+      "repeat": 1,
+      "changed_files": [
+        {
+          "path": "src/lexical.rs",
+          "sha256": "09501a915ce2df9cb630f817aa2584b3b5e113b7c96044880e633fe5ef15dc35"
+        }
+      ]
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "probe",
+      "repeat": 1,
+      "changed_files": [
+        {
+          "path": "src/lexical.rs",
+          "sha256": "b449c37db49a0d600e20753a66b96696dd746be80882ad6544ab0eefaafb9730"
+        }
+      ]
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "flexcontext",
+      "repeat": 1,
+      "changed_files": [
+        {
+          "path": "src/lexical.rs",
+          "sha256": "09501a915ce2df9cb630f817aa2584b3b5e113b7c96044880e633fe5ef15dc35"
+        }
+      ]
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "flexcontext",
+      "repeat": 2,
+      "changed_files": [
+        {
+          "path": "src/lexical.rs",
+          "sha256": "d2c59d74d8c0551d0a77383dd63466f163ab195fb6fbe5ac053aadfd41a58dd1"
+        }
+      ]
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "probe",
+      "repeat": 2,
+      "changed_files": [
+        {
+          "path": "src/lexical.rs",
+          "sha256": "c26f7658f6567b52bb1b5e93187c8baa4a0fade720ee22b3beb40a0a382eb475"
+        }
+      ]
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "rg",
+      "repeat": 2,
+      "changed_files": [
+        {
+          "path": "src/lexical.rs",
+          "sha256": "c26f7658f6567b52bb1b5e93187c8baa4a0fade720ee22b3beb40a0a382eb475"
+        }
+      ]
+    },
+    {
+      "task": "limiter-fifo",
+      "arm": "probe",
+      "repeat": 0,
+      "changed_files": [
+        {
+          "path": "src/utils/promise.ts",
+          "sha256": "988a4c00b91a977317e5fcdd6c8d1f1994eb602dbdbdcfe503f190756059db83"
+        }
+      ]
+    },
+    {
+      "task": "limiter-fifo",
+      "arm": "flexcontext",
+      "repeat": 0,
+      "changed_files": [
+        {
+          "path": "src/utils/promise.ts",
+          "sha256": "988a4c00b91a977317e5fcdd6c8d1f1994eb602dbdbdcfe503f190756059db83"
+        }
+      ]
+    },
+    {
+      "task": "limiter-fifo",
+      "arm": "rg",
+      "repeat": 0,
+      "changed_files": [
+        {
+          "path": "src/utils/promise.ts",
+          "sha256": "988a4c00b91a977317e5fcdd6c8d1f1994eb602dbdbdcfe503f190756059db83"
+        }
+      ]
+    },
+    {
+      "task": "limiter-fifo",
+      "arm": "rg",
+      "repeat": 1,
+      "changed_files": [
+        {
+          "path": "src/utils/promise.ts",
+          "sha256": "988a4c00b91a977317e5fcdd6c8d1f1994eb602dbdbdcfe503f190756059db83"
+        }
+      ]
+    },
+    {
+      "task": "limiter-fifo",
+      "arm": "flexcontext",
+      "repeat": 1,
+      "changed_files": [
+        {
+          "path": "src/utils/promise.ts",
+          "sha256": "988a4c00b91a977317e5fcdd6c8d1f1994eb602dbdbdcfe503f190756059db83"
+        }
+      ]
+    },
+    {
+      "task": "limiter-fifo",
+      "arm": "probe",
+      "repeat": 1,
+      "changed_files": [
+        {
+          "path": "src/utils/promise.ts",
+          "sha256": "988a4c00b91a977317e5fcdd6c8d1f1994eb602dbdbdcfe503f190756059db83"
+        }
+      ]
+    },
+    {
+      "task": "limiter-fifo",
+      "arm": "probe",
+      "repeat": 2,
+      "changed_files": [
+        {
+          "path": "src/utils/promise.ts",
+          "sha256": "988a4c00b91a977317e5fcdd6c8d1f1994eb602dbdbdcfe503f190756059db83"
+        }
+      ]
+    },
+    {
+      "task": "limiter-fifo",
+      "arm": "rg",
+      "repeat": 2,
+      "changed_files": [
+        {
+          "path": "src/utils/promise.ts",
+          "sha256": "988a4c00b91a977317e5fcdd6c8d1f1994eb602dbdbdcfe503f190756059db83"
+        }
+      ]
+    },
+    {
+      "task": "limiter-fifo",
+      "arm": "flexcontext",
+      "repeat": 2,
+      "changed_files": [
+        {
+          "path": "src/utils/promise.ts",
+          "sha256": "988a4c00b91a977317e5fcdd6c8d1f1994eb602dbdbdcfe503f190756059db83"
+        }
+      ]
+    },
+    {
+      "task": "java-prefix-boundary",
+      "arm": "probe",
+      "repeat": 0,
+      "changed_files": [
+        {
+          "path": "src/example/paths/PathPolicy.java",
+          "sha256": "7a60e22321c3d08c83e6644eec260806643347cce8f281f61c9329877df89398"
+        }
+      ]
+    },
+    {
+      "task": "java-prefix-boundary",
+      "arm": "flexcontext",
+      "repeat": 0,
+      "changed_files": [
+        {
+          "path": "src/example/paths/PathPolicy.java",
+          "sha256": "a08a6e8bb95e6f43ef49960d5071d680335b0404e5395435eff4f02a83a6323d"
+        }
+      ]
+    },
+    {
+      "task": "java-prefix-boundary",
+      "arm": "rg",
+      "repeat": 0,
+      "changed_files": [
+        {
+          "path": "src/example/paths/PathPolicy.java",
+          "sha256": "7a60e22321c3d08c83e6644eec260806643347cce8f281f61c9329877df89398"
+        }
+      ]
+    },
+    {
+      "task": "java-prefix-boundary",
+      "arm": "probe",
+      "repeat": 1,
+      "changed_files": [
+        {
+          "path": "src/example/paths/PathPolicy.java",
+          "sha256": "7a60e22321c3d08c83e6644eec260806643347cce8f281f61c9329877df89398"
+        }
+      ]
+    },
+    {
+      "task": "java-prefix-boundary",
+      "arm": "flexcontext",
+      "repeat": 1,
+      "changed_files": [
+        {
+          "path": "src/example/paths/PathPolicy.java",
+          "sha256": "fb1d3d7def01d764542e37bcdb4fc4f1703d71c92eb1c861a5d0794d87e568aa"
+        }
+      ]
+    },
+    {
+      "task": "java-prefix-boundary",
+      "arm": "rg",
+      "repeat": 1,
+      "changed_files": [
+        {
+          "path": "src/example/paths/PathPolicy.java",
+          "sha256": "a08a6e8bb95e6f43ef49960d5071d680335b0404e5395435eff4f02a83a6323d"
+        }
+      ]
+    },
+    {
+      "task": "java-prefix-boundary",
+      "arm": "rg",
+      "repeat": 2,
+      "changed_files": [
+        {
+          "path": "src/example/paths/PathPolicy.java",
+          "sha256": "7a60e22321c3d08c83e6644eec260806643347cce8f281f61c9329877df89398"
+        }
+      ]
+    },
+    {
+      "task": "java-prefix-boundary",
+      "arm": "probe",
+      "repeat": 2,
+      "changed_files": [
+        {
+          "path": "src/example/paths/PathPolicy.java",
+          "sha256": "a08a6e8bb95e6f43ef49960d5071d680335b0404e5395435eff4f02a83a6323d"
+        }
+      ]
+    },
+    {
+      "task": "java-prefix-boundary",
+      "arm": "flexcontext",
+      "repeat": 2,
+      "changed_files": [
+        {
+          "path": "src/example/paths/PathPolicy.java",
+          "sha256": "fb1d3d7def01d764542e37bcdb4fc4f1703d71c92eb1c861a5d0794d87e568aa"
+        }
+      ]
+    }
+  ]
+}

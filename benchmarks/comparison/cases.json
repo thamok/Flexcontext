@@ -1,0 +1,842 @@
+{
+  "schema_version": 1,
+  "judgment_status": "Author-reviewed against source before running retrieval; pilot labels need independent review before ranking claims.",
+  "cases": [
+    {
+      "id": "flex-languages",
+      "repo": "flexcontext",
+      "question": "Which file extensions are recognized as supported source languages?",
+      "evidence": [
+        {
+          "id": "rust",
+          "spans": [
+            {
+              "path": "src/language.rs",
+              "start": 8,
+              "end": 8,
+              "sha256": "7f215ba13a8b76da883cd7271805ede9e947dd3b930b696e57e1d0bab2816a38"
+            }
+          ]
+        },
+        {
+          "id": "typescript",
+          "spans": [
+            {
+              "path": "src/language.rs",
+              "start": 9,
+              "end": 9,
+              "sha256": "fc9756610d14a245e715c626b9f7e9291fa8f30c46fc144c678a34708e2eb1c5"
+            }
+          ]
+        },
+        {
+          "id": "javascript",
+          "spans": [
+            {
+              "path": "src/language.rs",
+              "start": 11,
+              "end": 11,
+              "sha256": "f6f5805c076c6f83c951dabe5879118bdf362efe17c910cb7b59cc41a7e75605"
+            }
+          ]
+        },
+        {
+          "id": "python",
+          "spans": [
+            {
+              "path": "src/language.rs",
+              "start": 12,
+              "end": 12,
+              "sha256": "4feb9f73b097dd5b9b34b321d408c2698eeeb3d2353835a7e9914518e637fb3d"
+            }
+          ]
+        },
+        {
+          "id": "unsupported",
+          "spans": [
+            {
+              "path": "src/language.rs",
+              "start": 13,
+              "end": 13,
+              "sha256": "23c2d409769b09487612fd7feda047a864600f38dd929f34ada585ee1033f443"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/language.rs",
+          "start": 5,
+          "end": 15,
+          "sha256": "1b44fb4fa92bb7d0eaad7c89889fb320b01b36f848d1b1630a1cb61f4647d87d"
+        }
+      ]
+    },
+    {
+      "id": "flex-scan-limits",
+      "repo": "flexcontext",
+      "question": "How does source discovery reject oversized files and stop when repository byte or file limits are exceeded?",
+      "evidence": [
+        {
+          "id": "oversize",
+          "spans": [
+            {
+              "path": "src/repository.rs",
+              "start": 129,
+              "end": 129,
+              "sha256": "3f033d8e04c0dfeb5cabe9776b58f7e9fa22fb73f1ad8f835de94ffeae51ea59"
+            },
+            {
+              "path": "src/repository.rs",
+              "start": 130,
+              "end": 130,
+              "sha256": "934282e81947b74abe941b7130eaaa4be353d84241a756db767b56d8de61f9e9"
+            }
+          ]
+        },
+        {
+          "id": "aggregate",
+          "spans": [
+            {
+              "path": "src/repository.rs",
+              "start": 135,
+              "end": 135,
+              "sha256": "9f52c33b9cdaf6fe8731001832ab6031b96797a7fb5fbb574a15b9421b09271b"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/repository.rs",
+          "start": 65,
+          "end": 156,
+          "sha256": "5e4bb86c91a76b0aeb80518af4f4801c332b7eed29c8411acbd134d8bb1f67dd"
+        }
+      ]
+    },
+    {
+      "id": "flex-cache",
+      "repo": "flexcontext",
+      "question": "What makes a cached index compatible and how are unchanged file fingerprints reused?",
+      "evidence": [
+        {
+          "id": "compatibility",
+          "spans": [
+            {
+              "path": "src/cache.rs",
+              "start": 77,
+              "end": 77,
+              "sha256": "f11baaefdb18507575b5684fe660e08e2869a7a1aaf6e658bd990bc66ea8996d"
+            }
+          ]
+        },
+        {
+          "id": "reuse",
+          "spans": [
+            {
+              "path": "src/cache.rs",
+              "start": 97,
+              "end": 97,
+              "sha256": "5de1a1accdb03a6e9adcf717686a606637f93e9ed310d78e4202af61d2b4752d"
+            },
+            {
+              "path": "src/cache.rs",
+              "start": 99,
+              "end": 99,
+              "sha256": "96b50b2179c4fdff8e7cb25df1a0bebebe9f5c41a3fd231d71ef8444f0b857b1"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/cache.rs",
+          "start": 65,
+          "end": 105,
+          "sha256": "be99e9c6e8c15b15b886c399163936a196f480af1425a9c6ccad7170dc71fecb"
+        }
+      ]
+    },
+    {
+      "id": "flex-output",
+      "repo": "flexcontext",
+      "question": "How is the serialized response kept within its token budget, including metadata and framing?",
+      "evidence": [
+        {
+          "id": "bytes",
+          "spans": [
+            {
+              "path": "src/output.rs",
+              "start": 124,
+              "end": 124,
+              "sha256": "0dacbcc3bd2ef5fd39f530de017e7dfb1bca3ffe6a6736e60b33ee16595d9fae"
+            }
+          ]
+        },
+        {
+          "id": "measure",
+          "spans": [
+            {
+              "path": "src/output.rs",
+              "start": 147,
+              "end": 147,
+              "sha256": "d2d30b824ebca8db16353436c99dcc63f78c57e2f0f010089549d95b7843b8ce"
+            }
+          ]
+        },
+        {
+          "id": "rounding",
+          "spans": [
+            {
+              "path": "src/output.rs",
+              "start": 149,
+              "end": 149,
+              "sha256": "bccab06da3cd850da01567d542ad2119b5c3b897e30153bcc017b3da2ee4280d"
+            }
+          ]
+        },
+        {
+          "id": "drop_lowest",
+          "spans": [
+            {
+              "path": "src/output.rs",
+              "start": 166,
+              "end": 166,
+              "sha256": "d80e388e5bb35d45bfaa4a37072016892e5df52650d1ba9a56340e10f67e70e4"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/output.rs",
+          "start": 112,
+          "end": 171,
+          "sha256": "943907178f2fa055b8addf6e55dfd5caa6536e21c81b730256ec517fc87fab79"
+        }
+      ]
+    },
+    {
+      "id": "flex-slicing",
+      "repo": "flexcontext",
+      "question": "How are oversized function bodies sliced into query relevant excerpts while retaining original line ranges?",
+      "evidence": [
+        {
+          "id": "rank",
+          "spans": [
+            {
+              "path": "src/slicing.rs",
+              "start": 32,
+              "end": 32,
+              "sha256": "9b5efa82d45ca27f43f8b7f89a011c01fc423690d991f7fe2d631fac08ed79c2"
+            }
+          ]
+        },
+        {
+          "id": "fit",
+          "spans": [
+            {
+              "path": "src/slicing.rs",
+              "start": 46,
+              "end": 46,
+              "sha256": "697353584684b4f06ad4dd7de06b8a45c08df8dd87d6ba0acca48f76d9c3372f"
+            }
+          ]
+        },
+        {
+          "id": "location",
+          "spans": [
+            {
+              "path": "src/slicing.rs",
+              "start": 60,
+              "end": 60,
+              "sha256": "81c736d8247056975dc67d1d0be2e607410d2bdedd5110478f2e17c582b6ed13"
+            },
+            {
+              "path": "src/slicing.rs",
+              "start": 61,
+              "end": 61,
+              "sha256": "ca8d55bba610ab0f1f82285bf88dfdf49dd9743b1af4730ffbe35e6e96428185"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/slicing.rs",
+          "start": 8,
+          "end": 66,
+          "sha256": "53373842915d8a944440cd3a8700922bbe4b390e8a089dbdba3fd13f0937c3c4"
+        }
+      ]
+    },
+    {
+      "id": "flex-diversity",
+      "repo": "flexcontext",
+      "question": "How does context selection discourage repeated paths and kinds and cap results from the same containing symbol?",
+      "evidence": [
+        {
+          "id": "paths",
+          "spans": [
+            {
+              "path": "src/selection.rs",
+              "start": 77,
+              "end": 77,
+              "sha256": "21bd4eec546064111a24f5b6ffa45b3605bc4ebd5e4e3cf4bd015491db363ff3"
+            }
+          ]
+        },
+        {
+          "id": "kinds",
+          "spans": [
+            {
+              "path": "src/selection.rs",
+              "start": 80,
+              "end": 80,
+              "sha256": "395369c7799682d57bf033ac056123bf46a36a5686fb8def332a0243527f923c"
+            }
+          ]
+        },
+        {
+          "id": "limit",
+          "spans": [
+            {
+              "path": "src/selection.rs",
+              "start": 103,
+              "end": 103,
+              "sha256": "25c8e14fb7a7c4333d5ab03746c5c70094ca19bd454d727bee33cbf962bfe42a"
+            },
+            {
+              "path": "src/selection.rs",
+              "start": 112,
+              "end": 112,
+              "sha256": "511503209617874756e6844c7b8914400cb5a0c5f4532cdec3969c33979a5af4"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/selection.rs",
+          "start": 45,
+          "end": 168,
+          "sha256": "1a7631e8d8288c1a10f9524407cfc3f4945898b783e107d60d0e53c1662dca85"
+        }
+      ]
+    },
+    {
+      "id": "agent-plugin-lookup",
+      "repo": "agentx",
+      "question": "How does single plugin auth lookup apply an optional plugin key and return a plain document?",
+      "evidence": [
+        {
+          "id": "filter",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/data-schemas/src/methods/pluginAuth.ts",
+              "start": 25,
+              "end": 25,
+              "sha256": "95e111640a5e7e085f4fb906ab5cbda356bb55a8ab0339d57c6a138a415ccfd0"
+            }
+          ]
+        },
+        {
+          "id": "lean",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/data-schemas/src/methods/pluginAuth.ts",
+              "start": 26,
+              "end": 26,
+              "sha256": "7049f10f3367a6895106b662fa8c81b4c8023ce3bf3ae3ef8d03ba33cd1266ed"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/data-schemas/src/methods/pluginAuth.ts",
+          "start": 15,
+          "end": 32,
+          "sha256": "ca93369be28c0a7ec3fe80ceea7402fadd71aee12c581e20f77e11cb86d6b7b7"
+        }
+      ]
+    },
+    {
+      "id": "agent-plugin-delete",
+      "repo": "agentx",
+      "question": "How does deleting all plugin auth credentials differ from deleting one credential?",
+      "evidence": [
+        {
+          "id": "all",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/data-schemas/src/methods/pluginAuth.ts",
+              "start": 110,
+              "end": 110,
+              "sha256": "561c4223e34089fe35632108d276577c24c09aab8262c2057644093f7628207f"
+            },
+            {
+              "path": "apps/chat-agentx/packages/data-schemas/src/methods/pluginAuth.ts",
+              "start": 112,
+              "end": 112,
+              "sha256": "84863458136487975bddaedef8a9de2eba130b48b003d2f73a6ae1af61581e89"
+            },
+            {
+              "path": "apps/chat-agentx/packages/data-schemas/src/methods/pluginAuth.ts",
+              "start": 114,
+              "end": 114,
+              "sha256": "0d128fb6401d11970a22083bdb93294f321d92b514f888c2fca0e8e4db76719e"
+            }
+          ]
+        },
+        {
+          "id": "single",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/data-schemas/src/methods/pluginAuth.ts",
+              "start": 118,
+              "end": 118,
+              "sha256": "2294726fcb656e32489ccc31154a34f1cca0543653551b8dd8e2188cf3d3b2d6"
+            },
+            {
+              "path": "apps/chat-agentx/packages/data-schemas/src/methods/pluginAuth.ts",
+              "start": 121,
+              "end": 121,
+              "sha256": "92302bdd13878890fff73b83d546073148c7d8a47cac59cd68d2ea9123de3463"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/data-schemas/src/methods/pluginAuth.ts",
+          "start": 101,
+          "end": 127,
+          "sha256": "2a1b08d393865952a7eda70e3a15753a96052089cd7c8a188da00f3390f3b8be"
+        }
+      ]
+    },
+    {
+      "id": "agent-remote-fallback",
+      "repo": "agentx",
+      "question": "Which remote agent OIDC authentication failures can fall back to API key authentication?",
+      "evidence": [
+        {
+          "id": "disabled",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 487,
+              "end": 487,
+              "sha256": "b48ad9966891fe1c99f6d9a68c530966a2b1990b5124182d25216b0141c270b9"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 488,
+              "end": 488,
+              "sha256": "4b72761bb0e896d959a8f2a403756a06600ade28e4ceb6c601a5b7456cbb34f9"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 489,
+              "end": 489,
+              "sha256": "f85d8ffb8e52a3cedcfb60452e55a55a3dc2f1481fcdf52bd97da8d0c9d41cf7"
+            }
+          ]
+        },
+        {
+          "id": "missing_token",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 511,
+              "end": 511,
+              "sha256": "6e01c331611e60082ef0ae706f877bc258688a63c94429a75e1514701e71ee2c"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 512,
+              "end": 512,
+              "sha256": "4b72761bb0e896d959a8f2a403756a06600ade28e4ceb6c601a5b7456cbb34f9"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 513,
+              "end": 513,
+              "sha256": "f85d8ffb8e52a3cedcfb60452e55a55a3dc2f1481fcdf52bd97da8d0c9d41cf7"
+            }
+          ]
+        },
+        {
+          "id": "verification",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 529,
+              "end": 529,
+              "sha256": "95e0b52b716c01dba838be91c9225fe394807bebbf366af946c6b7674f5b7924"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 530,
+              "end": 530,
+              "sha256": "4b72761bb0e896d959a8f2a403756a06600ade28e4ceb6c601a5b7456cbb34f9"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 532,
+              "end": 532,
+              "sha256": "f85d8ffb8e52a3cedcfb60452e55a55a3dc2f1481fcdf52bd97da8d0c9d41cf7"
+            }
+          ]
+        },
+        {
+          "id": "missing_user",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 548,
+              "end": 548,
+              "sha256": "2c45c140b2953d91fc981c3a8ffa27ba772159cf7f35843b92ad3e8ee91cfc7a"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 550,
+              "end": 550,
+              "sha256": "4b72761bb0e896d959a8f2a403756a06600ade28e4ceb6c601a5b7456cbb34f9"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 551,
+              "end": 551,
+              "sha256": "f85d8ffb8e52a3cedcfb60452e55a55a3dc2f1481fcdf52bd97da8d0c9d41cf7"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+          "start": 466,
+          "end": 583,
+          "sha256": "4c50309e86e949e514458ef7ff1b3c8f9292eb0646da0f60cabd0e1409129ce5"
+        }
+      ]
+    },
+    {
+      "id": "agent-remote-scopes",
+      "repo": "agentx",
+      "question": "How are required scopes checked against the remote agent token claims and which scope claim takes precedence?",
+      "evidence": [
+        {
+          "id": "precedence",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 107,
+              "end": 107,
+              "sha256": "51850867e0254b134d7d1825f440b1991e6306281eb913fcd62b35589bd9eb6f"
+            }
+          ]
+        },
+        {
+          "id": "all_scopes",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 109,
+              "end": 109,
+              "sha256": "fb320ead16d319d0852b2e85db0730b79854472538df2bbcc6f2a3e764a85e4d"
+            }
+          ]
+        },
+        {
+          "id": "optional",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 102,
+              "end": 102,
+              "sha256": "1debeb7918a38b544484ce0ae37d9945c422dbf12fe0855dc2ea0393e5f0c918"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+          "start": 89,
+          "end": 110,
+          "sha256": "48b1cd041420577c22de687af9c92fdf9915ba6fedd35efce3e7272904b27cd5"
+        }
+      ]
+    },
+    {
+      "id": "agent-jwks-cache",
+      "repo": "agentx",
+      "question": "How does remote authentication evict expired and oldest JWKS cache entries?",
+      "evidence": [
+        {
+          "id": "expired",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 67,
+              "end": 67,
+              "sha256": "61bbd5fcd5f7b90cf798c6371e9b063fd89758fff0b7157b84a411827e3e6ea4"
+            }
+          ]
+        },
+        {
+          "id": "capacity",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 78,
+              "end": 78,
+              "sha256": "43370c3a1f10efbe1660d87803da7247f9e5eaa12dc97fc62dce63750459dc77"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 79,
+              "end": 79,
+              "sha256": "f82ea868639ddc4d05aa8fc145e15461205bf6ecc18b979814fe05e9431af90d"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+              "start": 81,
+              "end": 81,
+              "sha256": "79f36be41b4949a5069c9f281ee105004442155e2f1ad4457e3558dda968f8be"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/middleware/remoteAgentAuth.ts",
+          "start": 64,
+          "end": 85,
+          "sha256": "518dc06250464829e3bf4507420e57958b9677afb6605d42bedec9ebe62b71b8"
+        }
+      ]
+    },
+    {
+      "id": "agent-tenant",
+      "repo": "agentx",
+      "question": "How is the authenticated tenant propagated to downstream requests and what happens in strict isolation mode without a tenant?",
+      "evidence": [
+        {
+          "id": "strict",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/tenant.ts",
+              "start": 12,
+              "end": 12,
+              "sha256": "f63dcd74548ed028b75f746fb053118f758e4d52f7843b8de3cdd81a5a2660ab"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/tenant.ts",
+              "start": 61,
+              "end": 61,
+              "sha256": "a2ea1a687b8cab5d19c73192f445b28dc4f301324b9a7cbbb8009b5bb55be777"
+            }
+          ]
+        },
+        {
+          "id": "user",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/tenant.ts",
+              "start": 50,
+              "end": 50,
+              "sha256": "94da54299c2b458c2aa750e187363ab3163aaf8990704c412d558af6e0442841"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/tenant.ts",
+              "start": 57,
+              "end": 57,
+              "sha256": "52d3c55fc31ef016b68ee24b142ad43ee81413f7dcc0a0c9c0a1f3a4aa1d4e34"
+            }
+          ]
+        },
+        {
+          "id": "propagate",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/middleware/tenant.ts",
+              "start": 68,
+              "end": 68,
+              "sha256": "744f80d5fb52500ec320e32fe76a1e5736776b53f75f1204d9f7bb829490d4e9"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/middleware/tenant.ts",
+          "start": 11,
+          "end": 13,
+          "sha256": "b1dd0ddf788546a59532b31064003540b5c21ecfca472fc7715f70931fb36eeb"
+        },
+        {
+          "path": "apps/chat-agentx/packages/api/src/middleware/tenant.ts",
+          "start": 36,
+          "end": 71,
+          "sha256": "916832cdf81cc10225c6ae9f5dc90b698db17f8b8a8e46fc7fff28e55f538c94"
+        }
+      ]
+    },
+    {
+      "id": "webkit-network-errors",
+      "repo": "webkitpy",
+      "question": "How does a network transaction handle HTTP errors, URL errors, and optional missing resource responses?",
+      "evidence": [
+        {
+          "id": "not_found",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/net/networktransaction.py",
+              "start": 56,
+              "end": 56,
+              "sha256": "9a8fe54b6070d8ccc32beeedc09cc391705ed2f65c476e1780ece5f0168b7217"
+            }
+          ]
+        },
+        {
+          "id": "http",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/net/networktransaction.py",
+              "start": 55,
+              "end": 55,
+              "sha256": "21ccc66e2d23a87b18f760dc04191d4a7c01446fc74e46b151f0938f70c81620"
+            }
+          ]
+        },
+        {
+          "id": "url",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/net/networktransaction.py",
+              "start": 61,
+              "end": 61,
+              "sha256": "99f96bf05729051280fc308b586ddb2883216e90b6cc4bdcdc9a4ab8bd911474"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/net/networktransaction.py",
+          "start": 49,
+          "end": 64,
+          "sha256": "8f7db8bbe2e2bebe7afa0df40f82f4643c07d1cf759fb74627c3a416a1fcf40e"
+        }
+      ]
+    },
+    {
+      "id": "webkit-network-backoff",
+      "repo": "webkitpy",
+      "question": "How does network retry backoff grow and when is a network timeout raised?",
+      "evidence": [
+        {
+          "id": "timeout",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/net/networktransaction.py",
+              "start": 67,
+              "end": 67,
+              "sha256": "8d0a9d67c3d2a34d2ee6f2a5bc95ca9b6b65b6081e9a6f6f90a8f894b6a1b87f"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/net/networktransaction.py",
+              "start": 68,
+              "end": 68,
+              "sha256": "addcaeae3b7cfe08c82962e2cdc200736c1823f9b43d9a1a5416164651019887"
+            }
+          ]
+        },
+        {
+          "id": "growth",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/net/networktransaction.py",
+              "start": 72,
+              "end": 72,
+              "sha256": "63249d32e60528a349f7236abd32aac875f90976e83d6a13f545c7f9285ff934"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/net/networktransaction.py",
+              "start": 73,
+              "end": 73,
+              "sha256": "eaf89427f5b2c2f3c6d7d25abad946bd123893a20acd6205887b9d09dba3bd0a"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/net/networktransaction.py",
+          "start": 66,
+          "end": 73,
+          "sha256": "dcc863c6736d3dd22514ef3d0120091765b0197cfe4d0ed2266e19723df4b108"
+        }
+      ]
+    },
+    {
+      "id": "webkit-tests-retry",
+      "repo": "webkitpy",
+      "question": "Which unexpected layout test results are eligible for retry and when are crashes included?",
+      "evidence": [
+        {
+          "id": "unexpected",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/layout_tests/controllers/manager.py",
+              "start": 808,
+              "end": 808,
+              "sha256": "6c292ddd1628b0f7ca3c11e5b85c90d616037d76c4930b97644d8aa32eeea910"
+            }
+          ]
+        },
+        {
+          "id": "exclude",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/layout_tests/controllers/manager.py",
+              "start": 809,
+              "end": 809,
+              "sha256": "488c5073f00ec907de070757095ea7e9ce74e48da9f0371397d56e7f89f36966"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/layout_tests/controllers/manager.py",
+              "start": 810,
+              "end": 810,
+              "sha256": "141b5ad0d40fc53e006d57d28200d15bd488beaec2583e6d7d179c19dd06bbcb"
+            }
+          ]
+        },
+        {
+          "id": "crashes",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/layout_tests/controllers/manager.py",
+              "start": 811,
+              "end": 811,
+              "sha256": "3763fd0c72dba9b4030dc91057b95789713ab30a5de76f5fc5c58fafee99f378"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/layout_tests/controllers/manager.py",
+          "start": 807,
+          "end": 811,
+          "sha256": "e198e6939cb97a289098ebc7e06e5d452306970d4c5109f011b0d44c5822c265"
+        }
+      ]
+    }
+  ]
+}

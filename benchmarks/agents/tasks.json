@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "status": "Pilot smoke tasks, not held-out production task-success evidence.",
+  "tasks": [
+    {
+      "id": "lexical-digit-boundary",
+      "origin": "Flexcontext src/lexical.rs, source-derived seeded regression",
+      "fixture": "fixtures/lexical",
+      "prompt": "Identifier segmentation incorrectly keeps digits attached to adjacent letters. Repair the letter-to-number and number-to-letter boundaries while preserving camel case, acronym handling, punctuation, and Unicode normalization. Keep existing public behavior and verify your change.",
+      "editable": [
+        "src/lexical.rs"
+      ],
+      "public_command": [
+        "rustc",
+        "--edition=2024",
+        "--test",
+        "src/lexical.rs",
+        "-o",
+        ".public-tests"
+      ],
+      "public_run": [
+        "./.public-tests"
+      ],
+      "grader": "lexical",
+      "files_sha256": {
+        "src/lexical.rs": "726d20e9b45b7404c1e6ed66799f53df29b6e895247c5c08cf39b71a5be99656"
+      },
+      "origin_source_sha256": "421f9ffe8abe99777c0bb378f141bdacec9ffebe2d8e977317912b75371a9d2b"
+    },
+    {
+      "id": "limiter-fifo",
+      "origin": "Frozen AgentX packages/api/src/utils/promise.ts, source-derived seeded regression",
+      "fixture": "fixtures/limiter",
+      "prompt": "Under load, queued asynchronous jobs execute in reverse order. Restore FIFO scheduling while retaining the concurrency cap, argument validation, and release behavior on both success and failure. Keep the public API unchanged and verify your change.",
+      "editable": [
+        "src/utils/promise.ts"
+      ],
+      "public_command": [
+        "node",
+        "--test",
+        "tests/public.test.ts"
+      ],
+      "public_run": null,
+      "grader": "limiter",
+      "files_sha256": {
+        "package.json": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae",
+        "src/utils/promise.ts": "799a71532f6b6ba2983747c036b0e2efbb31690f4d905b05355888d628910d2a",
+        "tests/public.test.ts": "9c4c5d740df51426ece1912a93467fa167982e44a3e3c414ec58ababccf02714"
+      },
+      "origin_source_sha256": "988a4c00b91a977317e5fcdd6c8d1f1994eb602dbdbdcfe503f190756059db83"
+    },
+    {
+      "id": "java-prefix-boundary",
+      "origin": "Synthetic Java PathPolicy retrieval fixture, seeded regression",
+      "fixture": "fixtures/java",
+      "prompt": "The path policy accepts sibling directories that merely share the same textual prefix. Make directory-prefix matching respect path-component boundaries, including the directory itself, while preserving absolute-path and parent-traversal rejection. Keep the public interface unchanged and verify your change.",
+      "editable": [
+        "src/example/paths/PathPolicy.java"
+      ],
+      "public_command": [
+        "javac",
+        "-d",
+        ".public-classes",
+        "src/example/paths/PathPolicy.java",
+        "tests/PublicCheck.java"
+      ],
+      "public_run": [
+        "java",
+        "-cp",
+        ".public-classes",
+        "PublicCheck"
+      ],
+      "grader": "java",
+      "files_sha256": {
+        "src/example/paths/PathPolicy.java": "c8c17c2a56d6873ed93691aeb0cda96f77c30274b9806bc6ef03967833619404",
+        "tests/PublicCheck.java": "46c15c1f5716b8633fa4c2f867431e85913d9f71996d55825970c6f2ccd47e15"
+      },
+      "origin_source_sha256": "a08a6e8bb95e6f43ef49960d5071d680335b0404e5395435eff4f02a83a6323d"
+    }
+  ]
+}

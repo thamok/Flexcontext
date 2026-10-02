@@ -147,6 +147,83 @@ impl PreparedIndex {
         }
         Some(matches)
     }
+
+    /// Weight each term by the number of distinct files containing it. Paths
+    /// and enclosing names help discovery, but never justify a body by themselves.
+    pub fn weight_by_file_frequency(
+        &self,
+        ranked: &mut Vec<ScoredSymbol>,
+        symbols: &[Symbol],
+        query: &Query,
+        weighted: bool,
+        evidence_only: bool,
+    ) {
+        let file_count = symbols
+            .iter()
+            .map(|s| s.path.as_str())
+            .collect::<BTreeSet<_>>()
+            .len() as f64;
+        // Chunking also supports queries longer than the fast mask's 64 terms.
+        let mut coverage = vec![[0.0; 8]; symbols.len()];
+        let mut total_weight = 0.0;
+        for terms in query.tokens.chunks(64) {
+            let mut part = query.clone();
+            part.tokens = terms.to_vec();
+            let masks = self.matches(&part).expect("at most 64 terms");
+            for i in 0..terms.len() {
+                let bit = 1u64 << i;
+                let files = masks
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, m)| [0, 3, 4, 5, 6].iter().any(|&f| m[f] & bit != 0))
+                    .map(|(id, _)| symbols[id].path.as_str())
+                    .collect::<BTreeSet<_>>();
+                let df = files.len() as f64;
+                let weight = if weighted {
+                    (1.0 + (file_count - df + 0.5) / (df + 0.5)).ln()
+                } else {
+                    1.0
+                };
+                total_weight += weight;
+                for item in ranked.iter() {
+                    let id = item.symbol_id;
+                    let fields: &[usize] = if evidence_only {
+                        &[0, 3, 4, 5, 6]
+                    } else {
+                        &[0, 1, 2, 3, 4, 5, 6]
+                    };
+                    for &f in fields {
+                        if masks[id][f] & bit != 0 {
+                            coverage[id][f] += weight;
+                        }
+                    }
+                    if fields.iter().any(|&f| masks[id][f] & bit != 0) {
+                        coverage[id][7] += weight;
+                    }
+                }
+            }
+        }
+        for item in ranked.iter_mut() {
+            let c = coverage[item.symbol_id];
+            let ratio = |f| c[f] / total_weight.max(f64::EPSILON);
+            let s = &mut item.signals;
+            s.symbol_name_tokens = WEIGHT_SYMBOL_NAME_TOKENS * ratio(0);
+            s.containing_symbol = WEIGHT_CONTAINING_SYMBOL * ratio(1);
+            s.path = WEIGHT_PATH * ratio(2);
+            s.comments = WEIGHT_COMMENTS * ratio(3);
+            s.identifiers = WEIGHT_IDENTIFIERS * ratio(4);
+            s.signature = WEIGHT_SIGNATURE * ratio(5);
+            s.body = WEIGHT_BODY * ratio(6);
+            s.query_coverage = WEIGHT_QUERY_COVERAGE * ratio(7);
+            item.score = s.total();
+        }
+        ranked.retain(|item| {
+            coverage[item.symbol_id][7] > 0.0
+                || item.signals.exact_symbol_name > 0.0
+                || item.signals.normalized_symbol_name > 0.0
+        });
+        sort_scored(ranked, symbols);
+    }
 }
 
 pub fn rank_prepared_candidates(
@@ -386,6 +463,7 @@ mod tests {
                 ..(body.to_owned()).len() + (format!("fn {name}()")).len(),
             body_range: 0..(body.to_owned()).len(),
             comment_ranges: Vec::new(),
+            excerpt_ranges: Vec::new(),
             imports: std::sync::Arc::from([]),
             identifiers: identifier_tokens(body),
             type_references: Vec::new(),

@@ -235,7 +235,11 @@ fn connect_name(
     let same_file: Vec<_> = matches
         .iter()
         .copied()
-        .filter(|&id| symbols[id].path == source.path && id != source.id)
+        .filter(|&id| {
+            symbols[id].path == source.path
+                && id != source.id
+                && eligible_definition(kind, &symbols[id])
+        })
         .collect();
     if same_file.len() == 1 {
         add_edge(graph, seen, source.id, same_file[0], kind);
@@ -249,6 +253,8 @@ fn connect_name(
         .copied()
         .filter(|&id| {
             id != source.id
+                && compatible_languages(source.language, symbols[id].language)
+                && eligible_definition(kind, &symbols[id])
                 && symbols[id].structural_depth == 0
                 && (kind != "type_reference"
                     || matches!(
@@ -260,6 +266,26 @@ fn connect_name(
     if other_matches.len() == 1 {
         add_edge(graph, seen, source.id, other_matches[0], kind);
     }
+}
+
+fn eligible_definition(relation: &str, symbol: &Symbol) -> bool {
+    match relation {
+        "calls" => matches!(symbol.kind.as_str(), "function" | "method"),
+        "type_reference" => matches!(
+            symbol.kind.as_str(),
+            "type" | "interface" | "class" | "struct" | "enum" | "trait"
+        ),
+        _ => true,
+    }
+}
+
+fn compatible_languages(left: crate::model::Language, right: crate::model::Language) -> bool {
+    use crate::model::Language::*;
+    left == right
+        || (matches!(left, TypeScript | Tsx | JavaScript)
+            && matches!(right, TypeScript | Tsx | JavaScript))
+        || (matches!(left, C | Cpp | Cuda | ObjectiveC)
+            && matches!(right, C | Cpp | Cuda | ObjectiveC))
 }
 
 fn add_edge(

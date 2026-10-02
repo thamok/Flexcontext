@@ -37,7 +37,7 @@ fn legacy_handshake_tools_and_single_copy_payload_with_exact_cost() {
         json!({"jsonrpc":"2.0","id":2,"method":"tools/list"}),
         json!({"jsonrpc":"2.0","id":"search-🔒","method":"tools/call","params":{
             "_meta":{"progressToken":"progress-1"},
-            "name":"code_search","arguments":{"query":"authenticate","max_tokens":1600}
+            "name":"code_search","arguments":{"query":"authenticate","max_tokens":1600,"detail":"full"}
         }}),
         json!({"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"refresh_index"}}),
         json!({"jsonrpc":"2.0","id":5,"method":"ping"}),

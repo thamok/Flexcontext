@@ -1,8 +1,26 @@
 # Retrieval and context-cost evaluation
 
+For the real-repository Flexcontext vs Probe vs ripgrep vs Aider repo-map harness, see [comparison/README.md](comparison/README.md). It records shared source-token budgets, authored evidence judgments, native payload costs, and cold/warm/resident latency independently of the synthetic regression suite below.
+
+The [focused retrieval results](comparison/OPTIMIZATION_RESULTS.md) include 36 additional frozen questions, isolated ablations, fixed-pool controls and 20-repeat resident latency checks. Baseline retrieval remains the default because the combined candidate failed acceptance.
+
 Run `cargo run --release --bin flexcontext-eval -- --output benchmarks/results/current.json`.
 The equivalent subcommand is `flexcontext benchmark benchmarks --max-bytes 12000`.
 Use `--k 1`, `--k 5`, or `--k 10` to change the cutoff. The standalone evaluator defaults to K=5 and a 12,000-byte selection budget.
+
+Language expansion has a separate 43-query suite in `multilingual.json`, covering Apex classes/triggers, Go, C, C#, C++, Objective-C, Metal, CUDA, Kotlin, Dart, Vue, Lua and React JSX/TSX. Queries and graded judgments were authored before retrieval runs. It is a small synthetic regression corpus, with deliberate vocabulary distractors, not a production-language leaderboard. Its language fixtures stay in one split each. It does not participate in the original four-suite tuning or alter the frozen 60-query baseline.
+
+Java has a separate nine-query suite in `java.json`, with three exact-name queries and six behavioral queries across classes, records and interfaces. Run `flexcontext-eval --suite java`. The [second iteration report](comparison/ITERATION_20261001_PASS2.md) includes Java and paired context-selection latency results. The [agent pilot](agents/README.md) adds independently graded patch tasks, explicit context limits and audited tool access; retrieval metrics and agent completion remain separate evaluations.
+
+```console
+cargo run --release --bin flexcontext-eval -- --suite multilingual --output /tmp/multilingual.json
+cargo run --release --bin flexcontext-eval -- --suite multilingual --max-bytes 2048 --output /tmp/multilingual-2k.json
+cargo test --test languages
+```
+
+`--suite NAME` is repeatable and loads `NAME.json` from the corpus directory. Cases may have no expected relationships where no resolvable local edge is appropriate; their relationship coverage is zero rather than a non-finite division. The original suites continue to require fully resolved symbol judgments. Additional language tests check late decisive statements in oversized methods, exact UTF-8 byte/line spans, cache roundtrips, container/member selection and conservative cross-language relations.
+
+The paired real-repository iteration gate is reproducible with `comparison/iteration.py`. It compares saved baseline/candidate binaries against the existing frozen snapshots/questions, keeping baseline policy, compact presentation and shared 2k/4k source-token normalization fixed. It records evidence recall per repository, split and budget plus 20-repeat resident latency; results are written to a fresh ignored output directory. See [ITERATION_20261001.md](comparison/ITERATION_20261001.md) for measurements and limitations.
 
 The four versioned JSON files contain **60 authored service-maintenance queries** (15 per suite). Fixtures cover authentication, cache expiry, retries, configuration, persistence, HTTP requests, pagination, sessions, uploads, webhook idempotency, jobs, CSV imports, rate limits, path validation, orders, inventory and warehouse export. These are checked-in, small synthetic repositories, not an evaluation of arbitrary production repositories or autonomous coding success.
 
@@ -36,6 +54,12 @@ The integration regression gate compares dev/test Recall, MRR, nDCG and relation
 The modern MCP framing/duplication experiment is reproducible with `python3 scripts/bench_payload.py benchmarks/fixtures/typescript`.
 
 ## Memory and scaling
+
+The [third optimization pass](comparison/ITERATION_20261001_PASS3.md) records live
+Probe/CodeGraph comparisons, separately authored confirmation questions, optional
+Jev reranking, rejected Qwen/BM25 variants and exact native-context equivalence.
+Its source-evidence metrics remain separate from the controlled agent repair
+evaluation described in [agents/README.md](agents/README.md).
 
 ```console
 cargo run --release --bin flexcontext-profile -- benchmarks/fixtures/mixed-monorepo

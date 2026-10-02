@@ -1,0 +1,1736 @@
+{
+  "schema_version": 1,
+  "source_snapshot": "pilot-20260916",
+  "judgment_status": "Source-reviewed and frozen before variant experiments; assistant authored, not independently adjudicated.",
+  "cases": [
+    {
+      "id": "v2-identifier-boundaries",
+      "repo": "flexcontext",
+      "split": "dev",
+      "module": "src/lexical.rs",
+      "question": "How are camel case, acronym transitions, and alphabetic to numeric identifier boundaries split?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "src/lexical.rs",
+              "start": 44,
+              "end": 44,
+              "sha256": "a731f2439a5a60381d83af67166bfb9c0d4f772323ce1b46fc43364c355cdef2"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "src/lexical.rs",
+              "start": 45,
+              "end": 45,
+              "sha256": "6284d38be343bd8e047bf5323577aec976ae62f73499d105daccb7f15702915d"
+            }
+          ]
+        },
+        {
+          "id": "e3",
+          "spans": [
+            {
+              "path": "src/lexical.rs",
+              "start": 46,
+              "end": 46,
+              "sha256": "23ee965f3d2e6cb0ea0594b22b31f8bf758dece4e7e30b6ca24f6e8e47f45bcc"
+            },
+            {
+              "path": "src/lexical.rs",
+              "start": 48,
+              "end": 48,
+              "sha256": "f63e3070caade5d7689f860ea552a086a4f758b4e8374abbe868dcf2c265a6e2"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/lexical.rs",
+          "start": 31,
+          "end": 57,
+          "sha256": "8c582fa2b3147ebed8b81935263ae376f83c65f23f80ea0366ca7b315da759a0"
+        }
+      ]
+    },
+    {
+      "id": "v2-identifier-punctuation",
+      "repo": "flexcontext",
+      "split": "dev",
+      "module": "src/lexical.rs",
+      "question": "How does identifier tokenization handle punctuation and normalize letter case?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "src/lexical.rs",
+              "start": 37,
+              "end": 37,
+              "sha256": "39beb2cc9f61f3015c36dc3e7dbf983163276cad440947b14bfb745ae668256f"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "src/lexical.rs",
+              "start": 52,
+              "end": 52,
+              "sha256": "91a5d785e4ca42875b9f7560a41a820e38245747e61f94df15135fa613a50fe4"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/lexical.rs",
+          "start": 31,
+          "end": 57,
+          "sha256": "8c582fa2b3147ebed8b81935263ae376f83c65f23f80ea0366ca7b315da759a0"
+        }
+      ]
+    },
+    {
+      "id": "v2-word-related",
+      "repo": "flexcontext",
+      "split": "dev",
+      "module": "src/lexical.rs",
+      "question": "When are lexical terms treated as related through stems or prefixes, and what minimum length is required?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "src/lexical.rs",
+              "start": 82,
+              "end": 82,
+              "sha256": "5902e8bd4a14d483ab72a4b837c9f5c9e4433cfcb79b978571e6e96669a14f19"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "src/lexical.rs",
+              "start": 87,
+              "end": 87,
+              "sha256": "32b5f7a03adfada54f6fd50c89f2182f46449e729e03c03bb71ae1a3e783a976"
+            }
+          ]
+        },
+        {
+          "id": "e3",
+          "spans": [
+            {
+              "path": "src/lexical.rs",
+              "start": 88,
+              "end": 88,
+              "sha256": "29c3a801eb7614ccbcfbe2a691706ca8d0a891804ce676e818cc87a69c5a21d6"
+            },
+            {
+              "path": "src/lexical.rs",
+              "start": 89,
+              "end": 89,
+              "sha256": "4aed726a2bdb6828a64d3365520a9cd349c8a0c55be456264ad0f284e02d5f18"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/lexical.rs",
+          "start": 81,
+          "end": 91,
+          "sha256": "e02324eb12c951e3b447fe4a663dd789b8b7edb2991c39dbadef0ebd609259f6"
+        }
+      ]
+    },
+    {
+      "id": "v2-posting-keys",
+      "repo": "flexcontext",
+      "split": "dev",
+      "module": "src/index.rs",
+      "question": "Which exact, stem, and prefix keys are stored for each lexical token?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "src/index.rs",
+              "start": 70,
+              "end": 70,
+              "sha256": "2294def67a3403662d6522ca8fd51373ec2c27e3f3607d3376b03c89966f7f63"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "src/index.rs",
+              "start": 71,
+              "end": 71,
+              "sha256": "32d21224b734702b718f5c23279652049de3c37902584d6b2b180322c4c50078"
+            },
+            {
+              "path": "src/index.rs",
+              "start": 73,
+              "end": 73,
+              "sha256": "16a5cb2e045c64f521f5cdc94d83600fa3c34ee0113917abf12d4360239f55ac"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/index.rs",
+          "start": 69,
+          "end": 77,
+          "sha256": "ea09a162c0c46ff7f86453e1845ffb69b79344ed7d723272bb06a7bebd2bf113"
+        }
+      ]
+    },
+    {
+      "id": "v2-candidate-union",
+      "repo": "flexcontext",
+      "split": "dev",
+      "module": "src/index.rs",
+      "question": "How does the lexical index combine normalized symbol names and token postings into deduplicated candidates?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "src/index.rs",
+              "start": 44,
+              "end": 44,
+              "sha256": "90b8bc48a8110edc57a77d5634ec7474feb90660ba229164089ba81d91c2c657"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "src/index.rs",
+              "start": 45,
+              "end": 45,
+              "sha256": "151bb0d42c6b4cd2bc55edec314ee6a58a0e5d20a5c4713f08abd207cb08c8fb"
+            }
+          ]
+        },
+        {
+          "id": "e3",
+          "spans": [
+            {
+              "path": "src/index.rs",
+              "start": 49,
+              "end": 49,
+              "sha256": "414a019c461c6d8db989465858d657c595b41f913eead3efc68be2723960b33f"
+            },
+            {
+              "path": "src/index.rs",
+              "start": 55,
+              "end": 55,
+              "sha256": "2bef01e23b3943993559986f52be04f5dc07f76fa36dcd1caaabaa93b90a4fcf"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/index.rs",
+          "start": 43,
+          "end": 57,
+          "sha256": "81e3b55e503e63e1c036d5ea1e8b233b44ca902baa34d3f83850b623619dfd85"
+        }
+      ]
+    },
+    {
+      "id": "v2-index-fields",
+      "repo": "flexcontext",
+      "split": "dev",
+      "module": "src/index.rs",
+      "question": "Which symbol fields contribute lexical posting keys during index construction?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "src/index.rs",
+              "start": 26,
+              "end": 26,
+              "sha256": "c25275a50d1496f5bfb3386daa031b38479c33dd33475792ddf3cd31fc3889ea"
+            },
+            {
+              "path": "src/index.rs",
+              "start": 27,
+              "end": 27,
+              "sha256": "b59f9d7fb61462cde07f607d23070769aa708400c5c9c6e3e4e7e881f5c39a90"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "src/index.rs",
+              "start": 28,
+              "end": 28,
+              "sha256": "16c68e8b52c193a18313a33a5f2909d39872c9de33c89b3bc8419458c89813e3"
+            },
+            {
+              "path": "src/index.rs",
+              "start": 29,
+              "end": 29,
+              "sha256": "ab972008b1b388ec0ccc579c247a54ed00a1fe4e6ceccf36a713375b50faaea0"
+            }
+          ]
+        },
+        {
+          "id": "e3",
+          "spans": [
+            {
+              "path": "src/index.rs",
+              "start": 33,
+              "end": 33,
+              "sha256": "b3e861b2cfbbc3737b4c727296fe362b1dc63f63badedc8c4c283082951d639f"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/index.rs",
+          "start": 18,
+          "end": 42,
+          "sha256": "3c4723dac23e711727ae4c604291e783b1f2239420aaf2b4d7dbfbf6a4977452"
+        }
+      ]
+    },
+    {
+      "id": "v2-parser-reuse",
+      "repo": "flexcontext",
+      "split": "heldout",
+      "module": "src/parser.rs",
+      "question": "How does the symbol extractor reuse parsers across languages and detect parser cancellation?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "src/parser.rs",
+              "start": 27,
+              "end": 27,
+              "sha256": "5e04165d0d701f9349a7251a14e025b66f0de46cfe2016b430c5806a2cf9b7ba"
+            },
+            {
+              "path": "src/parser.rs",
+              "start": 32,
+              "end": 32,
+              "sha256": "90ec7f6adb0d69e242ef3e38bf83a56f56411e1ce81edae44b19bced1d162838"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "src/parser.rs",
+              "start": 39,
+              "end": 39,
+              "sha256": "686f544f1350d6b15ced3ad8b0f3bc32d88c34e0a160bbd7de9b8326d6c71dda"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/parser.rs",
+          "start": 26,
+          "end": 44,
+          "sha256": "207b7f413ebe22fcd6e9793f516283697a5355e53526b8067e8a444dfa54b078"
+        }
+      ]
+    },
+    {
+      "id": "v2-parser-facts",
+      "repo": "flexcontext",
+      "split": "heldout",
+      "module": "src/parser.rs",
+      "question": "How are imports and identifier, type, and call facts deduplicated and assigned to extracted symbols?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "src/parser.rs",
+              "start": 179,
+              "end": 179,
+              "sha256": "08c4cdba9e90f8fb1b5d10e3a02e7ff448cde8f593969860b37308e56f71146e"
+            },
+            {
+              "path": "src/parser.rs",
+              "start": 180,
+              "end": 180,
+              "sha256": "0c69e9086cfed0303ee359feab2a0ae8e7606fc78ea6979c71211707cbda02e2"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "src/parser.rs",
+              "start": 205,
+              "end": 205,
+              "sha256": "3aea1c496892bc2248831ae77a341dc794e9a92909ad0f15254993ab8a6149e6"
+            },
+            {
+              "path": "src/parser.rs",
+              "start": 206,
+              "end": 206,
+              "sha256": "41de1bc0cba5d51dbe22ac99135e153d86ea7ab262ba5798d51d4d7f383801f6"
+            },
+            {
+              "path": "src/parser.rs",
+              "start": 207,
+              "end": 207,
+              "sha256": "da10ec589247ca25eb646d17957910af6e16b5bd207e416bcbe2af9f76a14d2a"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/parser.rs",
+          "start": 178,
+          "end": 212,
+          "sha256": "9b21f98a636cdbe609b792fe2df8b8df9df90df002213530886a260fd6bc721f"
+        }
+      ]
+    },
+    {
+      "id": "v2-parser-comments",
+      "repo": "flexcontext",
+      "split": "heldout",
+      "module": "src/parser.rs",
+      "question": "When are preceding comments attached to a source symbol, and what breaks the comment chain?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "src/parser.rs",
+              "start": 314,
+              "end": 314,
+              "sha256": "946e44eb39d1d0f4d23ee02e713d9185135648ea88ee8109a09cf17655de6a48"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "src/parser.rs",
+              "start": 319,
+              "end": 319,
+              "sha256": "a948d9a8780793a328e8ab3c201b106d773117e0ce307d85ede7861dfd3b9903"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/parser.rs",
+          "start": 308,
+          "end": 329,
+          "sha256": "8e1e26ff22e25684b6d1aa446e4b3c45c9ced8f79013f07ef4eba4d0d50114e6"
+        }
+      ]
+    },
+    {
+      "id": "v2-mcp-cancellation",
+      "repo": "flexcontext",
+      "split": "heldout",
+      "module": "src/mcp.rs",
+      "question": "How does the MCP reader handle cancellation notifications and signal pending requests?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "src/mcp.rs",
+              "start": 68,
+              "end": 68,
+              "sha256": "d1f18e2081cbccf083d188b9ca02e1dc7eaa25a844f722a0d58c28caf88c9d04"
+            },
+            {
+              "path": "src/mcp.rs",
+              "start": 69,
+              "end": 69,
+              "sha256": "e42f8fb6a92309ffdaa512b70a48d2b501a0368d9828c0e6c3702675493fccbd"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "src/mcp.rs",
+              "start": 71,
+              "end": 71,
+              "sha256": "1e827218b875582c1cb7d9e2ba0e756965050731f4fa9e87c40c95709926bbc3"
+            },
+            {
+              "path": "src/mcp.rs",
+              "start": 73,
+              "end": 73,
+              "sha256": "75c6f8085101686b7b01d0d7fc9ad494bb5b9551e7cbcd2c487ae3c4774634dc"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/mcp.rs",
+          "start": 46,
+          "end": 104,
+          "sha256": "ebaf8720bb4e71a42270c7aad2b5884d9e79c1fdd79149670534f86a11c345ff"
+        }
+      ]
+    },
+    {
+      "id": "v2-mcp-modern-meta",
+      "repo": "flexcontext",
+      "split": "heldout",
+      "module": "src/mcp.rs",
+      "question": "Which per-request protocol metadata does modern MCP require and how are unsupported versions rejected?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "src/mcp.rs",
+              "start": 190,
+              "end": 190,
+              "sha256": "dc9adc2b25fb2c618b9a9b5953241d3c7621a26de7724080badbc362ec959e74"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "src/mcp.rs",
+              "start": 201,
+              "end": 201,
+              "sha256": "b18cc8d2a6894de7dc8991d456e63ba5e65f442cfab609ca4fa6a9c831883d47"
+            }
+          ]
+        },
+        {
+          "id": "e3",
+          "spans": [
+            {
+              "path": "src/mcp.rs",
+              "start": 208,
+              "end": 208,
+              "sha256": "ac5d44c4a2308dbb6de247f58f5b4c5809cfa7a6784476f8a295fb6789ef30c6"
+            },
+            {
+              "path": "src/mcp.rs",
+              "start": 211,
+              "end": 211,
+              "sha256": "eacdffd5a69044e11fd3b59af6805de66cec077327643113626f66c7361de41f"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/mcp.rs",
+          "start": 174,
+          "end": 215,
+          "sha256": "547249c5950d2e33b7702c8c14bb6310939d2fc11a52975c6546384da3eefd7e"
+        }
+      ]
+    },
+    {
+      "id": "v2-mcp-legacy-wait",
+      "repo": "flexcontext",
+      "split": "heldout",
+      "module": "src/mcp.rs",
+      "question": "How does MCP reject requests while a legacy session is waiting for the initialized notification?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "src/mcp.rs",
+              "start": 183,
+              "end": 183,
+              "sha256": "c256401279e71d76029c8f40b1bc7b35d9d8a4965a26f9be529b781dc56af942"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "src/mcp.rs",
+              "start": 186,
+              "end": 186,
+              "sha256": "e4a665ad757f3e7b5a9b68cc1545902cee938c46c1a3649f29c0e58e70308eb8"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "src/mcp.rs",
+          "start": 174,
+          "end": 215,
+          "sha256": "547249c5950d2e33b7702c8c14bb6310939d2fc11a52975c6546384da3eefd7e"
+        }
+      ]
+    },
+    {
+      "id": "v2-promise-timeout",
+      "repo": "agentx",
+      "split": "dev",
+      "module": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+      "question": "How does a promise timeout log and reject an operation and clear its timer after completion?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+              "start": 32,
+              "end": 32,
+              "sha256": "80d71f1f06298c44a65bef956a62e27c35da3c5601aec62a9220d04c9bc7cd53"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+              "start": 33,
+              "end": 33,
+              "sha256": "c3bdc8a5b674c80aef80742abdd0601a2e70486d952d607edbaa525d2d8ea2d3"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+              "start": 38,
+              "end": 38,
+              "sha256": "ebc05feae703a78885161fe2dfdb4e301feec9b42a231e7e39ea9b0777542f87"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+              "start": 40,
+              "end": 40,
+              "sha256": "3738f59fcf44a8da76508f9edbd4b537dfa1c45e56002ee6d26a8c34527c9c5f"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+          "start": 21,
+          "end": 43,
+          "sha256": "af17137ac4a0e4496b9181591e8fc7e1b2217ac9fffdcabd1b0ac3b237832b6b"
+        }
+      ]
+    },
+    {
+      "id": "v2-limiter-queue",
+      "repo": "agentx",
+      "split": "dev",
+      "module": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+      "question": "How does the concurrency limiter validate capacity and queue work when all slots are occupied?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+              "start": 68,
+              "end": 68,
+              "sha256": "3f3c424372f993bdd05741ffda3b2f248e630848a0b8f26888bd21d41ed163dd"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+              "start": 102,
+              "end": 102,
+              "sha256": "aac236eb138fe45eb2a7f9f390f32b2b4ef060b9092d2b1885d970ce244b892d"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+              "start": 105,
+              "end": 105,
+              "sha256": "f2b8ecd5c3c35df8d0944aacc1beffd6fd55570da89ed9a4100b179cab2da67a"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+          "start": 65,
+          "end": 108,
+          "sha256": "7b26137b9220dfc945038e5d731e825e74a6d6978582636e3fac2d28a329d672"
+        }
+      ]
+    },
+    {
+      "id": "v2-limiter-release",
+      "repo": "agentx",
+      "split": "dev",
+      "module": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+      "question": "How does the concurrency limiter release slots in FIFO order after successful or failed tasks?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+              "start": 78,
+              "end": 78,
+              "sha256": "05faea28fb9626b46897ddb62900582ed01ae76642cb11e096e3853d799bd22d"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+              "start": 79,
+              "end": 79,
+              "sha256": "220e703ae2f26537680cb1e3f3c118c107e16cf71292c796d9d74669c3c1a25a"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+              "start": 94,
+              "end": 94,
+              "sha256": "17d489727e34635b3183458a0a7388fc98e36565532fed5294511fb355d1d02d"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+              "start": 98,
+              "end": 98,
+              "sha256": "ccc26ebe6af8cb15123ee8b50a6e73a7938f57f8090ea12c8358b9b35b3994e3"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/utils/promise.ts",
+          "start": 65,
+          "end": 108,
+          "sha256": "7b26137b9220dfc945038e5d731e825e74a6d6978582636e3fac2d28a329d672"
+        }
+      ]
+    },
+    {
+      "id": "v2-base-url-special",
+      "repo": "agentx",
+      "split": "dev",
+      "module": "apps/chat-agentx/packages/api/src/utils/url.ts",
+      "question": "How does API base URL extraction handle invalid input, Cohere endpoints, and URLs without a version segment?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+              "start": 21,
+              "end": 21,
+              "sha256": "f20e05c31249ac503f140c99ef244224ce55a904de3207b1a8a8fe2360827c91"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+              "start": 22,
+              "end": 22,
+              "sha256": "068cbacc398fa14bbbfd2342d20f1ee35dfe52d4966ec77130d8df0a5f1f582d"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+              "start": 25,
+              "end": 25,
+              "sha256": "294c97a8829ae98ee3ffb6cf08119607e95597423b44c078bf404cdc218b75dd"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+              "start": 26,
+              "end": 26,
+              "sha256": "1538d3b15fb29ce932368ab542c60c5b5ae5558c3f1369afdecfb1c8510a5425"
+            }
+          ]
+        },
+        {
+          "id": "e3",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+              "start": 29,
+              "end": 29,
+              "sha256": "5426278e7442147b8b7129867fc79d71d0ad0ed4ddcd4ee629ec09dd584b6854"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+              "start": 30,
+              "end": 30,
+              "sha256": "3648f070a96b91372bc3bf3cdccb3aa8002ebca5537e81566460d21b202d40dc"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+          "start": 20,
+          "end": 79,
+          "sha256": "b7825ec74294e425ff12fbbdd9d0ae7bd1a5daaf871a06acf972f0f0ab69f6c6"
+        }
+      ]
+    },
+    {
+      "id": "v2-azure-url",
+      "repo": "agentx",
+      "split": "dev",
+      "module": "apps/chat-agentx/packages/api/src/utils/url.ts",
+      "question": "How does base URL extraction strip chat or completion paths from an Azure OpenAI proxy URL?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+              "start": 58,
+              "end": 58,
+              "sha256": "1c3d772eb177519ab15daed3d48d19cd51f2118ca4bf3979e9bf0c18c3161ab7"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+              "start": 59,
+              "end": 59,
+              "sha256": "7656c5099a8802035827d2d1474bf1755af2f1c235b82f0d4768c9282f6e511c"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+          "start": 20,
+          "end": 79,
+          "sha256": "b7825ec74294e425ff12fbbdd9d0ae7bd1a5daaf871a06acf972f0f0ab69f6c6"
+        }
+      ]
+    },
+    {
+      "id": "v2-url-origin",
+      "repo": "agentx",
+      "split": "dev",
+      "module": "apps/chat-agentx/packages/api/src/utils/url.ts",
+      "question": "How is an endpoint origin reconstructed from protocol, hostname and port, and what happens when parsing fails?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+              "start": 88,
+              "end": 88,
+              "sha256": "bc3a63ea97782246616b2a1ab42f409a27baa9c83ac88f47063205e8693f32e3"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+              "start": 91,
+              "end": 91,
+              "sha256": "276cc0287ed4c030521a32d99ef80a5ce3ea0dcb4f519d4191fd0b43c04f2d93"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+              "start": 97,
+              "end": 97,
+              "sha256": "648c90045838563aaf61ca876194fb18bbe494c54da3f583e6670ca9200223ee"
+            }
+          ]
+        },
+        {
+          "id": "e3",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+              "start": 99,
+              "end": 99,
+              "sha256": "df92ae7bc39dc5f5d10ef30871d632d899e4a2db9baa01c4326f366710e0a9e6"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/utils/url.ts",
+          "start": 86,
+          "end": 102,
+          "sha256": "5fdef21bd4bf3cb7e78e6b62c05cda3c442a32cc4070bfa8e9123c58d05a9f36"
+        }
+      ]
+    },
+    {
+      "id": "v2-title-clean",
+      "repo": "agentx",
+      "split": "heldout",
+      "module": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+      "question": "How are reasoning blocks removed and whitespace normalized in generated conversation titles?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+              "start": 19,
+              "end": 19,
+              "sha256": "abb964f1914159fb0a23e237ebd51b658d4b8add744ebfad7189162c1ac05847"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+              "start": 20,
+              "end": 20,
+              "sha256": "a2a360d851bdc04fe4581a13e932f6ba857dcf925eba92898208f40c0e50aae1"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+              "start": 21,
+              "end": 21,
+              "sha256": "f3e7fdd2b9e15e58163d64ea6cf1221e991f8f5d6fec2e3d3ce50ae2518bed03"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+              "start": 22,
+              "end": 22,
+              "sha256": "89ab28f7f02ef06639333a152c70ac453d5658c8710d63dc31eac54a756973ec"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+          "start": 14,
+          "end": 35,
+          "sha256": "c3c4eed93de6c4afaef00ce4df861df3e8dada17098cd6bf2d160ad653bf5e24"
+        }
+      ]
+    },
+    {
+      "id": "v2-title-unicode",
+      "repo": "agentx",
+      "split": "heldout",
+      "module": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+      "question": "How are long conversation titles truncated without splitting Unicode code points?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+              "start": 28,
+              "end": 28,
+              "sha256": "8a6b9adde4a57a476ad9b262d855c4d4ab93ff06f1d461272b8c1a86b2ce4eee"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+              "start": 30,
+              "end": 30,
+              "sha256": "cb8843951ae5b0bcf53b4c87b840a1d4560d4c148a2eccdfc1fd635d96bef85d"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+              "start": 31,
+              "end": 31,
+              "sha256": "da10990bfd4641eb94370bdef79d9b048c16a717c4343224944ed37ecbf891b7"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+          "start": 14,
+          "end": 35,
+          "sha256": "c3c4eed93de6c4afaef00ce4df861df3e8dada17098cd6bf2d160ad653bf5e24"
+        }
+      ]
+    },
+    {
+      "id": "v2-title-empty",
+      "repo": "agentx",
+      "split": "heldout",
+      "module": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+      "question": "Which invalid or empty generated title inputs trigger the default fallback?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+              "start": 15,
+              "end": 15,
+              "sha256": "dbb0aa4a15c4f2d2727a1418ab5bbce686750dbb54993b50ff259a9433ff00bc"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+              "start": 24,
+              "end": 24,
+              "sha256": "62b75ae140a3649ec4964da7fde22340c9f105ac67fe9306f51849c71b1c8679"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/utils/sanitizeTitle.ts",
+          "start": 14,
+          "end": 35,
+          "sha256": "c3c4eed93de6c4afaef00ce4df861df3e8dada17098cd6bf2d160ad653bf5e24"
+        }
+      ]
+    },
+    {
+      "id": "v2-memory-history",
+      "repo": "agentx",
+      "split": "heldout",
+      "module": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+      "question": "How is memory snapshot history bounded and when is a trend calculation skipped?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+              "start": 79,
+              "end": 79,
+              "sha256": "6ab0e5f4dadccc5e1226dfe0fd92c6378dac091a87c850393880bddc1319213f"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+              "start": 80,
+              "end": 80,
+              "sha256": "98793034d64d68902d13977f6bfa4a0b89ce659ec3edf7dff895b25c207ccf67"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+              "start": 94,
+              "end": 94,
+              "sha256": "e5f26be48bd02592c4231804aed5d59aeafb07e35a634285b8142791d3a6439d"
+            }
+          ]
+        },
+        {
+          "id": "e3",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+              "start": 101,
+              "end": 101,
+              "sha256": "fbdd5af330b6590b90ee55c3b4c3f3a195543e8ccb5189a5453cb988fa82a631"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+          "start": 62,
+          "end": 114,
+          "sha256": "a4a272b27946f09e2b8df065640973c764cfa7cda355058d38643574eab9c6d3"
+        }
+      ]
+    },
+    {
+      "id": "v2-memory-gc",
+      "repo": "agentx",
+      "split": "heldout",
+      "module": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+      "question": "When can memory diagnostics force garbage collection and how does it report unsupported runtimes?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+              "start": 116,
+              "end": 116,
+              "sha256": "3ad5c9ebc1b9e19b89ffe5c30a2206355c03d27db4e2aa6a94a7656dec2a5f50"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+              "start": 117,
+              "end": 117,
+              "sha256": "4905acfccce7af79556863a0609cdbfeed6021480f964281482b7d1bc8568e09"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+              "start": 119,
+              "end": 119,
+              "sha256": "dfac4e43630abf68c3a4a7573fd4c43008ba798dd76c3759eeef53e6cff8d2e5"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+              "start": 122,
+              "end": 122,
+              "sha256": "db9d698d89e22b7884992713dd8ea8a58d367c5e342e57c3d6be3a190895ff4e"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+          "start": 115,
+          "end": 124,
+          "sha256": "1fe958f6b7f59d024cf5838f313e245603ea8f332ef593092b65e5bef9058379"
+        }
+      ]
+    },
+    {
+      "id": "v2-memory-start",
+      "repo": "agentx",
+      "split": "heldout",
+      "module": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+      "question": "How does memory diagnostics avoid duplicate timers and allow the process to exit naturally?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+              "start": 130,
+              "end": 130,
+              "sha256": "509892e5209bca1838c581344923c7bd4c3fde415387cd2dd00655e0e4b146a4"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+              "start": 134,
+              "end": 134,
+              "sha256": "70526d7ff63672e8424a337fd57486862ba45a0fb19253ab1225e06112078650"
+            },
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+              "start": 135,
+              "end": 135,
+              "sha256": "a6bc958180309a5199d8750dc094020d7bc59ec78e21f673d27325e67d90549e"
+            }
+          ]
+        },
+        {
+          "id": "e3",
+          "spans": [
+            {
+              "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+              "start": 137,
+              "end": 137,
+              "sha256": "1da8d8e9fd9f1a6c13e5e4e4db5bbf9440c3df47e263a9e1774e403f52887a61"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "apps/chat-agentx/packages/api/src/utils/memory.ts",
+          "start": 129,
+          "end": 140,
+          "sha256": "b432363a6def5e1549e5c876c0f9740870519eb5d7423c465d52e0c0adf20dda"
+        }
+      ]
+    },
+    {
+      "id": "v2-files-single",
+      "repo": "webkitpy",
+      "split": "dev",
+      "module": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+      "question": "How does filesystem enumeration handle a root that is already a file and apply the file filter?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+              "start": 136,
+              "end": 136,
+              "sha256": "06a4023f0011571f8c50464cf49c5a77bbdc8e92835b0e2a33728c0484411255"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+              "start": 137,
+              "end": 137,
+              "sha256": "fe567c95e92eddb0f25aa70c3621283e86f0616a98e5393357723ebfccab1751"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+              "start": 138,
+              "end": 138,
+              "sha256": "bacb3b29fb74f8a7fd5594d70c640b3aa8bb60250f96dff4d94694f9c32dc055"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+          "start": 119,
+          "end": 155,
+          "sha256": "e892d03172fe71ee6a9fcbf2c6e1501b23b20a5836ec0460d00c66fb1d618554"
+        }
+      ]
+    },
+    {
+      "id": "v2-files-prune",
+      "repo": "webkitpy",
+      "split": "dev",
+      "module": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+      "question": "How does recursive filesystem enumeration prune skipped directory names including the root?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+              "start": 141,
+              "end": 141,
+              "sha256": "db700a5e465588643c0a6dd745bf6c45002f3e0825fba8d6ca1fbb8801693c18"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+              "start": 142,
+              "end": 142,
+              "sha256": "a0f10f7942271672f7f39bf8fa86975ff1b3f3c24a4f161e17c6614abae7765d"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+              "start": 148,
+              "end": 148,
+              "sha256": "c5d0dc7e89c28f4b6f22521a32c6a0085d36a12655971829d00a259591bf742c"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+              "start": 149,
+              "end": 149,
+              "sha256": "27e66553b521e62b045295684b9f322933ca8301f65de352d8a876c39cc3d090"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+          "start": 119,
+          "end": 155,
+          "sha256": "e892d03172fe71ee6a9fcbf2c6e1501b23b20a5836ec0460d00c66fb1d618554"
+        }
+      ]
+    },
+    {
+      "id": "v2-dirs-filter",
+      "repo": "webkitpy",
+      "split": "dev",
+      "module": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+      "question": "How does directory enumeration apply an optional callback during a top-down walk?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+              "start": 108,
+              "end": 108,
+              "sha256": "363992716d651e2682d936f04f77ca196a7a8a21ed83f3d03d8f2f81c2f39d9d"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+              "start": 112,
+              "end": 112,
+              "sha256": "206288b6ff994f3d82500fb739da00b6f2e0a5a665c1305e0c13f89577df74cc"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+              "start": 115,
+              "end": 115,
+              "sha256": "141fc0403084a6d8b8701b2e9f609d205cf89154263f8646869d3437aed24f7b"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+              "start": 116,
+              "end": 116,
+              "sha256": "1f555c17c0eb3384a730ec1d08a0481f2c08b2ad040edcd37dc76938fb95520d"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/system/filesystem.py",
+          "start": 96,
+          "end": 118,
+          "sha256": "ef7e23da155a44bd1b8243226f547cf0f3383392d0b5c9cd16d614e6cb89ab44"
+        }
+      ]
+    },
+    {
+      "id": "v2-memo-init",
+      "repo": "webkitpy",
+      "split": "dev",
+      "module": "Tools/Scripts/webkitpy/common/memoized.py",
+      "question": "How does the memoization decorator initialize its wrapped callable and result cache?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/memoized.py",
+              "start": 37,
+              "end": 37,
+              "sha256": "95aeb8ea6796f04cac95f9650bea3a14362ed2c90a07d942ffe4cc19917646f9"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/memoized.py",
+              "start": 38,
+              "end": 38,
+              "sha256": "67b72aed945e75240ae390b2337e7c82ee638bebcdf500399df2261473a5cbbc"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/memoized.py",
+          "start": 36,
+          "end": 39,
+          "sha256": "df809a960b34b05085dd7ee9b48fc008d5c4ebb69d7f96e56334b6f93e62391f"
+        }
+      ]
+    },
+    {
+      "id": "v2-memo-call",
+      "repo": "webkitpy",
+      "split": "dev",
+      "module": "Tools/Scripts/webkitpy/common/memoized.py",
+      "question": "How does memoization distinguish a cached call from a cache miss and store the new result?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/memoized.py",
+              "start": 42,
+              "end": 42,
+              "sha256": "dbc41cea49cd6d79112f211440db74fc7d25d76ad7ba1a5ba1e22f1ba0ca14b4"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/memoized.py",
+              "start": 43,
+              "end": 43,
+              "sha256": "4f9e842857c92cd0a1f6453103c42cf9d11bc281dff5891940b3fc41da52f3a0"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/memoized.py",
+              "start": 45,
+              "end": 45,
+              "sha256": "be3719eef623a07536cbefda8b601778c74c1eaeadf859f2b3d404df713d1792"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/memoized.py",
+              "start": 46,
+              "end": 46,
+              "sha256": "b7c79671495ee84ef3c8926d9568d6641cc41b4be1ba165a9153facc972ffcbc"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/memoized.py",
+          "start": 40,
+          "end": 52,
+          "sha256": "1bf92d189b9b5a4ed2521999e87cce50b23324b012be8a726f56eef88d8eb42d"
+        }
+      ]
+    },
+    {
+      "id": "v2-memo-method",
+      "repo": "webkitpy",
+      "split": "dev",
+      "module": "Tools/Scripts/webkitpy/common/memoized.py",
+      "question": "How does the memoization decorator bind an instance when it is used as a method descriptor?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/memoized.py",
+              "start": 55,
+              "end": 55,
+              "sha256": "520fcb8277daf1e4a8a55b46a16729c3a2a705dfa067a0569d2bd50705f93cd3"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/memoized.py",
+          "start": 53,
+          "end": 55,
+          "sha256": "fffb888536173f395feef603f7aae2db5d11a407e9322a5ae0ca8c80b3aa97e1"
+        }
+      ]
+    },
+    {
+      "id": "v2-revision-url",
+      "repo": "webkitpy",
+      "split": "heldout",
+      "module": "Tools/Scripts/webkitpy/common/config/urls.py",
+      "question": "How are numeric revisions distinguished from commit identifiers when constructing a WebKit revision URL?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/config/urls.py",
+              "start": 38,
+              "end": 38,
+              "sha256": "bd3cc0c95a1eab9fca65712da7f9f698945d2c43514fc1eeb0a0154bc39dfa49"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/config/urls.py",
+              "start": 39,
+              "end": 39,
+              "sha256": "95f45656df178f5f8fdbe0b962ff02162a8a2380e4fe50d1eb11c19980306c23"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/config/urls.py",
+              "start": 40,
+              "end": 40,
+              "sha256": "ffa76ebe27b8e1fe9ae4ddab27e7f26b520e7a899b42be375fb2335d0e805600"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/config/urls.py",
+          "start": 37,
+          "end": 42,
+          "sha256": "eb1402361fc67d95025fd2d296d3d913c60cea51108b0c0beb92b2e3e5017e79"
+        }
+      ]
+    },
+    {
+      "id": "v2-bug-url",
+      "repo": "webkitpy",
+      "split": "heldout",
+      "module": "Tools/Scripts/webkitpy/common/config/urls.py",
+      "question": "How are short and long bug URLs parsed into numeric bug identifiers?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/config/urls.py",
+              "start": 70,
+              "end": 70,
+              "sha256": "796d5b49ae63835b39818c5b779b3474c8e908b72a5af3c21505b2769307e82d"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/config/urls.py",
+              "start": 73,
+              "end": 73,
+              "sha256": "f419fae13b7c6791754dced0cf49d7dc340588b33bd05ddb45e05adb72faca89"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/config/urls.py",
+          "start": 67,
+          "end": 78,
+          "sha256": "6d75e2278b4644ed3142d7325b2c3fbc1fc79fd11c76165ecb91a390375ee91b"
+        }
+      ]
+    },
+    {
+      "id": "v2-attachment-url",
+      "repo": "webkitpy",
+      "split": "heldout",
+      "module": "Tools/Scripts/webkitpy/common/config/urls.py",
+      "question": "Which URL patterns are used to extract attachment identifiers?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/config/urls.py",
+              "start": 82,
+              "end": 82,
+              "sha256": "bc3b979e9b096b1f07ab7184a25a5ee8d2beec4e001b9e6490ae907cb57a0489"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/config/urls.py",
+              "start": 85,
+              "end": 85,
+              "sha256": "a7d9871c578edac67f8bcafc9266cd6638b9fb6b2a147aca655accdd8d9253bd"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/config/urls.py",
+          "start": 79,
+          "end": 88,
+          "sha256": "83f4b14aac0fbd16c47403d6bc56b7d47f92e0d285feeab3081697506bfdcd29"
+        }
+      ]
+    },
+    {
+      "id": "v2-error-tail",
+      "repo": "webkitpy",
+      "split": "heldout",
+      "module": "Tools/Scripts/webkitpy/common/system/executive.py",
+      "question": "How are long command error outputs shortened and what is retained in the error message?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/executive.py",
+              "start": 71,
+              "end": 71,
+              "sha256": "3c9193f291913c4da07c89e34fbdcc0c3aa8d6196643f32e08f2c521038e8ede"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/executive.py",
+              "start": 73,
+              "end": 73,
+              "sha256": "7fcaaeb010fcc476c6093e78f27b17e531ccf43ff09f22a698f3e3f2084b54c0"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/executive.py",
+              "start": 75,
+              "end": 75,
+              "sha256": "bcc0efe35712cf2e6a19783c5cfe9cd77d4c6243225c75e7b970e113474d93bd"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/system/executive.py",
+          "start": 69,
+          "end": 76,
+          "sha256": "b2a09af799b85a3787caaf908196a8250a9784cad8f5cc28ff6ebb585b6e65d2"
+        }
+      ]
+    },
+    {
+      "id": "v2-cpu-count",
+      "repo": "webkitpy",
+      "split": "heldout",
+      "module": "Tools/Scripts/webkitpy/common/system/executive.py",
+      "question": "When does process execution use the configured processor count and when does it fall back to the system count?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/executive.py",
+              "start": 144,
+              "end": 144,
+              "sha256": "ceb49f5c126662e908eee77cc171f4f2cf78b8b424b4bae51a986f6fa733ca62"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/executive.py",
+              "start": 145,
+              "end": 145,
+              "sha256": "984c55c1801bd9a54f55abc31706311e78fdfb570f7dce268cf5af84b1b26c6f"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/executive.py",
+              "start": 146,
+              "end": 146,
+              "sha256": "427bb5c16f36c99042681617432dcc885fb108179d11b385e33e130374677f0c"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/executive.py",
+              "start": 149,
+              "end": 149,
+              "sha256": "522d477f82440b8fa04cbf57e5b6da10e7539bef742bbb8b29c0178fca49d26d"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/system/executive.py",
+          "start": 142,
+          "end": 150,
+          "sha256": "80f0d491e475f971159e5a2281d4be90ffbeb034187826e98688254a15d11cf0"
+        }
+      ]
+    },
+    {
+      "id": "v2-kill-invalid",
+      "repo": "webkitpy",
+      "split": "heldout",
+      "module": "Tools/Scripts/webkitpy/common/system/executive.py",
+      "question": "How does process termination guard against invalid process IDs and handle Windows process trees?",
+      "evidence": [
+        {
+          "id": "e1",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/executive.py",
+              "start": 156,
+              "end": 156,
+              "sha256": "389e313d746d098e931b301e2e079d0d9dbf3fc18257a037f216ddfd345371fb"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/executive.py",
+              "start": 157,
+              "end": 157,
+              "sha256": "f2eae3dd7cbf759345de455f0ed353b300638c178d171e9a8aed82dadfafc3c0"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "spans": [
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/executive.py",
+              "start": 166,
+              "end": 166,
+              "sha256": "fc09efa1dc0e27cabae6b9cb1e6733b1c650cfcc765d57a9893e6f00c92a942c"
+            },
+            {
+              "path": "Tools/Scripts/webkitpy/common/system/executive.py",
+              "start": 168,
+              "end": 168,
+              "sha256": "ca70beb1f4fa0abbd64219a2f810bd68f66d1f1a83357a9db2c48a2c42213e14"
+            }
+          ]
+        }
+      ],
+      "relevant_regions": [
+        {
+          "path": "Tools/Scripts/webkitpy/common/system/executive.py",
+          "start": 151,
+          "end": 206,
+          "sha256": "eb815c27775af10a016f78ce821371438c0b7e5c0918001bdf0f0860f95b2358"
+        }
+      ]
+    }
+  ]
+}

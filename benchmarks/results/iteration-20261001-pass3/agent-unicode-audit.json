@@ -1,0 +1,83 @@
+{
+  "classification": "Post-hoc diagnostic written after observing ASCII-only repairs; not a predeclared held-out gate.",
+  "script_sha256": "47243c623ea133a229e24f072696082c96016b97ae598e66a3b5a16ad5fc1e2c",
+  "checks_sha256": "ed604fa4e63315caf803ce448cb3ac9fa762fce0b2ee95136c02140c07f2ab21",
+  "reference_passed": true,
+  "seeded_state_passed": false,
+  "rows": [
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "flexcontext",
+      "repeat": 0,
+      "frozen_task_success": true,
+      "source_sha256": "b449c37db49a0d600e20753a66b96696dd746be80882ad6544ab0eefaafb9730",
+      "passed": false
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "rg",
+      "repeat": 0,
+      "frozen_task_success": true,
+      "source_sha256": "c26f7658f6567b52bb1b5e93187c8baa4a0fade720ee22b3beb40a0a382eb475",
+      "passed": false
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "probe",
+      "repeat": 0,
+      "frozen_task_success": true,
+      "source_sha256": "c26f7658f6567b52bb1b5e93187c8baa4a0fade720ee22b3beb40a0a382eb475",
+      "passed": false
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "rg",
+      "repeat": 1,
+      "frozen_task_success": true,
+      "source_sha256": "09501a915ce2df9cb630f817aa2584b3b5e113b7c96044880e633fe5ef15dc35",
+      "passed": false
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "probe",
+      "repeat": 1,
+      "frozen_task_success": true,
+      "source_sha256": "b449c37db49a0d600e20753a66b96696dd746be80882ad6544ab0eefaafb9730",
+      "passed": false
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "flexcontext",
+      "repeat": 1,
+      "frozen_task_success": true,
+      "source_sha256": "09501a915ce2df9cb630f817aa2584b3b5e113b7c96044880e633fe5ef15dc35",
+      "passed": false
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "flexcontext",
+      "repeat": 2,
+      "frozen_task_success": true,
+      "source_sha256": "d2c59d74d8c0551d0a77383dd63466f163ab195fb6fbe5ac053aadfd41a58dd1",
+      "passed": false
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "probe",
+      "repeat": 2,
+      "frozen_task_success": true,
+      "source_sha256": "c26f7658f6567b52bb1b5e93187c8baa4a0fade720ee22b3beb40a0a382eb475",
+      "passed": false
+    },
+    {
+      "task": "lexical-digit-boundary",
+      "arm": "rg",
+      "repeat": 2,
+      "frozen_task_success": true,
+      "source_sha256": "c26f7658f6567b52bb1b5e93187c8baa4a0fade720ee22b3beb40a0a382eb475",
+      "passed": false
+    }
+  ],
+  "audit_passes": 0,
+  "audit_trials": 9
+}

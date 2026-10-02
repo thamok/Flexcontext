@@ -1,0 +1,1682 @@
+{
+  "schema": 1,
+  "k": 5,
+  "selection_budget": 12000,
+  "summary": {
+    "queries": 43,
+    "recall_at_k": 0.9534883720930233,
+    "mrr": 0.7228682170542634,
+    "ndcg_at_k": 0.762872980365701,
+    "relationship_recall": 0.7441860465116279,
+    "mean_source_bytes": 568.8604651162791,
+    "mean_serialized_bytes": 8952.906976744185,
+    "mean_estimated_tokens": 2238.6046511627906
+  },
+  "by_split": {
+    "dev": {
+      "queries": 22,
+      "recall_at_k": 1.0,
+      "mrr": 0.7575757575757575,
+      "ndcg_at_k": 0.7881305821984906,
+      "relationship_recall": 0.6818181818181818,
+      "mean_source_bytes": 570.8636363636364,
+      "mean_serialized_bytes": 9047.181818181818,
+      "mean_estimated_tokens": 2262.181818181818
+    },
+    "test": {
+      "queries": 21,
+      "recall_at_k": 0.9047619047619048,
+      "mrr": 0.6865079365079365,
+      "ndcg_at_k": 0.7364126355884926,
+      "relationship_recall": 0.8095238095238095,
+      "mean_source_bytes": 566.7619047619048,
+      "mean_serialized_bytes": 8854.142857142857,
+      "mean_estimated_tokens": 2213.904761904762
+    }
+  },
+  "measurements": [
+    {
+      "id": "multilingual-01-1",
+      "query": "fetch active accounts while excluding deleted customer records",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.52129602861432,
+      "distractors_at_k": 1,
+      "relationship_recall": 0.0,
+      "source_bytes": 634,
+      "serialized_bytes": 8309,
+      "estimated_tokens": 2078,
+      "results": [
+        {
+          "path": "accounts.cls",
+          "symbol": "AccountAccess",
+          "kind": "class"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "loadActiveAccounts",
+          "kind": "method"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "accountHeading",
+          "kind": "method"
+        },
+        {
+          "path": "accounts.trigger",
+          "symbol": "RejectEmptyAccount",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-01-2",
+      "query": "reject an account name that is null or blank",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.531730627995306,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 794,
+      "serialized_bytes": 10094,
+      "estimated_tokens": 2524,
+      "results": [
+        {
+          "path": "accounts.cls",
+          "symbol": "AccountAccess",
+          "kind": "class"
+        },
+        {
+          "path": "accounts.trigger",
+          "symbol": "RejectEmptyAccount",
+          "kind": "function"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "validAccountName",
+          "kind": "method"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "loadActiveAccounts",
+          "kind": "method"
+        },
+        {
+          "path": "path.c",
+          "symbol": "contains_parent",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-01-3",
+      "query": "loadActiveAccounts",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 1,
+      "relationship_recall": 0.0,
+      "source_bytes": 560,
+      "serialized_bytes": 6483,
+      "estimated_tokens": 1621,
+      "results": [
+        {
+          "path": "accounts.cls",
+          "symbol": "loadActiveAccounts",
+          "kind": "method"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "accountHeading",
+          "kind": "method"
+        },
+        {
+          "path": "accounts.trigger",
+          "symbol": "RejectEmptyAccount",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-02-1",
+      "query": "reject an expired session before extending its lifetime",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.639909328045346,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 653,
+      "serialized_bytes": 9512,
+      "estimated_tokens": 2378,
+      "results": [
+        {
+          "path": "session.go",
+          "symbol": "Session",
+          "kind": "struct"
+        },
+        {
+          "path": "session.go",
+          "symbol": "RenewSession",
+          "kind": "method"
+        },
+        {
+          "path": "cache.cpp",
+          "symbol": "expired_entry",
+          "kind": "function"
+        },
+        {
+          "path": "session.go",
+          "symbol": "isExpired",
+          "kind": "function"
+        },
+        {
+          "path": "accounts.trigger",
+          "symbol": "RejectEmptyAccount",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-02-2",
+      "query": "compare expiry against the current time",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 0.0,
+      "reciprocal_rank": 0.0,
+      "ndcg_at_k": 0.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 263,
+      "serialized_bytes": 3262,
+      "estimated_tokens": 816,
+      "results": [
+        {
+          "path": "Selection.jsx",
+          "symbol": "useSelection",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-02-3",
+      "query": "RenewSession",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.944847956559586,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 385,
+      "serialized_bytes": 7667,
+      "estimated_tokens": 1917,
+      "results": [
+        {
+          "path": "session.go",
+          "symbol": "RenewSession",
+          "kind": "method"
+        },
+        {
+          "path": "session.go",
+          "symbol": "Session",
+          "kind": "struct"
+        },
+        {
+          "path": "session.go",
+          "symbol": "sessionHeading",
+          "kind": "function"
+        },
+        {
+          "path": "session.go",
+          "symbol": "isExpired",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-03-1",
+      "query": "reject an absolute upload path or parent traversal",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.6885288809404666,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 714,
+      "serialized_bytes": 9578,
+      "estimated_tokens": 2395,
+      "results": [
+        {
+          "path": "path.c",
+          "symbol": "contains_parent",
+          "kind": "function"
+        },
+        {
+          "path": "Upload.vue",
+          "symbol": "validUpload",
+          "kind": "function"
+        },
+        {
+          "path": "path.c",
+          "symbol": "validate_upload_path",
+          "kind": "function"
+        },
+        {
+          "path": "path.c",
+          "symbol": "path_heading",
+          "kind": "function"
+        },
+        {
+          "path": "accounts.trigger",
+          "symbol": "RejectEmptyAccount",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-03-2",
+      "query": "detect a parent directory in a relative path",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 678,
+      "serialized_bytes": 9994,
+      "estimated_tokens": 2499,
+      "results": [
+        {
+          "path": "path.c",
+          "symbol": "contains_parent",
+          "kind": "function"
+        },
+        {
+          "path": "path.c",
+          "symbol": "path_heading",
+          "kind": "function"
+        },
+        {
+          "path": "path.c",
+          "symbol": "validate_upload_path",
+          "kind": "function"
+        },
+        {
+          "path": "cache.cpp",
+          "symbol": "read_cache",
+          "kind": "function"
+        },
+        {
+          "path": "pixel.metal",
+          "symbol": "normalizePixels",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-03-3",
+      "query": "validate_upload_path",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 541,
+      "serialized_bytes": 10075,
+      "estimated_tokens": 2519,
+      "results": [
+        {
+          "path": "path.c",
+          "symbol": "validate_upload_path",
+          "kind": "function"
+        },
+        {
+          "path": "Upload.vue",
+          "symbol": "validUpload",
+          "kind": "function"
+        },
+        {
+          "path": "path.c",
+          "symbol": "contains_parent",
+          "kind": "function"
+        },
+        {
+          "path": "invoice.kt",
+          "symbol": "Invoice",
+          "kind": "class"
+        },
+        {
+          "path": "Upload.vue",
+          "symbol": "submitUpload",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-04-1",
+      "query": "retry throttled or failed requests with a maximum attempt limit",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.25,
+      "ndcg_at_k": 0.4935456744811716,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 486,
+      "serialized_bytes": 10274,
+      "estimated_tokens": 2569,
+      "results": [
+        {
+          "path": "retry.cs",
+          "symbol": "RetryPolicy",
+          "kind": "class"
+        },
+        {
+          "path": "jobs.lua",
+          "symbol": "shouldRetry",
+          "kind": "function"
+        },
+        {
+          "path": "retry.cs",
+          "symbol": "DelayMilliseconds",
+          "kind": "method"
+        },
+        {
+          "path": "retry.cs",
+          "symbol": "RetryRequest",
+          "kind": "method"
+        },
+        {
+          "path": "jobs.lua",
+          "symbol": "Jobs",
+          "kind": "declaration"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-04-2",
+      "query": "cap exponential delay at thirty seconds",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.5196610607458307,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 637,
+      "serialized_bytes": 10826,
+      "estimated_tokens": 2707,
+      "results": [
+        {
+          "path": "session.go",
+          "symbol": "Session",
+          "kind": "struct"
+        },
+        {
+          "path": "retry.cs",
+          "symbol": "RetryPolicy",
+          "kind": "class"
+        },
+        {
+          "path": "retry.cs",
+          "symbol": "DelayMilliseconds",
+          "kind": "method"
+        },
+        {
+          "path": "session.go",
+          "symbol": "RenewSession",
+          "kind": "method"
+        },
+        {
+          "path": "retry.cs",
+          "symbol": "RetryRequest",
+          "kind": "method"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-04-3",
+      "query": "RetryRequest",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 516,
+      "serialized_bytes": 10130,
+      "estimated_tokens": 2533,
+      "results": [
+        {
+          "path": "retry.cs",
+          "symbol": "RetryRequest",
+          "kind": "method"
+        },
+        {
+          "path": "retry.cs",
+          "symbol": "RetryHeading",
+          "kind": "method"
+        },
+        {
+          "path": "page.dart",
+          "symbol": "PageCursor",
+          "kind": "class"
+        },
+        {
+          "path": "page.dart",
+          "symbol": "clampPageSize",
+          "kind": "method"
+        },
+        {
+          "path": "jobs.lua",
+          "symbol": "shouldRetry",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-05-1",
+      "query": "return a cache miss when an entry has expired",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.58688267143572,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 386,
+      "serialized_bytes": 9259,
+      "estimated_tokens": 2315,
+      "results": [
+        {
+          "path": "cache.cpp",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        },
+        {
+          "path": "cache.cpp",
+          "symbol": "expired_entry",
+          "kind": "function"
+        },
+        {
+          "path": "cache.cpp",
+          "symbol": "read_cache",
+          "kind": "function"
+        },
+        {
+          "path": "jobs.lua",
+          "symbol": "Jobs",
+          "kind": "declaration"
+        },
+        {
+          "path": "session.go",
+          "symbol": "isExpired",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-05-2",
+      "query": "compare cache expiry to current time",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.41311732856427996,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 431,
+      "serialized_bytes": 9555,
+      "estimated_tokens": 2389,
+      "results": [
+        {
+          "path": "cache.cpp",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        },
+        {
+          "path": "page.dart",
+          "symbol": "PageCursor",
+          "kind": "class"
+        },
+        {
+          "path": "cache.cpp",
+          "symbol": "expired_entry",
+          "kind": "function"
+        },
+        {
+          "path": "page.dart",
+          "symbol": "clampPageSize",
+          "kind": "method"
+        },
+        {
+          "path": "Search.tsx",
+          "symbol": "filterSuggestions",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-05-3",
+      "query": "read_cache",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 292,
+      "serialized_bytes": 6245,
+      "estimated_tokens": 1562,
+      "results": [
+        {
+          "path": "cache.cpp",
+          "symbol": "read_cache",
+          "kind": "function"
+        },
+        {
+          "path": "cache.cpp",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        },
+        {
+          "path": "cache.cpp",
+          "symbol": "cache_heading",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-06-1",
+      "query": "persist a preference value after validating its key",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.7967075809905066,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 673,
+      "serialized_bytes": 9608,
+      "estimated_tokens": 2402,
+      "results": [
+        {
+          "path": "preferences.m",
+          "symbol": "validKey:",
+          "kind": "method"
+        },
+        {
+          "path": "preferences.m",
+          "symbol": "saveValue:forKey:",
+          "kind": "method"
+        },
+        {
+          "path": "Upload.vue",
+          "symbol": "validUpload",
+          "kind": "function"
+        },
+        {
+          "path": "Search.tsx",
+          "symbol": "filterSuggestions",
+          "kind": "function"
+        },
+        {
+          "path": "path.c",
+          "symbol": "contains_parent",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-06-2",
+      "query": "reject a nil or empty preference key",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 1,
+      "relationship_recall": 0.0,
+      "source_bytes": 816,
+      "serialized_bytes": 10002,
+      "estimated_tokens": 2501,
+      "results": [
+        {
+          "path": "preferences.m",
+          "symbol": "validKey:",
+          "kind": "method"
+        },
+        {
+          "path": "preferences.m",
+          "symbol": "preferencesHeading",
+          "kind": "method"
+        },
+        {
+          "path": "accounts.trigger",
+          "symbol": "RejectEmptyAccount",
+          "kind": "function"
+        },
+        {
+          "path": "path.c",
+          "symbol": "contains_parent",
+          "kind": "function"
+        },
+        {
+          "path": "Selection.jsx",
+          "symbol": "SelectionList",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-06-3",
+      "query": "saveValue forKey",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 787,
+      "serialized_bytes": 10152,
+      "estimated_tokens": 2538,
+      "results": [
+        {
+          "path": "preferences.m",
+          "symbol": "saveValue:forKey:",
+          "kind": "method"
+        },
+        {
+          "path": "preferences.m",
+          "symbol": "validKey:",
+          "kind": "method"
+        },
+        {
+          "path": "Search.tsx",
+          "symbol": "filterSuggestions",
+          "kind": "function"
+        },
+        {
+          "path": "cache.cpp",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        },
+        {
+          "path": "Search.tsx",
+          "symbol": "SearchBox",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-07-1",
+      "query": "normalize pixel samples before writing them on the GPU",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 576,
+      "serialized_bytes": 9385,
+      "estimated_tokens": 2347,
+      "results": [
+        {
+          "path": "pixel.metal",
+          "symbol": "normalizePixels",
+          "kind": "function"
+        },
+        {
+          "path": "pixel.metal",
+          "symbol": "clampSample",
+          "kind": "function"
+        },
+        {
+          "path": "session.go",
+          "symbol": "Session",
+          "kind": "struct"
+        },
+        {
+          "path": "pixel.metal",
+          "symbol": "pixelHeading",
+          "kind": "function"
+        },
+        {
+          "path": "accounts.trigger",
+          "symbol": "RejectEmptyAccount",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-07-2",
+      "query": "clamp a sample value between zero and one",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 474,
+      "serialized_bytes": 9695,
+      "estimated_tokens": 2424,
+      "results": [
+        {
+          "path": "pixel.metal",
+          "symbol": "clampSample",
+          "kind": "function"
+        },
+        {
+          "path": "vector.cu",
+          "symbol": "scaleElement",
+          "kind": "function"
+        },
+        {
+          "path": "cache.cpp",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        },
+        {
+          "path": "vector.cu",
+          "symbol": "scaleVector",
+          "kind": "function"
+        },
+        {
+          "path": "page.dart",
+          "symbol": "PageCursor",
+          "kind": "class"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-07-3",
+      "query": "normalizePixels",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 285,
+      "serialized_bytes": 6343,
+      "estimated_tokens": 1586,
+      "results": [
+        {
+          "path": "pixel.metal",
+          "symbol": "normalizePixels",
+          "kind": "function"
+        },
+        {
+          "path": "pixel.metal",
+          "symbol": "pixelHeading",
+          "kind": "function"
+        },
+        {
+          "path": "pixel.metal",
+          "symbol": "clampSample",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-08-1",
+      "query": "scale vector elements on the GPU without writing beyond the count",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 663,
+      "serialized_bytes": 10006,
+      "estimated_tokens": 2502,
+      "results": [
+        {
+          "path": "vector.cu",
+          "symbol": "scaleVector",
+          "kind": "function"
+        },
+        {
+          "path": "vector.cu",
+          "symbol": "scaleElement",
+          "kind": "function"
+        },
+        {
+          "path": "Search.tsx",
+          "symbol": "filterSuggestions",
+          "kind": "function"
+        },
+        {
+          "path": "vector.cu",
+          "symbol": "launchScale",
+          "kind": "function"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "AccountAccess",
+          "kind": "class"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-08-2",
+      "query": "multiply an element by the scale factor",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 894,
+      "serialized_bytes": 9807,
+      "estimated_tokens": 2452,
+      "results": [
+        {
+          "path": "vector.cu",
+          "symbol": "scaleElement",
+          "kind": "function"
+        },
+        {
+          "path": "vector.cu",
+          "symbol": "scaleVector",
+          "kind": "function"
+        },
+        {
+          "path": "Search.tsx",
+          "symbol": "SearchBox",
+          "kind": "function"
+        },
+        {
+          "path": "vector.cu",
+          "symbol": "launchScale",
+          "kind": "function"
+        },
+        {
+          "path": "Search.tsx",
+          "symbol": "filterSuggestions",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-08-3",
+      "query": "scaleVector",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 426,
+      "serialized_bytes": 6130,
+      "estimated_tokens": 1533,
+      "results": [
+        {
+          "path": "vector.cu",
+          "symbol": "scaleVector",
+          "kind": "function"
+        },
+        {
+          "path": "vector.cu",
+          "symbol": "launchScale",
+          "kind": "function"
+        },
+        {
+          "path": "vector.cu",
+          "symbol": "scaleElement",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-09-1",
+      "query": "refund an invoice only when the amount is positive and within the total",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.58688267143572,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 576,
+      "serialized_bytes": 10219,
+      "estimated_tokens": 2555,
+      "results": [
+        {
+          "path": "invoice.kt",
+          "symbol": "Invoice",
+          "kind": "class"
+        },
+        {
+          "path": "invoice.kt",
+          "symbol": "validRefund",
+          "kind": "method"
+        },
+        {
+          "path": "invoice.kt",
+          "symbol": "refundInvoice",
+          "kind": "method"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "loadActiveAccounts",
+          "kind": "method"
+        },
+        {
+          "path": "session.go",
+          "symbol": "isExpired",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-09-2",
+      "query": "validate a refund amount against the invoice total",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.6590018048024133,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 542,
+      "serialized_bytes": 9943,
+      "estimated_tokens": 2486,
+      "results": [
+        {
+          "path": "invoice.kt",
+          "symbol": "Invoice",
+          "kind": "class"
+        },
+        {
+          "path": "invoice.kt",
+          "symbol": "validRefund",
+          "kind": "method"
+        },
+        {
+          "path": "invoice.kt",
+          "symbol": "refundInvoice",
+          "kind": "method"
+        },
+        {
+          "path": "Upload.vue",
+          "symbol": "validUpload",
+          "kind": "function"
+        },
+        {
+          "path": "path.c",
+          "symbol": "contains_parent",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-09-3",
+      "query": "refundInvoice",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 245,
+      "serialized_bytes": 4844,
+      "estimated_tokens": 1211,
+      "results": [
+        {
+          "path": "invoice.kt",
+          "symbol": "refundInvoice",
+          "kind": "method"
+        },
+        {
+          "path": "invoice.kt",
+          "symbol": "validRefund",
+          "kind": "method"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-10-1",
+      "query": "return rows after a cursor with a capped page size",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_k": 0.58688267143572,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 487,
+      "serialized_bytes": 9938,
+      "estimated_tokens": 2485,
+      "results": [
+        {
+          "path": "page.dart",
+          "symbol": "PageCursor",
+          "kind": "class"
+        },
+        {
+          "path": "page.dart",
+          "symbol": "clampPageSize",
+          "kind": "method"
+        },
+        {
+          "path": "page.dart",
+          "symbol": "nextPage",
+          "kind": "method"
+        },
+        {
+          "path": "Upload.vue",
+          "symbol": "validUpload",
+          "kind": "function"
+        },
+        {
+          "path": "cache.cpp",
+          "symbol": "expired_entry",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-10-2",
+      "query": "limit the requested page size to one through one hundred",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.639909328045346,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 452,
+      "serialized_bytes": 10785,
+      "estimated_tokens": 2697,
+      "results": [
+        {
+          "path": "page.dart",
+          "symbol": "PageCursor",
+          "kind": "class"
+        },
+        {
+          "path": "page.dart",
+          "symbol": "clampPageSize",
+          "kind": "method"
+        },
+        {
+          "path": "retry.cs",
+          "symbol": "Requests",
+          "kind": "module"
+        },
+        {
+          "path": "page.dart",
+          "symbol": "nextPage",
+          "kind": "method"
+        },
+        {
+          "path": "retry.cs",
+          "symbol": "RetryPolicy",
+          "kind": "class"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-10-3",
+      "query": "nextPage",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 247,
+      "serialized_bytes": 4830,
+      "estimated_tokens": 1208,
+      "results": [
+        {
+          "path": "page.dart",
+          "symbol": "nextPage",
+          "kind": "method"
+        },
+        {
+          "path": "page.dart",
+          "symbol": "pageHeading",
+          "kind": "method"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-11-1",
+      "query": "prevent submitting an empty or oversized upload",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.7967075809905066,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 680,
+      "serialized_bytes": 9807,
+      "estimated_tokens": 2452,
+      "results": [
+        {
+          "path": "Upload.vue",
+          "symbol": "validUpload",
+          "kind": "function"
+        },
+        {
+          "path": "Upload.vue",
+          "symbol": "submitUpload",
+          "kind": "function"
+        },
+        {
+          "path": "path.c",
+          "symbol": "contains_parent",
+          "kind": "function"
+        },
+        {
+          "path": "accounts.trigger",
+          "symbol": "RejectEmptyAccount",
+          "kind": "function"
+        },
+        {
+          "path": "Upload.vue",
+          "symbol": "uploadHeading",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-11-2",
+      "query": "validate upload bytes against a one megabyte limit",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 1,
+      "relationship_recall": 0.0,
+      "source_bytes": 536,
+      "serialized_bytes": 9401,
+      "estimated_tokens": 2351,
+      "results": [
+        {
+          "path": "Upload.vue",
+          "symbol": "validUpload",
+          "kind": "function"
+        },
+        {
+          "path": "invoice.kt",
+          "symbol": "validRefund",
+          "kind": "method"
+        },
+        {
+          "path": "path.c",
+          "symbol": "contains_parent",
+          "kind": "function"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "validAccountName",
+          "kind": "method"
+        },
+        {
+          "path": "Upload.vue",
+          "symbol": "uploadHeading",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-11-3",
+      "query": "submitUpload",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8262346571285599,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 584,
+      "serialized_bytes": 9582,
+      "estimated_tokens": 2396,
+      "results": [
+        {
+          "path": "Upload.vue",
+          "symbol": "submitUpload",
+          "kind": "function"
+        },
+        {
+          "path": "Upload.vue",
+          "symbol": "UploadTemplate",
+          "kind": "template"
+        },
+        {
+          "path": "Upload.vue",
+          "symbol": "uploadHeading",
+          "kind": "function"
+        },
+        {
+          "path": "path.c",
+          "symbol": "validate_upload_path",
+          "kind": "function"
+        },
+        {
+          "path": "path.c",
+          "symbol": "contains_parent",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-12-1",
+      "query": "stop a job when retry attempts reach the maximum",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 0.0,
+      "reciprocal_rank": 0.0,
+      "ndcg_at_k": 0.17376534287144002,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 486,
+      "serialized_bytes": 10416,
+      "estimated_tokens": 2604,
+      "results": [
+        {
+          "path": "retry.cs",
+          "symbol": "RetryPolicy",
+          "kind": "class"
+        },
+        {
+          "path": "jobs.lua",
+          "symbol": "shouldRetry",
+          "kind": "function"
+        },
+        {
+          "path": "retry.cs",
+          "symbol": "DelayMilliseconds",
+          "kind": "method"
+        },
+        {
+          "path": "retry.cs",
+          "symbol": "RetryRequest",
+          "kind": "method"
+        },
+        {
+          "path": "jobs.lua",
+          "symbol": "Jobs",
+          "kind": "declaration"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-12-2",
+      "query": "compare retry attempt count against the maximum",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.52129602861432,
+      "distractors_at_k": 0,
+      "relationship_recall": 0.0,
+      "source_bytes": 486,
+      "serialized_bytes": 10511,
+      "estimated_tokens": 2628,
+      "results": [
+        {
+          "path": "retry.cs",
+          "symbol": "RetryPolicy",
+          "kind": "class"
+        },
+        {
+          "path": "jobs.lua",
+          "symbol": "shouldRetry",
+          "kind": "function"
+        },
+        {
+          "path": "retry.cs",
+          "symbol": "DelayMilliseconds",
+          "kind": "method"
+        },
+        {
+          "path": "retry.cs",
+          "symbol": "RetryRequest",
+          "kind": "method"
+        },
+        {
+          "path": "jobs.lua",
+          "symbol": "Jobs",
+          "kind": "declaration"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-12-3",
+      "query": "runJob",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.944847956559586,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 276,
+      "serialized_bytes": 7043,
+      "estimated_tokens": 1761,
+      "results": [
+        {
+          "path": "jobs.lua",
+          "symbol": "runJob",
+          "kind": "method"
+        },
+        {
+          "path": "jobs.lua",
+          "symbol": "jobsHeading",
+          "kind": "function"
+        },
+        {
+          "path": "jobs.lua",
+          "symbol": "Jobs",
+          "kind": "declaration"
+        },
+        {
+          "path": "jobs.lua",
+          "symbol": "shouldRetry",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-13-1",
+      "query": "render a selection list that toggles items when clicked",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 863,
+      "serialized_bytes": 10130,
+      "estimated_tokens": 2533,
+      "results": [
+        {
+          "path": "Selection.jsx",
+          "symbol": "SelectionList",
+          "kind": "function"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "AccountAccess",
+          "kind": "class"
+        },
+        {
+          "path": "Selection.jsx",
+          "symbol": "useSelection",
+          "kind": "function"
+        },
+        {
+          "path": "page.dart",
+          "symbol": "clampPageSize",
+          "kind": "method"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "loadActiveAccounts",
+          "kind": "method"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-13-2",
+      "query": "toggle a selected item and expose the updated selection",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 859,
+      "serialized_bytes": 10326,
+      "estimated_tokens": 2582,
+      "results": [
+        {
+          "path": "Selection.jsx",
+          "symbol": "useSelection",
+          "kind": "function"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "AccountAccess",
+          "kind": "class"
+        },
+        {
+          "path": "Selection.jsx",
+          "symbol": "SelectionList",
+          "kind": "function"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "loadActiveAccounts",
+          "kind": "method"
+        },
+        {
+          "path": "Selection.jsx",
+          "symbol": "selectionHeading",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-13-3",
+      "query": "SelectionList",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.944847956559586,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 724,
+      "serialized_bytes": 10319,
+      "estimated_tokens": 2580,
+      "results": [
+        {
+          "path": "Selection.jsx",
+          "symbol": "SelectionList",
+          "kind": "function"
+        },
+        {
+          "path": "Selection.jsx",
+          "symbol": "selectionHeading",
+          "kind": "function"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "AccountAccess",
+          "kind": "class"
+        },
+        {
+          "path": "Selection.jsx",
+          "symbol": "useSelection",
+          "kind": "function"
+        },
+        {
+          "path": "page.dart",
+          "symbol": "PageCursor",
+          "kind": "class"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-14-1",
+      "query": "render filtered search suggestions alongside the input",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.7967075809905066,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 804,
+      "serialized_bytes": 8676,
+      "estimated_tokens": 2169,
+      "results": [
+        {
+          "path": "Search.tsx",
+          "symbol": "filterSuggestions",
+          "kind": "function"
+        },
+        {
+          "path": "Search.tsx",
+          "symbol": "SearchBox",
+          "kind": "function"
+        },
+        {
+          "path": "Search.tsx",
+          "symbol": "searchHeading",
+          "kind": "function"
+        },
+        {
+          "path": "Selection.jsx",
+          "symbol": "useSelection",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-14-2",
+      "query": "filter suggestions by a case insensitive query prefix",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "distractors_at_k": 0,
+      "relationship_recall": 1.0,
+      "source_bytes": 924,
+      "serialized_bytes": 9745,
+      "estimated_tokens": 2437,
+      "results": [
+        {
+          "path": "Search.tsx",
+          "symbol": "filterSuggestions",
+          "kind": "function"
+        },
+        {
+          "path": "Search.tsx",
+          "symbol": "SearchBox",
+          "kind": "function"
+        },
+        {
+          "path": "Selection.jsx",
+          "symbol": "useSelection",
+          "kind": "function"
+        },
+        {
+          "path": "cache.cpp",
+          "symbol": "CacheEntry",
+          "kind": "struct"
+        },
+        {
+          "path": "path.c",
+          "symbol": "contains_parent",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-14-3",
+      "query": "SearchBox",
+      "split": "test",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.9639404333166532,
+      "distractors_at_k": 1,
+      "relationship_recall": 1.0,
+      "source_bytes": 541,
+      "serialized_bytes": 6617,
+      "estimated_tokens": 1655,
+      "results": [
+        {
+          "path": "Search.tsx",
+          "symbol": "SearchBox",
+          "kind": "function"
+        },
+        {
+          "path": "Search.tsx",
+          "symbol": "searchHeading",
+          "kind": "function"
+        },
+        {
+          "path": "Search.tsx",
+          "symbol": "filterSuggestions",
+          "kind": "function"
+        }
+      ]
+    },
+    {
+      "id": "multilingual-apex-trigger",
+      "query": "reject blank account names before insert and update",
+      "split": "dev",
+      "k": 5,
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.6590018048024133,
+      "distractors_at_k": 1,
+      "relationship_recall": 0.0,
+      "source_bytes": 585,
+      "serialized_bytes": 9452,
+      "estimated_tokens": 2363,
+      "results": [
+        {
+          "path": "accounts.cls",
+          "symbol": "AccountAccess",
+          "kind": "class"
+        },
+        {
+          "path": "accounts.trigger",
+          "symbol": "RejectEmptyAccount",
+          "kind": "function"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "validAccountName",
+          "kind": "method"
+        },
+        {
+          "path": "session.go",
+          "symbol": "Session",
+          "kind": "struct"
+        },
+        {
+          "path": "accounts.cls",
+          "symbol": "accountHeading",
+          "kind": "method"
+        }
+      ]
+    }
+  ]
+}

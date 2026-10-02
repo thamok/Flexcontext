@@ -3,16 +3,12 @@ use crate::{
     lexical::{Query, matching_query_terms},
     model::{SourceSpan, Symbol},
 };
-use tree_sitter::Node;
 
 pub fn slice_symbol(
     symbol: &Symbol,
     query: &Query,
     limit: usize,
 ) -> Option<(String, Vec<SourceSpan>)> {
-    let mut parser = tree_sitter::Parser::new();
-    crate::language::configure_parser(&mut parser, symbol.language).ok()?;
-    let tree = parser.parse(symbol.content(), None)?;
     let mut content = format!(
         "{}\n[… body excerpts; omitted code is not shown …]\n",
         symbol.signature()
@@ -20,70 +16,88 @@ pub fn slice_symbol(
     if content.len() > limit {
         return None;
     }
-    let mut candidates = Vec::new();
-    collect(
-        tree.root_node(),
-        symbol.content(),
-        limit.saturating_sub(content.len()),
-        &mut candidates,
-    );
-    candidates.sort_by(|a, b| {
-        let relevance =
-            |node: &Node<'_>| matching_query_terms(query, &symbol.content()[node.byte_range()]);
-        relevance(b)
-            .cmp(&relevance(a))
-            .then_with(|| a.start_byte().cmp(&b.start_byte()))
-    });
+    let available = limit.saturating_sub(content.len());
+    let line_starts: Vec<_> = std::iter::once(symbol.start_byte)
+        .chain(
+            symbol
+                .content()
+                .bytes()
+                .enumerate()
+                .filter_map(|(i, b)| (b == b'\n').then_some(symbol.start_byte + i + 1)),
+        )
+        .collect();
+    let span_for = |range: std::ops::Range<usize>| SourceSpan {
+        start_byte: range.start,
+        end_byte: range.end,
+        start_line: symbol.start_line + line_starts.partition_point(|&p| p <= range.start) - 1,
+        end_line: symbol.start_line + line_starts.partition_point(|&p| p <= range.end) - 1,
+    };
+    let mut candidates: Vec<(std::ops::Range<usize>, usize)> = Vec::new();
+    // Reuse complete statements collected in the full-file AST. This also
+    // handles methods that cannot be parsed correctly outside their container.
+    for range in &symbol.excerpt_ranges {
+        if range.len() + 48 > available
+            // Ranges arrive in source order. Selected enclosing ranges suppress
+            // their descendants, so only the most recent range can contain this one.
+            || candidates.last().is_some_and(|(parent, _)|
+                parent.start <= range.start && parent.end >= range.end)
+        {
+            continue;
+        }
+        let source = symbol.source.get(range.clone())?;
+        candidates.push((range.clone(), matching_query_terms(query, source)));
+    }
+    if candidates.is_empty()
+        && !symbol.body_range.is_empty()
+        && symbol.body_range.len() + 48 <= available
+    {
+        candidates.push((
+            symbol.body_range.clone(),
+            matching_query_terms(query, symbol.body()),
+        ));
+    }
+    candidates.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.start.cmp(&b.0.start)));
     let mut chosen = Vec::new();
     let mut used = content.len();
-    for node in candidates {
-        let header = format!(
-            "\n[lines {}–{}]\n",
-            symbol.start_line + node.start_position().row,
-            symbol.start_line + node.end_position().row
-        );
-        let cost = header.len() + node.byte_range().len() + 1;
+    for (range, _) in candidates {
+        let span = span_for(range.clone());
+        let header = format!("\n[lines {}–{}]\n", span.start_line, span.end_line);
+        let cost = header.len() + range.len() + 1;
         if cost + used <= limit {
-            chosen.push(node);
+            chosen.push(range);
             used += cost;
         }
     }
-    chosen.sort_by_key(Node::start_byte);
-    let mut spans = Vec::new();
-    for node in chosen {
-        let start_line = symbol.start_line + node.start_position().row;
-        let end_line = symbol.start_line + node.end_position().row;
+    chosen.sort_by_key(|r| r.start);
+    let signature = symbol.signature();
+    let raw_signature = &symbol.source[symbol.signature_range.clone()];
+    let start =
+        symbol.signature_range.start + raw_signature.len() - raw_signature.trim_start().len();
+    let mut spans = vec![span_for(start..start + signature.len())];
+    for range in chosen {
+        let span = span_for(range.clone());
+        let start_line = span.start_line;
+        let end_line = span.end_line;
         content.push_str(&format!("\n[lines {start_line}–{end_line}]\n"));
-        content.push_str(&symbol.content()[node.byte_range()]);
+        content.push_str(&symbol.source[range]);
         content.push('\n');
-        spans.push(SourceSpan {
-            start_byte: symbol.start_byte + node.start_byte(),
-            end_byte: symbol.start_byte + node.end_byte(),
-            start_line,
-            end_line,
-        });
+        spans.push(span);
     }
     Some((content, spans))
 }
 
-fn collect<'a>(node: Node<'a>, source: &str, limit: usize, output: &mut Vec<Node<'a>>) {
-    // Iterative descent avoids stack overflow on pathological nesting.
-    let mut stack = vec![node];
-    while let Some(node) = stack.pop() {
-        let parent_is_block = node
-            .parent()
-            .is_some_and(|parent| matches!(parent.kind(), "statement_block" | "block"));
-        if parent_is_block
-            && node.kind() != "comment"
-            && node.byte_range().len() + 48 <= limit
-            && !node.has_error()
-            && !source[node.byte_range()].trim().is_empty()
-        {
-            output.push(node);
-            continue;
-        }
-        let mut cursor = node.walk();
-        let children: Vec<_> = node.named_children(&mut cursor).collect();
-        stack.extend(children.into_iter().rev());
+pub(crate) fn span_for_range(symbol: &Symbol, range: std::ops::Range<usize>) -> SourceSpan {
+    let line = |offset| {
+        symbol.start_line
+            + symbol.source.as_bytes()[symbol.start_byte..offset]
+                .iter()
+                .filter(|&&b| b == b'\n')
+                .count()
+    };
+    SourceSpan {
+        start_byte: range.start,
+        end_byte: range.end,
+        start_line: line(range.start),
+        end_line: line(range.end),
     }
 }

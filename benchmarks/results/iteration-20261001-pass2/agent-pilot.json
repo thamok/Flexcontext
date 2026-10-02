@@ -1,0 +1,127 @@
+{
+  "contract": {
+    "tasks_sha256": "d34dda33c179daa70db9c9d1f6c1dd46b4fb5f5b541b4d0b90852922d7dd594c",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "seed": 1729,
+    "repeats": 1,
+    "arms": [
+      "rg",
+      "baseline",
+      "candidate"
+    ],
+    "timeout_seconds": 180,
+    "source_token_limit": 8000,
+    "call_limit": 40,
+    "tokenizer": "cl100k_base; repeated source and all public-test diagnostics charged",
+    "binaries_sha256": {
+      "baseline": "07ae891b93a733d7d08f7e262be4aa155dd42cf5303ccbd834d4c8ac0f465a8c",
+      "candidate": "06566aee38f5df57ff5886b7243ec7771df19297a503197dacf446242a88a324"
+    },
+    "harness_sha256": {
+      "isolation.py": "c65e913d1ed0d24332c768986ddb796101cbc4dfebc007fba283c77f08cce15f",
+      "run.py": "75cc85d1a8d326b213ba6139afab2d0fe69cfd26e3c80f4f6bd573ea92a73874",
+      "test_pilot.py": "dcbba350370908d1f5916b7606dd911e80c8db28a35714cfcdc5af39542edbea",
+      "broker.py": "749df2f7fbb6cb96a606c0653875844b46b9bf2e6e099ef077c4af9d9ca63d32",
+      "grade.py": "e8d9f69f865a4edf804464d64eb61f7738e007900b23c190fc86a0cbef2c00ed"
+    },
+    "codex_version": "codex-cli 0.159.3",
+    "scope": "Small source-derived/synthetic seeded bug pilot. Not a production task-success benchmark."
+  },
+  "rows": [
+    {
+      "task": "limiter-fifo",
+      "arm": "baseline",
+      "repeat": 0,
+      "valid": true,
+      "task_success": true,
+      "acceptance_passed": true,
+      "timeout": false,
+      "exit_code": 0,
+      "elapsed_seconds": 42.27861775000929,
+      "protected_files_unchanged": true,
+      "trace": {
+        "valid": true,
+        "turn_completed": true,
+        "unauthorized": [],
+        "completed_mcp_calls": 5,
+        "broker_calls": 5,
+        "usage": {
+          "input_tokens": 84491,
+          "cached_input_tokens": 61824,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 630,
+          "reasoning_output_tokens": 240
+        }
+      },
+      "tool_calls": 5,
+      "source_tokens_delivered": 1367,
+      "tool_output_tokens": 2128,
+      "searches_before_first_edit": 1,
+      "retrieval_ms": 345.726540996111
+    },
+    {
+      "task": "limiter-fifo",
+      "arm": "rg",
+      "repeat": 0,
+      "valid": true,
+      "task_success": true,
+      "acceptance_passed": true,
+      "timeout": false,
+      "exit_code": 0,
+      "elapsed_seconds": 37.457946249996894,
+      "protected_files_unchanged": true,
+      "trace": {
+        "valid": true,
+        "turn_completed": true,
+        "unauthorized": [],
+        "completed_mcp_calls": 6,
+        "broker_calls": 6,
+        "usage": {
+          "input_tokens": 101165,
+          "cached_input_tokens": 89344,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 625,
+          "reasoning_output_tokens": 171
+        }
+      },
+      "tool_calls": 6,
+      "source_tokens_delivered": 2142,
+      "tool_output_tokens": 2512,
+      "searches_before_first_edit": 1,
+      "retrieval_ms": 162.06887499720324
+    },
+    {
+      "task": "limiter-fifo",
+      "arm": "candidate",
+      "repeat": 0,
+      "valid": true,
+      "task_success": true,
+      "acceptance_passed": true,
+      "timeout": false,
+      "exit_code": 0,
+      "elapsed_seconds": 36.2409369579982,
+      "protected_files_unchanged": true,
+      "trace": {
+        "valid": true,
+        "turn_completed": true,
+        "unauthorized": [],
+        "completed_mcp_calls": 5,
+        "broker_calls": 5,
+        "usage": {
+          "input_tokens": 85598,
+          "cached_input_tokens": 56960,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 581,
+          "reasoning_output_tokens": 137
+        }
+      },
+      "tool_calls": 5,
+      "source_tokens_delivered": 1511,
+      "tool_output_tokens": 2395,
+      "searches_before_first_edit": 1,
+      "retrieval_ms": 374.07391698798165
+    }
+  ],
+  "interpretation": "One seeded FIFO task, one attempt per arm; all three pass. Harness smoke only, no comparative task-success or latency claim. Baseline/candidate provider labels differed in this initial smoke and are unified in the subsequent runner."
+}

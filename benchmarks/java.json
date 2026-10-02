@@ -1,0 +1,285 @@
+{
+  "schema": 1,
+  "queries": [
+    {
+      "id": "java-01-1",
+      "query": "reject blank bearer tokens before checking expiry",
+      "fixture": "fixtures/java",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "Session.java",
+          "symbol": "authenticateBearer",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "Session.java",
+          "symbol": "hasExpired",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "Session.java",
+          "symbol": "authenticationHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "Session.java",
+            "symbol": "authenticateBearer",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "Session.java",
+            "symbol": "hasExpired",
+            "kind": "method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "java-01-2",
+      "query": "check whether session expiry is at or before the current instant",
+      "fixture": "fixtures/java",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "Session.java",
+          "symbol": "hasExpired",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "Session.java",
+          "symbol": "authenticateBearer",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "Session.java",
+          "symbol": "authenticationHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": []
+    },
+    {
+      "id": "java-01-3",
+      "query": "authenticateBearer",
+      "fixture": "fixtures/java",
+      "split": "dev",
+      "strongly_relevant": [
+        {
+          "path": "Session.java",
+          "symbol": "authenticateBearer",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "Session.java",
+          "symbol": "hasExpired",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "Session.java",
+          "symbol": "authenticationHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": [
+        {
+          "source": {
+            "path": "Session.java",
+            "symbol": "authenticateBearer",
+            "kind": "method"
+          },
+          "kind": "calls",
+          "target": {
+            "path": "Session.java",
+            "symbol": "hasExpired",
+            "kind": "method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "java-02-1",
+      "query": "retry transient failures only below the maximum attempt count",
+      "fixture": "fixtures/java",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "shouldRetry",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "backoffMillis",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "retryHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": []
+    },
+    {
+      "id": "java-02-2",
+      "query": "double retry backoff with a thirty second cap",
+      "fixture": "fixtures/java",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "backoffMillis",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "shouldRetry",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "retryHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": []
+    },
+    {
+      "id": "java-02-3",
+      "query": "shouldRetry",
+      "fixture": "fixtures/java",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "shouldRetry",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "backoffMillis",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "RetryPolicy.java",
+          "symbol": "retryHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": []
+    },
+    {
+      "id": "java-03-1",
+      "query": "reject absolute paths and parent traversal components",
+      "fixture": "fixtures/java",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "PathPolicy.java",
+          "symbol": "allowsRelativePath",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "PathPolicy.java",
+          "symbol": "matchesDirectoryPrefix",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "PathPolicy.java",
+          "symbol": "pathHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": []
+    },
+    {
+      "id": "java-03-2",
+      "query": "match directory prefix using a slash component boundary",
+      "fixture": "fixtures/java",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "PathPolicy.java",
+          "symbol": "matchesDirectoryPrefix",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "PathPolicy.java",
+          "symbol": "allowsRelativePath",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "PathPolicy.java",
+          "symbol": "pathHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": []
+    },
+    {
+      "id": "java-03-3",
+      "query": "matchesDirectoryPrefix",
+      "fixture": "fixtures/java",
+      "split": "test",
+      "strongly_relevant": [
+        {
+          "path": "PathPolicy.java",
+          "symbol": "matchesDirectoryPrefix",
+          "kind": "method"
+        }
+      ],
+      "partially_relevant": [
+        {
+          "path": "PathPolicy.java",
+          "symbol": "allowsRelativePath",
+          "kind": "method"
+        }
+      ],
+      "distractors": [
+        {
+          "path": "PathPolicy.java",
+          "symbol": "pathHeading",
+          "kind": "method"
+        }
+      ],
+      "expected_relationships": []
+    }
+  ]
+}
