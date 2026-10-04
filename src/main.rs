@@ -62,9 +62,20 @@ struct Cli {
     /// Include candidate selection diagnostics (implies full detail).
     #[arg(long, global = true)]
     explain: bool,
+    /// Advertise bounded omitted-source leads and exact expansion references.
+    #[arg(long, global = true)]
+    continuations: bool,
+    /// Add heuristic source-vocabulary cues to continuation leads.
+    #[arg(long, global = true, requires = "continuations")]
+    role_hints: bool,
 }
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// Fetch omitted source or the next navigation page from an opaque reference.
+    Expand {
+        root: PathBuf,
+        reference: String,
+    },
     Search {
         root: PathBuf,
         query: String,
@@ -132,6 +143,25 @@ fn main() -> Result<()> {
         None => cli.max_bytes.unwrap_or(16384),
     };
     match command {
+        Command::Expand { root, reference } => {
+            ensure!(
+                cli.include_paths.is_empty() && cli.exclude_paths.is_empty(),
+                "expand uses the originating scope in its reference; scope overrides are not allowed"
+            );
+            let session =
+                flexcontext::SearchSession::open_with_limits(&root, !cli.no_cache, &limits)?;
+            let mut response = session.expand(&reference, max_bytes)?;
+            let representation = if cli.json {
+                flexcontext::output::Representation::json(cli.detail)
+            } else {
+                flexcontext::output::Representation::human(cli.detail)
+            };
+            flexcontext::output::finalize(&mut response, &representation, cli.max_tokens)?;
+            use std::io::Write;
+            std::io::stdout()
+                .lock()
+                .write_all(&representation.render(&response)?)?;
+        }
         Command::Serve { root } => {
             let mut session =
                 flexcontext::SearchSession::open_with_limits(&root, !cli.no_cache, &limits)?;
@@ -180,6 +210,8 @@ fn main() -> Result<()> {
                     policy: cli.policy,
                     cutoff: cli.cutoff,
                     explain: cli.explain,
+                    continuations: cli.continuations,
+                    role_hints: cli.role_hints,
                     scope: flexcontext::SearchScope {
                         scope: cli.scope,
                         include_paths: cli.include_paths,

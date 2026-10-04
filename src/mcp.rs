@@ -29,6 +29,21 @@ struct QueryArgs {
     cutoff: f64,
     #[serde(default)]
     explain: bool,
+    #[serde(default)]
+    continuations: bool,
+    #[serde(default)]
+    role_hints: bool,
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ExpandArgs {
+    reference: String,
+    #[serde(default = "default_budget")]
+    budget: usize,
+    #[serde(default)]
+    max_tokens: Option<usize>,
+    #[serde(default)]
+    detail: crate::model::Detail,
 }
 fn default_cutoff() -> f64 {
     0.25
@@ -236,7 +251,7 @@ fn process_requests(
             ),
             "ping" => Ok(json!({})),
             "tools/list" => Ok(json!({"tools":[
-                {"name":"code_search", "description":"Retrieve diverse structural code context from the resident repository snapshot. budget selects source bytes/4; max_tokens bounds the complete serialized response estimate. Read code from structuredContent; text is a summary.",
+                {"name":"code_search", "description":"Retrieve diverse structural code context from the resident repository snapshot. budget selects source bytes/4; max_tokens bounds the complete serialized response estimate. Read code from structuredContent; text is a summary. Opt-in continuations expose omitted-source leads; fetch relevant references with expand_context to establish behavior. Optional role_hints are source-word heuristics, not facts. Other searches may still be needed.",
                  "inputSchema":{"type":"object", "properties":{"query":{"type":"string"},"budget":{"type":"integer","minimum":1,"default":4096},"max_tokens":{"type":"integer","minimum":1},"max_results":{"type":"integer","minimum":1,"maximum":100,"default":12},
                     "detail":{"type":"string","enum":["compact","full"],"default":"compact"},
                     "scope":{"type":"string","enum":["auto","repository"],"default":"auto"},
@@ -244,7 +259,10 @@ fn process_requests(
                     "exclude_paths":{"type":"array","items":{"type":"string"},"description":"Exclusions override includes"},
                     "policy":{"type":"string","enum":["baseline","relations","quotas","diversity","idf","direct","implementation","focus","stable","cutoff","focused"],"default":"baseline"},
                     "cutoff":{"type":"number","minimum":0,"maximum":1,"default":0.25},
+                    "continuations":{"type":"boolean","default":false},
+                    "role_hints":{"type":"boolean","default":false},
                     "explain":{"type":"boolean","default":false,"description":"Candidate diagnostic trace; implies full detail"}},"required":["query"],"additionalProperties":false}},
+                {"name":"expand_context", "description":"Fetch one exact omitted candidate or next navigation page via its opaque reference, bypassing ranking/quotas. References preserve original scope, reject changed snapshots, and survive identical-snapshot restarts. Partial source has follow-up leads; tiny budgets may fail explicitly. No automatic seen state: choose references from the latest response to avoid repeating source.", "inputSchema":{"type":"object","properties":{"reference":{"type":"string","maxLength":32768},"budget":{"type":"integer","minimum":1,"default":4096},"max_tokens":{"type":"integer","minimum":1},"detail":{"type":"string","enum":["compact","full"],"default":"compact"}},"required":["reference"],"additionalProperties":false}},
                 {"name":"refresh_index", "description":"Reload the repository snapshot after files are edited, added or deleted.", "inputSchema":{"type":"object","properties":{},"additionalProperties":false}}
             ]})),
             "tools/call" => match params["name"].as_str() {
@@ -271,6 +289,8 @@ fn process_requests(
                                 policy: args.policy,
                                 cutoff: args.cutoff,
                                 explain: args.explain,
+                                continuations: args.continuations,
+                                role_hints: args.role_hints,
                                 scope: crate::model::SearchScope {
                                     scope: args.scope,
                                     include_paths: args.include_paths,
@@ -299,6 +319,36 @@ fn process_requests(
                             }
                         }
                         _ => Err((-32602, "Invalid code_search arguments")),
+                    }
+                }
+                Some("expand_context") => {
+                    match serde_json::from_value::<ExpandArgs>(params["arguments"].clone()) {
+                        Ok(args)
+                            if args.budget > 0
+                                && args.budget.checked_mul(4).is_some()
+                                && args
+                                    .max_tokens
+                                    .is_none_or(|n| n > 0 && n.checked_mul(4).is_some()) =>
+                        {
+                            match session.expand(&args.reference, args.budget * 4).and_then(
+                                |mut response| {
+                                    crate::output::finalize(
+                                        &mut response,
+                                        &crate::output::Representation::mcp(
+                                            args.detail,
+                                            id.clone(),
+                                            modern,
+                                        ),
+                                        args.max_tokens,
+                                    )?;
+                                    Ok(crate::output::tool_result_detail(&response, args.detail))
+                                },
+                            ) {
+                                Ok(result) => Ok(result),
+                                Err(err) => Ok(tool_error(&err.to_string())),
+                            }
+                        }
+                        _ => Err((-32602, "Invalid expand_context arguments")),
                     }
                 }
                 Some("refresh_index")

@@ -86,6 +86,8 @@ pub struct QueryOptions {
     pub cutoff: f64,
     pub explain: bool,
     pub detail: Detail,
+    pub continuations: bool,
+    pub role_hints: bool,
 }
 impl Default for QueryOptions {
     fn default() -> Self {
@@ -98,6 +100,8 @@ impl Default for QueryOptions {
             cutoff: 0.25,
             explain: false,
             detail: Detail::default(),
+            continuations: false,
+            role_hints: false,
         }
     }
 }
@@ -329,6 +333,10 @@ pub struct SearchStats {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SearchResponse {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub navigation: Option<crate::progressive::Navigation>,
+    #[serde(skip)]
+    pub(crate) continuation_state: Option<crate::progressive::State>,
     #[serde(default)]
     pub policy: RetrievalPolicy,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]

@@ -93,6 +93,11 @@ impl SearchSession {
         &self.repository.symbols
     }
 
+    /// Resolve a source or navigation reference against this immutable snapshot.
+    pub fn expand(&self, reference: &str, max_bytes: usize) -> Result<SearchResponse> {
+        crate::progressive::expand(&self.root, self.symbols(), reference, max_bytes)
+    }
+
     pub fn refresh(&mut self) -> Result<()> {
         *self = Self::open_with_limits(&self.root, self.use_cache, &self.scan_limits)?;
         Ok(())
@@ -464,6 +469,22 @@ fn search_repository(
         ),
     ]);
     let mut response = SearchResponse {
+        navigation: None,
+        continuation_state: options
+            .retrieval
+            .continuations
+            .then(|| {
+                crate::progressive::prepare(
+                    root,
+                    symbols,
+                    &ranked,
+                    &rejected,
+                    &options.retrieval.scope,
+                    options.retrieval.role_hints,
+                    &results,
+                )
+            })
+            .transpose()?,
         policy,
         focused_files: focus
             .keys()

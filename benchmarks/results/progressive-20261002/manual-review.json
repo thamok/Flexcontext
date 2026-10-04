@@ -1,0 +1,102 @@
+{
+  "reviewer": "Implementing assistant manually compared delivered source and final explanations with frozen source; not independent human adjudication.",
+  "rubric": "Pass requires all requested behaviors explained without material incorrect claims, with implementation evidence delivered. Missing final answers fail. Source coverage remains a separate automated field. Minor citation/wording problems are noted separately.",
+  "reviews": {
+    "calibration/lifecycle-A": {
+      "pass": true,
+      "note": "All four behaviors and revoked-renewal rejection correctly explained."
+    },
+    "calibration/lifecycle-B": {
+      "pass": true,
+      "note": "All four behaviors and revoked-renewal rejection correctly explained; followed with full-file read."
+    },
+    "calibration/lifecycle-C": {
+      "pass": true,
+      "note": "All four behaviors and revoked-renewal rejection correctly explained; followed with full-file read."
+    },
+    "calibration/cache-A": {
+      "pass": false,
+      "note": "Required reuse/incompatibility/temp-rename mechanisms correct, but claims flush ensures data is on disk; no fsync is present. Also malformed illustrative format! line. Strict correctness fails despite full evidence."
+    },
+    "calibration/cache-B": {
+      "pass": false,
+      "note": "Three charged payload-budget errors; final provider HTTP400; no answer or source."
+    },
+    "calibration/cache-C": {
+      "pass": false,
+      "note": "Three charged payload-budget errors; final provider HTTP400; no answer or source."
+    },
+    "calibration/lexical-A": {
+      "pass": false,
+      "note": "Full evidence delivered and algorithm largely correct, but invents stems authentication->auth and usage->usag. Actual stems are authentic and usage; semantic-generalization wording also overstates lexical matching."
+    },
+    "calibration/lexical-B": {
+      "pass": false,
+      "note": "Incomplete evidence after charged errors; final provider HTTP400; no answer."
+    },
+    "calibration/lexical-C": {
+      "pass": false,
+      "note": "Incomplete evidence after charged errors; final provider HTTP400; no answer."
+    },
+    "calibration/opaque-C": {
+      "pass": true,
+      "note": "Correctly distinguishes pump/finish/step state changes from read-only cancelMetrics despite misleading name."
+    },
+    "final-development/opaque-A": {
+      "pass": true,
+      "note": "Correct state transitions and abandoned-job prevention; correctly distinguishes read-only cancelMetrics. Ordinary whole-file read supplied complete evidence."
+    },
+    "final-development/opaque-B": {
+      "pass": true,
+      "note": "Correct state transitions and abandoned-job prevention; correctly distinguishes read-only cancelMetrics. Ordinary whole-file read supplied complete evidence."
+    },
+    "confirmation/output-A": {
+      "pass": true,
+      "note": "Correct bytes/4 estimate, representation rendering, convergence, trailing-result removal, trace update and metadata error. Recovered from an oversized full-file read."
+    },
+    "confirmation/output-B": {
+      "pass": true,
+      "note": "Correct budget/removal/error explanation. Autonomously expanded Representation::render after all frozen required snippets were already delivered; useful corroboration but no new required-evidence coverage."
+    },
+    "confirmation/output-C": {
+      "pass": true,
+      "note": "Correct bytes/4 conversion, actual rendering/newline, trailing-result removal and metadata error. Expanded render after required evidence was already complete, matching B behavior."
+    },
+    "confirmation/limiter-A": {
+      "pass": true,
+      "note": "All requested timeout/validation/cap/release mechanisms and pop-vs-FIFO discrepancy correct. Eventual-drain wording implicitly assumes finite arrivals and settling tasks; no fairness guarantee is established."
+    },
+    "confirmation/limiter-B": {
+      "pass": false,
+      "note": "Required behavior was explained correctly, including LIFO discrepancy, but final answer hit model output cap and ended mid-sentence. Incomplete turn fails bounded completion rule."
+    },
+    "confirmation/limiter-C": {
+      "pass": true,
+      "note": "Correct timeout, validation, LIFO discrepancy, cap and both release paths. Extra test-oriented search repeated source and did not establish tests; cited line numbers are imprecise but behavior is correct."
+    },
+    "confirmation/complete-A": {
+      "pass": true,
+      "note": "Correct conversion formula and source citation; stops after initial search, no unnecessary expansion."
+    },
+    "confirmation/complete-B": {
+      "pass": true,
+      "note": "Correct conversion formula and source citation; stops after initial search, no unnecessary expansion."
+    },
+    "confirmation/complete-C": {
+      "pass": true,
+      "note": "Correct conversion formula and source citation; stops after initial search, no unnecessary expansion."
+    },
+    "confirmation/outside-B": {
+      "pass": true,
+      "note": "Correct issue delegation, Map storage and <= now deletion; follows storage path with ordinary reads rather than expanding limited candidate pool. Explicitly avoids inventing scheduler/validation behavior."
+    },
+    "confirmation/outside-C": {
+      "pass": true,
+      "note": "Correct issue delegation, Map storage and <= now deletion; follows storage path with ordinary reads rather than expanding limited candidate pool. Explicitly avoids inventing scheduler/validation behavior."
+    },
+    "confirmation/outside-A": {
+      "pass": true,
+      "note": "Correct delegation/storage/expiry deletion, with explicit caveat that sweep invocation is not shown. Ordinary reads recover omitted behavior."
+    }
+  }
+}

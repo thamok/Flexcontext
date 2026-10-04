@@ -89,7 +89,7 @@ fn stdio_lifecycle_errors_and_repeated_queries() {
         responses[1]["result"]["supportedVersions"],
         json!(["2026-07-28", "2025-06-18"])
     );
-    assert_eq!(responses[2]["result"]["tools"].as_array().unwrap().len(), 2);
+    assert_eq!(responses[2]["result"]["tools"].as_array().unwrap().len(), 3);
     for response in &responses[3..5] {
         assert_eq!(
             response["result"]["structuredContent"]["results"][0]["symbol"],

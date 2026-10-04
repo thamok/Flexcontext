@@ -1,0 +1,9 @@
+# Progressive retrieval status
+
+- Complete. Start: `aea3f5bf361050988da6cf5050e7350081c95972`; initially only `plan/` untracked. No applicable AGENTS.md. Root README unchanged.
+- Diagnosis verified: quota/result/source/pool omissions appeared only in explain traces; final serialization could remove more source. Real lexical-source omissions reproduced.
+- Delivered opt-in `--continuations`, optional `--role-hints`, CLI `expand` / MCP `expand_context`. Authenticated snapshot/scope references; 64 retained candidates, 4 leads/page, 256 missing ranges, 32 KiB references. One signing key, no session/seen database. Exact source expansion bypasses quotas and subtracts delivered spans, including identical copied/nested source.
+- Verified: failing tests preceded both implementation and duplicate repair. Runnable demo returns two method bodies and fetches both omitted methods. Final 71 Rust tests (13 progressive), 8 benchmark smoke checks, 4 harness tests, strict Clippy and diff checks pass. All 72 frozen default result arrays unchanged; final binary exactly replays all 28 confirmation payloads.
+- Evaluation complete: 8 frozen cases (4 dev,4 confirmation); 12 stable A/B/C confirmation trials. Required coverage 4/4 each; complete correct investigations A 4/4, B 3/4, C 4/4 (B output-cap truncation). Payload totals 4,950 / 6,213 / 6,992 tokens. Both agent-chosen expansions succeeded but added no required evidence. Development failures/encoding amendment/partial usage remain disclosed separately.
+- Decision: retain unlabelled continuations as opt-in; hints stay experimental for reproduction. No demonstrated agent-benefit gain and no credible learned-classifier case/data, so no ML added. Report: `docs/progressive-retrieval.md`; receipts: `benchmarks/results/progressive-20261002/`.
+- Next action: user review. Do not broaden API sweeps or tune on confirmation cases; a larger independently authored investigation set would require a separate decision.
