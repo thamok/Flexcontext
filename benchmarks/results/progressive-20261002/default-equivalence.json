@@ -1,0 +1,298 @@
+{
+  "context_equivalence_pass": true,
+  "verified_pairs": [
+    {
+      "case": "v2-promise-timeout",
+      "budget": 2048
+    },
+    {
+      "case": "v2-promise-timeout",
+      "budget": 4096
+    },
+    {
+      "case": "v2-limiter-queue",
+      "budget": 2048
+    },
+    {
+      "case": "v2-limiter-queue",
+      "budget": 4096
+    },
+    {
+      "case": "v2-limiter-release",
+      "budget": 2048
+    },
+    {
+      "case": "v2-limiter-release",
+      "budget": 4096
+    },
+    {
+      "case": "v2-base-url-special",
+      "budget": 2048
+    },
+    {
+      "case": "v2-base-url-special",
+      "budget": 4096
+    },
+    {
+      "case": "v2-azure-url",
+      "budget": 2048
+    },
+    {
+      "case": "v2-azure-url",
+      "budget": 4096
+    },
+    {
+      "case": "v2-url-origin",
+      "budget": 2048
+    },
+    {
+      "case": "v2-url-origin",
+      "budget": 4096
+    },
+    {
+      "case": "v2-title-clean",
+      "budget": 2048
+    },
+    {
+      "case": "v2-title-clean",
+      "budget": 4096
+    },
+    {
+      "case": "v2-title-unicode",
+      "budget": 2048
+    },
+    {
+      "case": "v2-title-unicode",
+      "budget": 4096
+    },
+    {
+      "case": "v2-title-empty",
+      "budget": 2048
+    },
+    {
+      "case": "v2-title-empty",
+      "budget": 4096
+    },
+    {
+      "case": "v2-memory-history",
+      "budget": 2048
+    },
+    {
+      "case": "v2-memory-history",
+      "budget": 4096
+    },
+    {
+      "case": "v2-memory-gc",
+      "budget": 2048
+    },
+    {
+      "case": "v2-memory-gc",
+      "budget": 4096
+    },
+    {
+      "case": "v2-memory-start",
+      "budget": 2048
+    },
+    {
+      "case": "v2-memory-start",
+      "budget": 4096
+    },
+    {
+      "case": "v2-identifier-boundaries",
+      "budget": 2048
+    },
+    {
+      "case": "v2-identifier-boundaries",
+      "budget": 4096
+    },
+    {
+      "case": "v2-identifier-punctuation",
+      "budget": 2048
+    },
+    {
+      "case": "v2-identifier-punctuation",
+      "budget": 4096
+    },
+    {
+      "case": "v2-word-related",
+      "budget": 2048
+    },
+    {
+      "case": "v2-word-related",
+      "budget": 4096
+    },
+    {
+      "case": "v2-posting-keys",
+      "budget": 2048
+    },
+    {
+      "case": "v2-posting-keys",
+      "budget": 4096
+    },
+    {
+      "case": "v2-candidate-union",
+      "budget": 2048
+    },
+    {
+      "case": "v2-candidate-union",
+      "budget": 4096
+    },
+    {
+      "case": "v2-index-fields",
+      "budget": 2048
+    },
+    {
+      "case": "v2-index-fields",
+      "budget": 4096
+    },
+    {
+      "case": "v2-parser-reuse",
+      "budget": 2048
+    },
+    {
+      "case": "v2-parser-reuse",
+      "budget": 4096
+    },
+    {
+      "case": "v2-parser-facts",
+      "budget": 2048
+    },
+    {
+      "case": "v2-parser-facts",
+      "budget": 4096
+    },
+    {
+      "case": "v2-parser-comments",
+      "budget": 2048
+    },
+    {
+      "case": "v2-parser-comments",
+      "budget": 4096
+    },
+    {
+      "case": "v2-mcp-cancellation",
+      "budget": 2048
+    },
+    {
+      "case": "v2-mcp-cancellation",
+      "budget": 4096
+    },
+    {
+      "case": "v2-mcp-modern-meta",
+      "budget": 2048
+    },
+    {
+      "case": "v2-mcp-modern-meta",
+      "budget": 4096
+    },
+    {
+      "case": "v2-mcp-legacy-wait",
+      "budget": 2048
+    },
+    {
+      "case": "v2-mcp-legacy-wait",
+      "budget": 4096
+    },
+    {
+      "case": "v2-files-single",
+      "budget": 2048
+    },
+    {
+      "case": "v2-files-single",
+      "budget": 4096
+    },
+    {
+      "case": "v2-files-prune",
+      "budget": 2048
+    },
+    {
+      "case": "v2-files-prune",
+      "budget": 4096
+    },
+    {
+      "case": "v2-dirs-filter",
+      "budget": 2048
+    },
+    {
+      "case": "v2-dirs-filter",
+      "budget": 4096
+    },
+    {
+      "case": "v2-memo-init",
+      "budget": 2048
+    },
+    {
+      "case": "v2-memo-init",
+      "budget": 4096
+    },
+    {
+      "case": "v2-memo-call",
+      "budget": 2048
+    },
+    {
+      "case": "v2-memo-call",
+      "budget": 4096
+    },
+    {
+      "case": "v2-memo-method",
+      "budget": 2048
+    },
+    {
+      "case": "v2-memo-method",
+      "budget": 4096
+    },
+    {
+      "case": "v2-revision-url",
+      "budget": 2048
+    },
+    {
+      "case": "v2-revision-url",
+      "budget": 4096
+    },
+    {
+      "case": "v2-bug-url",
+      "budget": 2048
+    },
+    {
+      "case": "v2-bug-url",
+      "budget": 4096
+    },
+    {
+      "case": "v2-attachment-url",
+      "budget": 2048
+    },
+    {
+      "case": "v2-attachment-url",
+      "budget": 4096
+    },
+    {
+      "case": "v2-error-tail",
+      "budget": 2048
+    },
+    {
+      "case": "v2-error-tail",
+      "budget": 4096
+    },
+    {
+      "case": "v2-cpu-count",
+      "budget": 2048
+    },
+    {
+      "case": "v2-cpu-count",
+      "budget": 4096
+    },
+    {
+      "case": "v2-kill-invalid",
+      "budget": 2048
+    },
+    {
+      "case": "v2-kill-invalid",
+      "budget": 4096
+    }
+  ],
+  "pair_count": 72,
+  "final_binary_sha256": "06811e36f565ec6c6796adc621e6c700d4636b042d3bc07b26ef0267c6a6f22b",
+  "reference_contract_sha256": "f8a822630c71a44c698cd0d4aea49d54bc9ead122fa2c29b7b7715c2bfe3610f",
+  "method": "Every result, content string, source span and order must equal the paired candidate. Final resident timings collected separately after warmup.",
+  "note": "One timing round is a smoke check, not a performance claim."
+}

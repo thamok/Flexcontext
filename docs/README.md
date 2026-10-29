@@ -7,7 +7,7 @@ Start with the [README](../README.md) to build the binary and run your first sea
 | Guide | What you will find |
 |---|---|
 | [Agent integrations](agents.md) | Codex, Claude Code, Cursor and VS Code setup; skill installation and troubleshooting |
-| [Portable discovery skill](../integrations/skills/flexcontext/SKILL.md) | Instructions for discovery, targeted source inspection and index refresh |
+| [Portable discovery skill](../integrations/skills/flexcontext/SKILL.md) | Instructions for discovery, targeted source inspection and automatic freshness |
 | [Retrieval and context budgets](retrieval.md) | Compact/full output, scope filters, experimental policies, source spans and cost accounting |
 | [Supported languages](languages.md) | File extensions, extracted structures and parser limitations |
 | [Indexing and cache](indexing.md) | Cache invalidation, ignore behavior, cancellation and scan bounds |

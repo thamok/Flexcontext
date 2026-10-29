@@ -1,0 +1,98 @@
+{
+  "query": "worker",
+  "same_selected_source": true,
+  "description": "Deterministic identifier-cue check, not agent or classifier accuracy benchmark. Cold process/warm cache timing is noisy. cancelMetrics only reads a counter; pump can start work but has no hint. No learned model trained.",
+  "arms": {
+    "A": {
+      "symbols": [
+        "Worker",
+        "finish",
+        "step"
+      ],
+      "source_sha256": "761bdcfd112dc61ad536e40ab214db119ae3fc7a73d8ed1ac18f485287374a3f",
+      "payload_tokens": 320,
+      "median_warm_cli_ms": 3.8249589999850286,
+      "trials_ms": [
+        5.008416999999099,
+        3.6775420001049497,
+        3.8249589999850286,
+        3.8493750000725413,
+        3.4012920000350277
+      ],
+      "leads": []
+    },
+    "B": {
+      "symbols": [
+        "Worker",
+        "finish",
+        "step"
+      ],
+      "source_sha256": "761bdcfd112dc61ad536e40ab214db119ae3fc7a73d8ed1ac18f485287374a3f",
+      "payload_tokens": 785,
+      "median_warm_cli_ms": 3.463624999994863,
+      "trials_ms": [
+        3.7769580001167924,
+        3.7255830000049173,
+        3.3920829998805857,
+        3.463624999994863,
+        3.4523750000516884
+      ],
+      "leads": [
+        {
+          "symbol": "Worker",
+          "reason": "partial source",
+          "role_hints": null
+        },
+        {
+          "symbol": "cancelMetrics",
+          "reason": "file/container quota",
+          "role_hints": null
+        },
+        {
+          "symbol": "pump",
+          "reason": "file/container quota",
+          "role_hints": null
+        }
+      ]
+    },
+    "C": {
+      "symbols": [
+        "Worker",
+        "finish",
+        "step"
+      ],
+      "source_sha256": "761bdcfd112dc61ad536e40ab214db119ae3fc7a73d8ed1ac18f485287374a3f",
+      "payload_tokens": 788,
+      "median_warm_cli_ms": 3.700249999837979,
+      "trials_ms": [
+        3.700249999837979,
+        4.226332999905935,
+        4.010249999964799,
+        3.5762079999130947,
+        3.4052080000037677
+      ],
+      "leads": [
+        {
+          "symbol": "Worker",
+          "reason": "partial source",
+          "role_hints": [
+            "cancel",
+            "delete"
+          ]
+        },
+        {
+          "symbol": "cancelMetrics",
+          "reason": "file/container quota",
+          "role_hints": [
+            "cancel"
+          ]
+        },
+        {
+          "symbol": "pump",
+          "reason": "file/container quota",
+          "role_hints": null
+        }
+      ]
+    }
+  }
+}

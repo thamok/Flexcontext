@@ -96,14 +96,16 @@ Restart the session. Invoke `$flexcontext` in Codex or `/flexcontext` in Claude 
 
 For harnesses without skills, add this instruction to their repository guidance:
 
-> Use flexcontext to discover relevant implementations when the files or symbols are unknown. Follow its source locations with targeted searches and source inspection before editing. Refresh the resident MCP index after edits.
+> Use flexcontext to discover relevant implementations when the files or symbols are unknown. Follow its source locations with targeted searches and source inspection before editing. MCP searches check for repository changes automatically; after edits, search again for current results and expansion references. Use refresh_index only when an explicit reload is useful.
 
 ## First query and troubleshooting
 
-Ask the agent to call `code_search` with `{"query":"session expiration","max_tokens":8000}`. Both tools are read-only with respect to repository source; indexing may write the local `.flexcontext` cache.
+Ask the agent to call `code_search` with `{"query":"session expiration","max_tokens":8000}`. All three tools are read-only with respect to repository source; indexing may write the local `.flexcontext` cache. `code_search` and `expand_context` check eligible paths and file metadata before serving source, automatically refreshing after edits, additions, or deletions. Repeated searches with unchanged source reuse the prepared indexes. See [MCP freshness and failure behavior](mcp.md) for costs and limits.
 
 - **Server does not start:** run the configured binary with `--version`, check the absolute paths, then run `flexcontext index /absolute/path/to/repository` to expose scan errors. For large repositories, choose a smaller root or adjust the [scan limits](indexing.md).
-- **Results are stale:** call `refresh_index` after source edits. Restart after rebuilding the server binary.
+- **Results appear stale:** restart MCP after rebuilding or upgrading from a version that required manual refresh. Check the configured root, ignore rules, and [metadata limitations](indexing.md). `refresh_index` forces a reload; ordinary edits are detected automatically.
+- **Automatic refresh fails:** fix the reported scan, parser-limit, or cache-write error, then retry the search (or call `refresh_index`). The server retains the last complete snapshot internally but returns an error instead of stale source.
+- **Expansion reference is stale:** run `code_search` again after edits and use its current references.
 - **No visible source in tool results:** the client must consume MCP `structuredContent`. The text field contains only a result summary. Text-only clients are unsupported; use the CLI's `--json` output instead.
 - **No relevant hits:** check [language support](languages.md), ignore rules, explicit filters and the repository root. Try terms describing the implementation, then follow known identifiers with a targeted text search.
 

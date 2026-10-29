@@ -4,6 +4,13 @@ use crate::model::SearchResponse;
 
 pub fn render_human(response: &SearchResponse) -> String {
     let mut output = String::new();
+    if let Some(nav) = &response.navigation {
+        let _ = writeln!(
+            output,
+            "navigation: {}",
+            serde_json::to_string(nav).unwrap()
+        );
+    }
     for (index, result) in response.results.iter().enumerate() {
         if index > 0 {
             output.push('\n');
@@ -172,12 +179,24 @@ impl Representation {
     }
 }
 pub fn compact_value(response: &SearchResponse) -> serde_json::Value {
-    serde_json::json!({"query":response.query,"scope":response.scope,"policy":response.policy,"focused_files":response.focused_files,"context_cost":response.context_cost,
+    let mut value = serde_json::json!({"query":response.query,"scope":response.scope,"policy":response.policy,"focused_files":response.focused_files,"context_cost":response.context_cost,
         "results":response.results.iter().map(|r| serde_json::json!({
             "path":r.path,"symbol":r.symbol,"kind":r.kind,"language":r.language,
             "containing_symbol":r.containing_symbol,"start_line":r.start_line,"end_line":r.end_line,
             "content":r.content,"source_spans":r.source_spans,"content_truncated":r.content_truncated
-        })).collect::<Vec<_>>()})
+        })).collect::<Vec<_>>()});
+    if let Some(nav) = &response.navigation {
+        value["navigation"] = serde_json::to_value(nav).unwrap();
+        for (result, original) in value["results"]
+            .as_array_mut()
+            .unwrap()
+            .iter_mut()
+            .zip(&response.results)
+        {
+            result["signature"] = serde_json::json!(original.signature);
+        }
+    }
+    value
 }
 fn render_compact_human(response: &SearchResponse) -> String {
     let mut out = format!(
@@ -185,7 +204,13 @@ fn render_compact_human(response: &SearchResponse) -> String {
         response.query,
         serde_json::to_string(&response.scope).unwrap()
     );
+    if let Some(nav) = &response.navigation {
+        let _ = writeln!(out, "navigation: {}", serde_json::to_string(nav).unwrap());
+    }
     for r in &response.results {
+        if response.navigation.is_some() {
+            let _ = writeln!(out, "signature: {}", r.signature);
+        }
         let _ = writeln!(
             out,
             "\n{}:{}–{} {} {}{}",
@@ -247,6 +272,7 @@ pub fn finalize(
     response.context_cost.token_budget = max_tokens;
     response.context_cost.representation = representation.name().into();
     loop {
+        crate::progressive::update(response)?;
         response.stats.returned_symbols = response.results.len();
         response.stats.returned_bytes = response.results.iter().map(|r| r.content_bytes).sum();
         response.stats.approximate_tokens =
@@ -284,6 +310,15 @@ pub fn finalize(
             return Ok(());
         }
         let removed = response.results.pop();
+        if let Some(state) = &mut response.continuation_state {
+            anyhow::ensure!(
+                !state.expansion,
+                "insufficient serialized budget for exact source; retry with a smaller source budget or larger max_tokens"
+            );
+            if let Some(result) = &removed {
+                state.displaced += result.content_bytes;
+            }
+        }
         if let Some(result) = &removed {
             for trace in &mut response.trace {
                 if trace.path == result.path

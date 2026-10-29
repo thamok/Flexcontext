@@ -7,6 +7,7 @@ pub mod lexical;
 pub mod model;
 pub mod output;
 pub mod parser;
+pub mod progressive;
 pub mod ranking;
 pub mod relations;
 pub mod repository;

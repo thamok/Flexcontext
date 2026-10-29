@@ -51,7 +51,7 @@ fn legacy_handshake_tools_and_single_copy_payload_with_exact_cost() {
     );
     assert_eq!(
         responses[1].0["result"]["tools"].as_array().unwrap().len(),
-        2
+        3
     );
     for (response, _) in &responses {
         assert!(response["result"].get("resultType").is_none());
@@ -108,7 +108,7 @@ fn legacy_lifecycle_negotiation_and_invalid_initialization() {
     assert_eq!(responses[5].0["error"]["code"], -32600);
     assert_eq!(
         responses[6].0["result"]["tools"].as_array().unwrap().len(),
-        2
+        3
     );
 }
 

@@ -29,6 +29,21 @@ struct QueryArgs {
     cutoff: f64,
     #[serde(default)]
     explain: bool,
+    #[serde(default)]
+    continuations: bool,
+    #[serde(default)]
+    role_hints: bool,
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ExpandArgs {
+    reference: String,
+    #[serde(default = "default_budget")]
+    budget: usize,
+    #[serde(default)]
+    max_tokens: Option<usize>,
+    #[serde(default)]
+    detail: crate::model::Detail,
 }
 fn default_cutoff() -> f64 {
     0.25
@@ -236,7 +251,7 @@ fn process_requests(
             ),
             "ping" => Ok(json!({})),
             "tools/list" => Ok(json!({"tools":[
-                {"name":"code_search", "description":"Retrieve diverse structural code context from the resident repository snapshot. budget selects source bytes/4; max_tokens bounds the complete serialized response estimate. Read code from structuredContent; text is a summary.",
+                {"name":"code_search", "description":"Retrieve diverse structural code context, automatically refreshing the resident snapshot when repository files change. budget selects source bytes/4; max_tokens bounds the complete serialized response estimate. Read code from structuredContent; text is a summary. Opt-in continuations expose omitted-source leads; fetch relevant references with expand_context to establish behavior. Optional role_hints are source-word heuristics, not facts. Other searches may still be needed.",
                  "inputSchema":{"type":"object", "properties":{"query":{"type":"string"},"budget":{"type":"integer","minimum":1,"default":4096},"max_tokens":{"type":"integer","minimum":1},"max_results":{"type":"integer","minimum":1,"maximum":100,"default":12},
                     "detail":{"type":"string","enum":["compact","full"],"default":"compact"},
                     "scope":{"type":"string","enum":["auto","repository"],"default":"auto"},
@@ -244,8 +259,11 @@ fn process_requests(
                     "exclude_paths":{"type":"array","items":{"type":"string"},"description":"Exclusions override includes"},
                     "policy":{"type":"string","enum":["baseline","relations","quotas","diversity","idf","direct","implementation","focus","stable","cutoff","focused"],"default":"baseline"},
                     "cutoff":{"type":"number","minimum":0,"maximum":1,"default":0.25},
+                    "continuations":{"type":"boolean","default":false},
+                    "role_hints":{"type":"boolean","default":false},
                     "explain":{"type":"boolean","default":false,"description":"Candidate diagnostic trace; implies full detail"}},"required":["query"],"additionalProperties":false}},
-                {"name":"refresh_index", "description":"Reload the repository snapshot after files are edited, added or deleted.", "inputSchema":{"type":"object","properties":{},"additionalProperties":false}}
+                {"name":"expand_context", "description":"Fetch one exact omitted candidate or next navigation page via its opaque reference, bypassing ranking/quotas. Automatically checks repository changes first; references to changed snapshots fail, so search again after edits. References preserve original scope and survive identical-snapshot restarts. Partial source has follow-up leads; tiny budgets may fail explicitly. No automatic seen state: choose references from the latest response to avoid repeating source.", "inputSchema":{"type":"object","properties":{"reference":{"type":"string","maxLength":32768},"budget":{"type":"integer","minimum":1,"default":4096},"max_tokens":{"type":"integer","minimum":1},"detail":{"type":"string","enum":["compact","full"],"default":"compact"}},"required":["reference"],"additionalProperties":false}},
+                {"name":"refresh_index", "description":"Force a reload of the repository snapshot. Searches check for changes automatically; use this tool for an explicit reload or retry after fixing a refresh error.", "inputSchema":{"type":"object","properties":{},"additionalProperties":false}}
             ]})),
             "tools/call" => match params["name"].as_str() {
                 Some("code_search") => {
@@ -271,13 +289,15 @@ fn process_requests(
                                 policy: args.policy,
                                 cutoff: args.cutoff,
                                 explain: args.explain,
+                                continuations: args.continuations,
+                                role_hints: args.role_hints,
                                 scope: crate::model::SearchScope {
                                     scope: args.scope,
                                     include_paths: args.include_paths,
                                     exclude_paths: args.exclude_paths,
                                 },
                             };
-                            match session.query_with_options(&options) {
+                            match session.query_current(&options) {
                                 Ok(mut response) => {
                                     let representation = crate::output::Representation::mcp(
                                         detail,
@@ -292,13 +312,43 @@ fn process_requests(
                                         Ok(()) => {
                                             Ok(crate::output::tool_result_detail(&response, detail))
                                         }
-                                        Err(err) => Ok(tool_error(&err.to_string())),
+                                        Err(err) => Ok(tool_error(&format!("{err:#}"))),
                                     }
                                 }
-                                Err(err) => Ok(tool_error(&err.to_string())),
+                                Err(err) => Ok(tool_error(&format!("{err:#}"))),
                             }
                         }
                         _ => Err((-32602, "Invalid code_search arguments")),
+                    }
+                }
+                Some("expand_context") => {
+                    match serde_json::from_value::<ExpandArgs>(params["arguments"].clone()) {
+                        Ok(args)
+                            if args.budget > 0
+                                && args.budget.checked_mul(4).is_some()
+                                && args
+                                    .max_tokens
+                                    .is_none_or(|n| n > 0 && n.checked_mul(4).is_some()) =>
+                        {
+                            match session
+                                .expand_current(&args.reference, args.budget * 4)
+                                .and_then(|mut response| {
+                                    crate::output::finalize(
+                                        &mut response,
+                                        &crate::output::Representation::mcp(
+                                            args.detail,
+                                            id.clone(),
+                                            modern,
+                                        ),
+                                        args.max_tokens,
+                                    )?;
+                                    Ok(crate::output::tool_result_detail(&response, args.detail))
+                                }) {
+                                Ok(result) => Ok(result),
+                                Err(err) => Ok(tool_error(&format!("{err:#}"))),
+                            }
+                        }
+                        _ => Err((-32602, "Invalid expand_context arguments")),
                     }
                 }
                 Some("refresh_index")
@@ -311,7 +361,7 @@ fn process_requests(
                         Ok(()) => {
                             json!({"content":[{"type":"text","text":"Repository snapshot refreshed."}],"isError":false})
                         }
-                        Err(err) => tool_error(&err.to_string()),
+                        Err(err) => tool_error(&format!("{err:#}")),
                     })
                 }
                 Some("refresh_index") => Err((-32602, "refresh_index takes no arguments")),
@@ -347,7 +397,7 @@ fn write_response(output: &mut impl Write, response: &Value) -> Result<()> {
 
 pub const PROTOCOL_VERSION: &str = "2026-07-28";
 pub const LEGACY_PROTOCOL_VERSION: &str = "2025-06-18";
-const INSTRUCTIONS: &str = "Searches the configured repository snapshot. Read code_search structuredContent. Call refresh_index after repository edits.";
+const INSTRUCTIONS: &str = "Searches the configured repository. Source requests automatically check for edits, additions and deletions. Read code_search structuredContent. refresh_index forces a snapshot reload. After edits, search again for new expansion references.";
 pub fn complete(mut result: Value) -> Value {
     result["resultType"] = json!("complete");
     result["_meta"] = json!({"io.modelcontextprotocol/serverInfo":{"name":"flexcontext","version":env!("CARGO_PKG_VERSION")}});

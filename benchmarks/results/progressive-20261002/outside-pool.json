@@ -1,0 +1,47 @@
+{
+  "description": "Deterministic protocol demonstration, not an agent-choice result. Initial session query has no sweep in retained trace/leads. A new records-delete query retrieves cleanup. Actual pilot agents followed the store path with a read.",
+  "initial_query": "session",
+  "initial_candidates": [
+    "writeRecord",
+    "Session",
+    "issue",
+    "describe",
+    "writeRecord"
+  ],
+  "initial_leads": [
+    "Session"
+  ],
+  "followup_query": "records delete",
+  "followup_results": [
+    {
+      "path": "store.ts",
+      "symbol": "writeRecord",
+      "content": "function writeRecord(key: string, value: number) {\n  records.set(key, value);\n  return true;\n}"
+    },
+    {
+      "path": "session.ts",
+      "symbol": "Session",
+      "content": "class Session { /* \u2026 members omitted by context budget */ }"
+    },
+    {
+      "path": "store.ts",
+      "symbol": "records",
+      "content": "const records = new Map<string, number>();"
+    },
+    {
+      "path": "store.ts",
+      "symbol": "sweep",
+      "content": "function sweep(now: number) {\n  for (const [key, value] of records) {\n    if (value <= now) records.delete(key);\n  }\n}"
+    },
+    {
+      "path": "session.ts",
+      "symbol": "issue",
+      "content": "issue(token: string, expires: number) {\n    return writeRecord(token, expires);\n  }"
+    },
+    {
+      "path": "session.ts",
+      "symbol": "writeRecord",
+      "content": "import { writeRecord } from './store';"
+    }
+  ]
+}

@@ -1,0 +1,256 @@
+{
+  "schema": 1,
+  "frozen_before_evaluation": true,
+  "authorship": "Assistant-authored prompts/evidence; not human-adjudicated. Real sources copied before implementation. No confirmation retuning.",
+  "starting_commit": "aea3f5bf361050988da6cf5050e7350081c95972",
+  "starting_dirty_state": "untracked plan/ only",
+  "cases": [
+    {
+      "id": "lifecycle",
+      "split": "development",
+      "origin": "assistant-authored TypeScript lifecycle",
+      "prompt": "Explain how sessions are issued, checked, renewed, and revoked. Identify whether a revoked session can be renewed.",
+      "files_sha256": {
+        "session.ts": "dee82366cc6fc6fd92e7938797b46e33f88b623a7145f11895d573df38264753"
+      },
+      "required_evidence": [
+        {
+          "id": "issue",
+          "path": "session.ts",
+          "snippet": "this.revoked.delete(token);"
+        },
+        {
+          "id": "validate",
+          "path": "session.ts",
+          "snippet": "this.sessions.get(token)! > now && !this.revoked.has(token)"
+        },
+        {
+          "id": "renew",
+          "path": "session.ts",
+          "snippet": "if (!this.sessions.has(token) || this.revoked.has(token)) return false;"
+        },
+        {
+          "id": "revoke",
+          "path": "session.ts",
+          "snippet": "this.sessions.delete(token);"
+        }
+      ],
+      "expected_explanation": "Issue stores expiry and clears revocation; validation checks existence, expiry, and revocation; renewal rejects absent/revoked tokens; revoke marks and deletes."
+    },
+    {
+      "id": "cache",
+      "split": "development",
+      "origin": "frozen current Flexcontext src/cache.rs",
+      "prompt": "Explain when cached source and the lexical index are reused, what rejects an incompatible cache, and how a rebuilt cache replaces the old file.",
+      "files_sha256": {
+        "cache.rs": "2736f9a57cf92fbedfc7e7d4ded1345c416414d138bd51c7830620bd8dafe51a"
+      },
+      "required_evidence": [
+        {
+          "id": "compatible",
+          "path": "cache.rs",
+          "snippet": "cache.schema != CACHE_SCHEMA || cache.compatibility != CACHE_FINGERPRINT"
+        },
+        {
+          "id": "source-reuse",
+          "path": "cache.rs",
+          "snippet": "cached.fingerprint == fingerprint"
+        },
+        {
+          "id": "index-reuse",
+          "path": "cache.rs",
+          "snippet": "&& files_reused == files.len()"
+        },
+        {
+          "id": "install",
+          "path": "cache.rs",
+          "snippet": "std::fs::rename(&temporary, cache_path(root))"
+        }
+      ],
+      "expected_explanation": "Reuse needs matching fingerprints; schema/build compatibility and ranges are validated; unchanged complete files permit index reuse; flushed temp cache is renamed."
+    },
+    {
+      "id": "lexical",
+      "split": "development",
+      "origin": "frozen current Flexcontext src/lexical.rs",
+      "prompt": "Explain identifier segmentation including letters, numbers, camel case, acronyms and Unicode, and how matching handles related word forms.",
+      "files_sha256": {
+        "lexical.rs": "421f9ffe8abe99777c0bb378f141bdacec9ffebe2d8e977317912b75371a9d2b"
+      },
+      "required_evidence": [
+        {
+          "id": "boundaries",
+          "path": "lexical.rs",
+          "snippet": "prev.is_alphabetic() != ch.is_alphabetic()"
+        },
+        {
+          "id": "unicode",
+          "path": "lexical.rs",
+          "snippet": "current.extend(ch.to_lowercase());"
+        },
+        {
+          "id": "related",
+          "path": "lexical.rs",
+          "snippet": "(left_stem.len() >= 4 && left_stem == right_stem)"
+        },
+        {
+          "id": "suffixes",
+          "path": "lexical.rs",
+          "snippet": "[\"ations\", \"ation\", \"ating\", \"ated\", \"ates\", \"ate\"]"
+        }
+      ],
+      "expected_explanation": "Nonalphanumeric splits, case/acronym and alphabetic-status transitions split, lowercase is Unicode aware; equality, bounded stemming and prefixes relate terms."
+    },
+    {
+      "id": "opaque",
+      "split": "development",
+      "origin": "assistant-authored misleading names and opaque cancellation",
+      "prompt": "Explain how the worker starts work, finishes work, and prevents an abandoned job from starting again. Distinguish state changes from metrics lookup.",
+      "files_sha256": {
+        "worker.ts": "db3fc6f643c5d6f2b0010e2067dd70e29e08237fec75bbf9fe6031d9c039a7df"
+      },
+      "required_evidence": [
+        {
+          "id": "start",
+          "path": "worker.ts",
+          "snippet": "if (this.abandoned.has(id)) return false;"
+        },
+        {
+          "id": "finish",
+          "path": "worker.ts",
+          "snippet": "finish(id: string) {\n    this.active.delete(id);"
+        },
+        {
+          "id": "abandon",
+          "path": "worker.ts",
+          "snippet": "this.abandoned.add(id);"
+        },
+        {
+          "id": "metrics",
+          "path": "worker.ts",
+          "snippet": "return this.counters.get(id) ?? 0;"
+        }
+      ],
+      "expected_explanation": "pump rejects abandoned IDs; finish removes active IDs only; step marks abandoned and removes active; cancelMetrics only reads counters."
+    },
+    {
+      "id": "output",
+      "split": "confirmation",
+      "origin": "frozen current Flexcontext src/output.rs before progressive implementation",
+      "prompt": "Explain how serialized response budgets are measured, how overflow removes source, and what happens if even metadata cannot fit.",
+      "files_sha256": {
+        "output.rs": "37906cf6aedeb43e36cdb5cfbaead92de20b8f756b8c15984c7f4d6e3bc27014"
+      },
+      "required_evidence": [
+        {
+          "id": "measurement",
+          "path": "output.rs",
+          "snippet": "response.context_cost.serialized_bytes = representation.render(response)?.len();"
+        },
+        {
+          "id": "remove",
+          "path": "output.rs",
+          "snippet": "let removed = response.results.pop();"
+        },
+        {
+          "id": "trace",
+          "path": "output.rs",
+          "snippet": "trace.decision = \"serialized payload budget\".into();"
+        },
+        {
+          "id": "insufficient",
+          "path": "output.rs",
+          "snippet": "token budget cannot fit response metadata"
+        }
+      ],
+      "expected_explanation": "Rendered representation includes framing; size self-accounting converges; overflow pops trailing results, updates matching trace, errors if no result can be removed."
+    },
+    {
+      "id": "limiter",
+      "split": "confirmation",
+      "origin": "existing AgentX-derived benchmark fixture; seeded LIFO regression retained",
+      "prompt": "Explain the promise timeout cleanup and the concurrency limiter: validation, queue ordering, cap, and slot release on success and failure. Assess the actual queue behavior against its comment.",
+      "files_sha256": {
+        "promise.ts": "799a71532f6b6ba2983747c036b0e2efbb31690f4d905b05355888d628910d2a"
+      },
+      "required_evidence": [
+        {
+          "id": "timeout",
+          "path": "promise.ts",
+          "snippet": "clearTimeout(timeoutId!);"
+        },
+        {
+          "id": "validation",
+          "path": "promise.ts",
+          "snippet": "!Number.isInteger(concurrency) || concurrency < 1"
+        },
+        {
+          "id": "ordering",
+          "path": "promise.ts",
+          "snippet": "const next = queue.pop();"
+        },
+        {
+          "id": "cap",
+          "path": "promise.ts",
+          "snippet": "if (active < concurrency)"
+        },
+        {
+          "id": "success",
+          "path": "promise.ts",
+          "snippet": "release();\n              resolve(value);"
+        },
+        {
+          "id": "failure",
+          "path": "promise.ts",
+          "snippet": "release();\n              reject(error);"
+        }
+      ],
+      "expected_explanation": "Timeout uses race with finally clearing timer; positive integer cap; queue.pop is LIFO despite FIFO comment; both fulfillment and rejection release a slot."
+    },
+    {
+      "id": "complete",
+      "split": "confirmation",
+      "origin": "assistant-authored complete-in-one-call negative control",
+      "prompt": "What formula converts Celsius to Fahrenheit in this repository?",
+      "files_sha256": {
+        "temperature.py": "cba690f36fcf0aed5cea88acbac262ee6cbf7474f7bf921a8574398f3177dc81"
+      },
+      "required_evidence": [
+        {
+          "id": "formula",
+          "path": "temperature.py",
+          "snippet": "return celsius * 9 / 5 + 32"
+        }
+      ],
+      "expected_explanation": "Multiply Celsius by nine fifths and add 32; no unrelated expansion needed."
+    },
+    {
+      "id": "outside",
+      "split": "confirmation",
+      "origin": "assistant-authored behavior outside a session-focused lexical candidate pool",
+      "prompt": "Explain how sessions are issued and how expired stored records are removed. Follow the storage implementation as needed.",
+      "files_sha256": {
+        "session.ts": "aa99d3008b3969b3f086ca20e165212dc900b86757781e28f009795a462947f9",
+        "store.ts": "98d104b1792c3e37b7e044a38a5debac4d50d19344308d75f86f023aba0eaf2a"
+      },
+      "required_evidence": [
+        {
+          "id": "issue",
+          "path": "session.ts",
+          "snippet": "return writeRecord(token, expires);"
+        },
+        {
+          "id": "store",
+          "path": "store.ts",
+          "snippet": "records.set(key, value);"
+        },
+        {
+          "id": "sweep",
+          "path": "store.ts",
+          "snippet": "if (value <= now) records.delete(key);"
+        }
+      ],
+      "expected_explanation": "Issue delegates expiry storage to writeRecord; sweep removes records at or before now. Session alone does not establish sweep behavior."
+    }
+  ]
+}
