@@ -1,8 +1,8 @@
-use flexcontext::{SearchOptions, SearchSession, search};
+use flexcontext::{QueryOptions, SearchOptions, SearchSession, search};
 use serde_json::{Value, json};
 
 #[test]
-fn resident_scores_match_cli_and_refresh_replaces_changed_and_deleted_files() {
+fn resident_scores_match_cli_and_current_queries_replace_changed_and_deleted_files() {
     let dir = tempfile::tempdir().unwrap();
     let path = dir.path().join("auth.ts");
     std::fs::write(
@@ -27,18 +27,389 @@ fn resident_scores_match_cli_and_refresh_replaces_changed_and_deleted_files() {
         "export function authorizationPolicy() { return false; }\n",
     )
     .unwrap();
+    let query = QueryOptions {
+        query: "auth".into(),
+        ..Default::default()
+    };
     assert_eq!(
-        session.query("auth", 4096, 12).unwrap().results[0].symbol,
-        "authenticateUser"
-    );
-    session.refresh().unwrap();
-    assert_eq!(
-        session.query("auth", 4096, 12).unwrap().results[0].symbol,
+        session.query_current(&query).unwrap().results[0].symbol,
         "authorizationPolicy"
     );
     std::fs::remove_file(path).unwrap();
-    session.refresh().unwrap();
-    assert!(session.query("auth", 4096, 12).unwrap().results.is_empty());
+    assert!(session.query_current(&query).unwrap().results.is_empty());
+}
+
+fn mcp_call(session: &mut SearchSession, name: &str, arguments: Value, modern: bool) -> Value {
+    let mut request = json!({"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":name,"arguments":arguments}});
+    let input = if modern {
+        request["params"]["_meta"] = json!({"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}});
+        format!("{request}\n")
+    } else {
+        format!(
+            "{}\n{}\n{request}\n",
+            json!({"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"resident-test","version":"1"}}}),
+            json!({"jsonrpc":"2.0","method":"notifications/initialized"})
+        )
+    };
+    let mut output = Vec::new();
+    flexcontext::mcp::serve(session, input.as_bytes(), &mut output).unwrap();
+    let response: Value = serde_json::from_str(
+        std::str::from_utf8(&output)
+            .unwrap()
+            .lines()
+            .last()
+            .unwrap(),
+    )
+    .unwrap();
+    assert!(response.get("error").is_none(), "{response}");
+    response["result"].clone()
+}
+
+fn mcp_search(session: &mut SearchSession, modern: bool) -> Value {
+    mcp_call(
+        session,
+        "code_search",
+        json!({"query":"auth","detail":"full"}),
+        modern,
+    )
+}
+
+#[test]
+fn mcp_automatically_tracks_edits_additions_renames_and_deletions() {
+    for use_cache in [false, true] {
+        for modern in [false, true] {
+            let dir = tempfile::tempdir().unwrap();
+            let path = dir.path().join("auth.ts");
+            std::fs::write(&path, "function authOld() { return 'old'; }").unwrap();
+            let mut session = SearchSession::open(dir.path(), use_cache).unwrap();
+            assert_eq!(
+                mcp_search(&mut session, modern)["structuredContent"]["results"][0]["symbol"],
+                "authOld"
+            );
+
+            // Same-length edits must also invalidate the snapshot.
+            std::fs::write(&path, "function authNew() { return 'new'; }").unwrap();
+            let changed = mcp_search(&mut session, modern);
+            assert_eq!(changed["isError"], false);
+            assert_eq!(
+                changed["structuredContent"]["results"][0]["symbol"],
+                "authNew"
+            );
+            assert!(
+                changed["structuredContent"]["results"][0]["content"]
+                    .as_str()
+                    .unwrap()
+                    .contains("'new'")
+            );
+            assert_eq!(changed["structuredContent"]["stats"]["files_reparsed"], 1);
+
+            let nested = dir.path().join("nested");
+            std::fs::create_dir(&nested).unwrap();
+            let added = nested.join("created.ts");
+            std::fs::write(&added, "function authCreated() { return true; }").unwrap();
+            let created = mcp_search(&mut session, modern);
+            assert_eq!(
+                created["structuredContent"]["results"]
+                    .as_array()
+                    .unwrap()
+                    .len(),
+                2
+            );
+            assert_eq!(
+                created["structuredContent"]["stats"]["files_reparsed"],
+                if use_cache { 1 } else { 2 }
+            );
+            assert_eq!(
+                created["structuredContent"]["stats"]["files_reused"],
+                usize::from(use_cache)
+            );
+
+            std::fs::rename(&added, nested.join("renamed.ts")).unwrap();
+            let renamed = mcp_search(&mut session, modern);
+            let results = renamed["structuredContent"]["results"].as_array().unwrap();
+            assert!(results.iter().any(|r| r["path"] == "nested/renamed.ts"));
+            assert!(!results.iter().any(|r| r["path"] == "nested/created.ts"));
+
+            std::fs::remove_file(&path).unwrap();
+            std::fs::remove_dir_all(&nested).unwrap();
+            let deleted = mcp_search(&mut session, modern);
+            assert_eq!(deleted["isError"], false);
+            assert!(
+                deleted["structuredContent"]["results"]
+                    .as_array()
+                    .unwrap()
+                    .is_empty()
+            );
+            assert_eq!(deleted["structuredContent"]["stats"]["files_indexed"], 0);
+            assert!(
+                !deleted["structuredContent"]["stats"]["index_reused"]
+                    .as_bool()
+                    .unwrap()
+            );
+        }
+    }
+}
+
+#[test]
+fn unchanged_source_reuses_memory_without_loading_or_writing_the_cache() {
+    let dir = tempfile::tempdir().unwrap();
+    std::fs::write(
+        dir.path().join("auth.ts"),
+        "function auth() { return true; }",
+    )
+    .unwrap();
+    // Keep skipped files in the metadata inventory too, so they do not cause repeated refreshes.
+    std::fs::write(dir.path().join("binary.ts"), [0, 0, 0]).unwrap();
+    let mut session = SearchSession::open(dir.path(), true).unwrap();
+    let source = session.symbols()[0].source.clone();
+    std::fs::remove_dir_all(dir.path().join(".flexcontext")).unwrap();
+    std::fs::create_dir(dir.path().join("node_modules")).unwrap();
+    std::fs::write(
+        dir.path().join("node_modules/ignored.ts"),
+        "function authIgnored() {}",
+    )
+    .unwrap();
+    std::fs::write(dir.path().join("notes.txt"), "not indexed").unwrap();
+    let query = QueryOptions {
+        query: "auth".into(),
+        ..Default::default()
+    };
+    for _ in 0..3 {
+        let response = session.query_current(&query).unwrap();
+        assert_eq!(response.results.len(), 1);
+        assert_eq!(response.stats.files_parsed, 0);
+        assert_eq!(response.stats.files_reparsed, 0);
+        assert_eq!(response.stats.cache_load_us, 0);
+        assert_eq!(response.stats.cache_write_us, 0);
+        assert_eq!(response.stats.index_us, 0);
+        assert!(response.stats.index_reused);
+        assert_eq!(
+            response.context_cost.serialized_bytes,
+            flexcontext::output::Representation::json(query.detail)
+                .render(&response)
+                .unwrap()
+                .len()
+        );
+        assert!(std::sync::Arc::ptr_eq(
+            &source,
+            &session.symbols()[0].source
+        ));
+        assert!(!dir.path().join(".flexcontext").exists());
+    }
+}
+
+#[test]
+fn automatic_checks_honor_ignore_changes_and_file_size_limits() {
+    use flexcontext::repository::ScanLimits;
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("auth.ts");
+    std::fs::write(&path, "function auth() {}").unwrap();
+    let mut session = SearchSession::open_with_limits(
+        dir.path(),
+        false,
+        &ScanLimits {
+            max_file_bytes: 64,
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    let query = QueryOptions {
+        query: "auth".into(),
+        ..Default::default()
+    };
+    std::fs::write(dir.path().join(".gitignore"), "auth.ts\n").unwrap();
+    assert!(session.query_current(&query).unwrap().results.is_empty());
+    std::fs::remove_file(dir.path().join(".gitignore")).unwrap();
+    assert_eq!(session.query_current(&query).unwrap().results.len(), 1);
+    std::fs::write(&path, format!("function auth() {{}}{}", " ".repeat(64))).unwrap();
+    assert!(session.query_current(&query).unwrap().results.is_empty());
+    std::fs::write(&path, "function auth() {}").unwrap();
+    assert_eq!(session.query_current(&query).unwrap().results.len(), 1);
+    std::fs::write(&path, [0, 0, 0]).unwrap();
+    assert!(session.query_current(&query).unwrap().results.is_empty());
+    std::fs::write(&path, "function auth() {}").unwrap();
+    assert_eq!(session.query_current(&query).unwrap().results.len(), 1);
+}
+
+#[test]
+fn failed_automatic_and_explicit_refreshes_preserve_snapshot_and_retry() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("auth.ts");
+    std::fs::write(&path, "function authOld() {}").unwrap();
+    let mut session = SearchSession::open(dir.path(), true).unwrap();
+    let source = session.symbols()[0].source.clone();
+    let cache = dir.path().join(".flexcontext");
+    std::fs::remove_dir_all(&cache).unwrap();
+    std::fs::write(&cache, "blocks cache creation").unwrap();
+    std::fs::write(&path, "function authChanged() {}").unwrap();
+    for _ in 0..2 {
+        let response = mcp_search(&mut session, true);
+        assert_eq!(response["isError"], true);
+        assert!(response.get("structuredContent").is_none());
+        assert!(
+            response["content"][0]["text"]
+                .as_str()
+                .unwrap()
+                .contains("cannot refresh repository snapshot")
+        );
+        assert!(std::sync::Arc::ptr_eq(
+            &source,
+            &session.symbols()[0].source
+        ));
+    }
+    let explicit = mcp_call(&mut session, "refresh_index", json!({}), true);
+    assert_eq!(explicit["isError"], true);
+    assert!(std::sync::Arc::ptr_eq(
+        &source,
+        &session.symbols()[0].source
+    ));
+    std::fs::remove_file(&cache).unwrap();
+    let recovered = mcp_search(&mut session, true);
+    assert_eq!(recovered["isError"], false);
+    assert_eq!(
+        recovered["structuredContent"]["results"][0]["symbol"],
+        "authChanged"
+    );
+    assert_eq!(
+        mcp_call(&mut session, "refresh_index", json!({}), true)["isError"],
+        false
+    );
+}
+
+#[test]
+fn automatic_scan_failures_do_not_serve_stale_source_or_poison_recovery() {
+    use flexcontext::repository::ScanLimits;
+    let dir = tempfile::tempdir().unwrap();
+    std::fs::write(dir.path().join("auth.ts"), "function auth() {}").unwrap();
+    let mut session = SearchSession::open_with_limits(
+        dir.path(),
+        false,
+        &ScanLimits {
+            max_source_files: 1,
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    let added = dir.path().join("added.ts");
+    std::fs::write(&added, "function authAdded() {}").unwrap();
+    let failed = mcp_search(&mut session, false);
+    assert_eq!(failed["isError"], true);
+    assert!(failed.get("structuredContent").is_none());
+    assert!(
+        failed["content"][0]["text"]
+            .as_str()
+            .unwrap()
+            .contains("repository limit exceeded")
+    );
+    assert_eq!(session.symbols().len(), 1);
+    std::fs::remove_file(added).unwrap();
+    assert_eq!(mcp_search(&mut session, false)["isError"], false);
+}
+
+#[test]
+fn parser_failure_during_refresh_is_atomic_and_recovers_on_next_search() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("auth.rs");
+    std::fs::write(&path, "fn authOld() {}").unwrap();
+    let mut session = SearchSession::open(dir.path(), true).unwrap();
+    let nested = format!(
+        "{}fn authNew() {{}}{}",
+        "mod nested {".repeat(270),
+        "}".repeat(270)
+    );
+    std::fs::write(&path, nested).unwrap();
+    let failed = mcp_search(&mut session, true);
+    assert_eq!(failed["isError"], true);
+    assert!(failed.get("structuredContent").is_none());
+    assert!(
+        failed["content"][0]["text"]
+            .as_str()
+            .unwrap()
+            .contains("complexity limit")
+    );
+    assert_eq!(
+        session.query("auth", 4096, 12).unwrap().results[0].symbol,
+        "authOld"
+    );
+    std::fs::write(&path, "fn authNew() {}").unwrap();
+    assert_eq!(
+        mcp_search(&mut session, true)["structuredContent"]["results"][0]["symbol"],
+        "authNew"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn automatic_checks_detect_atomic_replacement_with_same_size_and_mtime() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("auth.ts");
+    std::fs::write(&path, "function authOld() {}").unwrap();
+    let modified = std::fs::metadata(&path).unwrap().modified().unwrap();
+    let mut session = SearchSession::open(dir.path(), true).unwrap();
+    let replacement = dir.path().join("replacement");
+    std::fs::write(&replacement, "function authNew() {}").unwrap();
+    std::fs::File::options()
+        .write(true)
+        .open(&replacement)
+        .unwrap()
+        .set_times(std::fs::FileTimes::new().set_modified(modified))
+        .unwrap();
+    std::fs::rename(replacement, path).unwrap();
+    assert_eq!(
+        mcp_search(&mut session, true)["structuredContent"]["results"][0]["symbol"],
+        "authNew"
+    );
+}
+
+#[test]
+fn mcp_expansion_checks_changes_before_resolving_old_references() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("auth.ts");
+    let source = "class Auth {\n authOne() { return 1; }\n authTwo() { return 2; }\n authThree() { return 3; }\n authFour() { return 4; }\n}";
+    std::fs::write(&path, source).unwrap();
+    let mut session = SearchSession::open(dir.path(), true).unwrap();
+    let response = mcp_call(
+        &mut session,
+        "code_search",
+        json!({"query":"Auth","continuations":true}),
+        true,
+    );
+    let reference = response["structuredContent"]["navigation"]["leads"][0]["reference"].clone();
+    assert!(reference.is_string(), "{response}");
+    assert_eq!(
+        mcp_call(
+            &mut session,
+            "expand_context",
+            json!({"reference":reference}),
+            true
+        )["isError"],
+        false
+    );
+    std::fs::write(&path, source.replace("return 4", "return 5")).unwrap();
+    let stale = mcp_call(
+        &mut session,
+        "expand_context",
+        json!({"reference":reference}),
+        true,
+    );
+    assert_eq!(stale["isError"], true);
+    assert!(stale.get("structuredContent").is_none());
+    let response = mcp_call(
+        &mut session,
+        "code_search",
+        json!({"query":"Auth","continuations":true}),
+        true,
+    );
+    let fresh = response["structuredContent"]["navigation"]["leads"][0]["reference"].clone();
+    assert_eq!(
+        mcp_call(
+            &mut session,
+            "expand_context",
+            json!({"reference":fresh}),
+            true
+        )["isError"],
+        false
+    );
 }
 
 #[test]

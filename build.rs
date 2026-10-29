@@ -11,6 +11,7 @@ fn main() {
         "src/lexical.rs",
         "src/index.rs",
         "src/cache.rs",
+        "src/repository.rs",
         "build.rs",
     ];
     let root = PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").unwrap());

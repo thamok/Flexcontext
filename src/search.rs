@@ -3,7 +3,7 @@ use std::time::Instant;
 
 use anyhow::{Context, Result, bail};
 
-use crate::cache::load_indexed_repository;
+use crate::cache::load_with_fingerprints;
 use crate::lexical::Query;
 use crate::model::{
     QueryOptions, RetrievalPolicy, RetrievalTrace, ScopeMode, SearchOptions, SearchResponse,
@@ -11,7 +11,7 @@ use crate::model::{
 };
 use crate::ranking::{PreparedIndex, rank_indexed_candidates, rank_prepared_candidates};
 use crate::relations::{RelationIndex, build_relation_graph_for, expand_ranked_with_weights};
-use crate::repository::{ScanLimits, ScanStats, discover_with_limits};
+use crate::repository::{Discovery, FileFingerprint, ScanLimits, ScanStats, discover_with_limits};
 use crate::selection::select_context_config;
 
 pub fn search(options: &SearchOptions) -> Result<SearchResponse> {
@@ -34,7 +34,7 @@ pub fn search(options: &SearchOptions) -> Result<SearchResponse> {
     let discovery = discover_with_limits(&root, &options.scan_limits)?;
     let traversal_us = stage.elapsed().as_micros();
 
-    let repository = load_indexed_repository(&root, &discovery.paths, options.use_cache)?;
+    let repository = load_with_fingerprints(&root, &discovery.fingerprints, options.use_cache)?;
     search_repository(
         options,
         &root,
@@ -48,8 +48,9 @@ pub fn search(options: &SearchOptions) -> Result<SearchResponse> {
     )
 }
 
-/// An immutable repository snapshot. Queries perform no filesystem reads.
-/// Call refresh after edits to atomically replace the snapshot.
+/// An immutable repository snapshot with atomic replacement after edits.
+/// `query_current` and `expand_current` check the filesystem first (used by MCP).
+/// The other query/expansion methods deliberately read the pinned snapshot.
 pub struct SearchSession {
     root: std::path::PathBuf,
     repository: crate::cache::IndexedRepository,
@@ -58,6 +59,7 @@ pub struct SearchSession {
     use_cache: bool,
     scan: ScanStats,
     scan_limits: ScanLimits,
+    fingerprints: BTreeMap<std::path::PathBuf, FileFingerprint>,
 }
 
 impl SearchSession {
@@ -71,10 +73,19 @@ impl SearchSession {
     ) -> Result<Self> {
         let root = root.canonicalize()?;
         let discovery = discover_with_limits(&root, limits)?;
-        let paths = discovery.paths;
-        let repository = load_indexed_repository(&root, &paths, use_cache)?;
+        Self::from_discovery(root, use_cache, limits, discovery)
+    }
+
+    fn from_discovery(
+        root: std::path::PathBuf,
+        use_cache: bool,
+        limits: &ScanLimits,
+        discovery: Discovery,
+    ) -> Result<Self> {
+        let repository = load_with_fingerprints(&root, &discovery.fingerprints, use_cache)?;
         let prepared = PreparedIndex::build(&repository.symbols);
         let relations = RelationIndex::build(&repository.symbols);
+        crate::repository::check_cancelled()?;
         Ok(Self {
             root,
             repository,
@@ -83,6 +94,7 @@ impl SearchSession {
             use_cache,
             scan: discovery.stats,
             scan_limits: limits.clone(),
+            fingerprints: discovery.fingerprints,
         })
     }
 
@@ -101,6 +113,76 @@ impl SearchSession {
     pub fn refresh(&mut self) -> Result<()> {
         *self = Self::open_with_limits(&self.root, self.use_cache, &self.scan_limits)?;
         Ok(())
+    }
+
+    /// Search current source, retaining all prepared indexes when metadata is unchanged.
+    /// A failed refresh returns an error without publishing the previous snapshot.
+    pub fn query_current(&mut self, query: &QueryOptions) -> Result<SearchResponse> {
+        self.with_current_snapshot(query.detail, |session| session.query_with_options(query))
+    }
+
+    /// Check current source before expansion so references to old source fail explicitly.
+    pub fn expand_current(&mut self, reference: &str, max_bytes: usize) -> Result<SearchResponse> {
+        self.with_current_snapshot(crate::model::Detail::Compact, |session| {
+            session.expand(reference, max_bytes)
+        })
+    }
+
+    fn with_current_snapshot(
+        &mut self,
+        detail: crate::model::Detail,
+        query: impl FnOnce(&Self) -> Result<SearchResponse>,
+    ) -> Result<SearchResponse> {
+        let started = Instant::now();
+        let discovery = discover_with_limits(&self.root, &self.scan_limits)
+            .context("cannot check repository changes")?;
+        let traversal_us = started.elapsed().as_micros();
+        let changed = discovery.fingerprints != self.fingerprints;
+        if changed {
+            let updated = Self::from_discovery(
+                self.root.clone(),
+                self.use_cache,
+                &self.scan_limits,
+                discovery,
+            )
+            .context("cannot refresh repository snapshot")?;
+            *self = updated;
+        } else {
+            self.scan = discovery.stats;
+        }
+        crate::repository::check_cancelled()?;
+        let mut response = query(self)?;
+        let stats = &mut response.stats;
+        stats.scan = self.scan.clone();
+        stats.files_scanned = self.scan.files_scanned;
+        stats.files_indexed = self.repository.files_available;
+        stats.source_bytes = self.repository.source_bytes;
+        stats.symbols = self.repository.symbols.len();
+        stats.skipped_binary_or_unreadable_files = self.repository.files_skipped;
+        stats.files_reused = self.repository.files_available;
+        stats.index_reused = true;
+        stats.traversal_us = traversal_us;
+        stats.elapsed_us = started.elapsed().as_micros();
+        if changed {
+            stats.files_parsed = self.repository.files_reparsed;
+            stats.files_reparsed = self.repository.files_reparsed;
+            stats.files_reused = self.repository.files_reused;
+            stats.index_reused = self.repository.index_reused;
+            stats.cache_load_us = self.repository.cache_load_us;
+            stats.parse_and_extract_us = self.repository.parse_and_extract_us;
+            stats.index_us = self.repository.index_us;
+            stats.cache_write_us = self.repository.cache_write_us;
+        }
+        response.metadata.insert(
+            "snapshot".into(),
+            "resident; checked for repository changes before this request".into(),
+        );
+        crate::output::finalize(
+            &mut response,
+            &crate::output::Representation::json(detail),
+            None,
+        )?;
+        Ok(response)
     }
 
     pub fn query(
@@ -447,7 +529,7 @@ fn search_repository(
         (
             "snapshot".to_owned(),
             if resident {
-                "resident; explicit refresh required after edits"
+                "pinned resident snapshot"
             } else {
                 "fresh filesystem scan"
             }
@@ -510,4 +592,35 @@ fn search_repository(
         None,
     )?;
     Ok(response)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn cancelled_change_check_retains_snapshot_and_next_query_recovers() {
+        use std::sync::{Arc, atomic::AtomicBool};
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("auth.ts");
+        std::fs::write(&path, "function authOld() {}").unwrap();
+        let mut session = SearchSession::open(dir.path(), true).unwrap();
+        let source = session.symbols()[0].source.clone();
+        std::fs::write(&path, "function authNew() {}").unwrap();
+        let query = QueryOptions {
+            query: "auth".into(),
+            ..Default::default()
+        };
+        {
+            let _scope =
+                crate::repository::RequestCancellation::enter(Arc::new(AtomicBool::new(true)));
+            let error = session.query_current(&query).unwrap_err();
+            assert!(format!("{error:#}").contains("cancelled"));
+            assert!(Arc::ptr_eq(&source, &session.symbols()[0].source));
+        }
+        assert_eq!(
+            session.query_current(&query).unwrap().results[0].symbol,
+            "authNew"
+        );
+    }
 }

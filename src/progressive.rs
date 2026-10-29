@@ -513,7 +513,7 @@ pub(crate) fn update(response: &mut SearchResponse) -> Result<()> {
             )
         })
         .transpose()?;
-    response.navigation = Some(Navigation { leads, next, remaining: omitted.len(), retained_candidates: state.candidates.len(), outside_retained: outside, displaced_source_bytes: state.displaced, coverage: "Retained discovered candidates only; leads are not behavioral evidence. Other searches may be needed. References survive restart only for the identical repository/index snapshot and scope; refresh after edits.".into() });
+    response.navigation = Some(Navigation { leads, next, remaining: omitted.len(), retained_candidates: state.candidates.len(), outside_retained: outside, displaced_source_bytes: state.displaced, coverage: "Retained discovered candidates only; leads are not behavioral evidence. Other searches may be needed. References survive restart only for the identical repository/index snapshot and scope; search again after edits.".into() });
     Ok(())
 }
 

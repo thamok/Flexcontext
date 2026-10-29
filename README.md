@@ -7,7 +7,7 @@ Find useful code before you know the right files or symbol names. `flexcontext` 
 - **Start with a question.** Search for `session expiration` or `queued job cancellation` to discover likely implementations, then follow up with precise searches and edits.
 - **Keep context useful.** Structural extraction preserves functions, declarations and relevant statements. Compact responses avoid unnecessary ranking metadata, and configurable budgets limit returned context.
 - **Work locally.** The CLI and MCP server use deterministic lexical retrieval and Tree-sitter parsing. No embeddings, model calls, API keys or hosted index are required.
-- **Reuse indexing work.** A persistent cache reparses changed files; the MCP server keeps a repository snapshot in memory for repeated queries.
+- **Reuse indexing work.** A persistent cache reparses changed files; MCP searches automatically check for repository changes and reuse the in-memory indexes when source is unchanged.
 - **Inspect the evidence.** Results include paths, source locations and truncation information. Full detail and explanation options expose ranking and selection decisions.
 
 Supports Rust, TypeScript, JavaScript, Python, Java, Apex, Go, C, C#, C++, Objective-C, Metal, CUDA, Kotlin, Dart, Vue and Lua, including React in JS/TS. See [language coverage and parser limitations](docs/languages.md).
@@ -70,7 +70,7 @@ codex mcp add flexcontext -- "$(command -v flexcontext)" serve "$PWD"
 claude mcp add --transport stdio --scope project flexcontext -- "$(command -v flexcontext)" serve "$PWD"
 ```
 
-Start a new agent session, then ask: “Use flexcontext to find how session expiration works, inspect the relevant source, and explain it.” The server exposes `code_search` and `refresh_index`; refresh after editing because the resident snapshot does not update automatically.
+Start a new agent session, then ask: “Use flexcontext to find how session expiration works, inspect the relevant source, and explain it.” The server exposes `code_search`, `expand_context`, and `refresh_index`. Searches automatically reflect file edits, additions, and deletions; `refresh_index` remains available for an explicit reload.
 
 [Agent integrations](docs/agents.md) includes Cursor and VS Code/GitHub Copilot configuration, setup checks, troubleshooting, and an optional [portable discovery skill](integrations/skills/flexcontext/SKILL.md) for Codex and Claude Code. Setup follows the official [Codex](https://learn.chatgpt.com/docs/extend/mcp?surface=cli) and [Claude Code](https://code.claude.com/docs/en/mcp) MCP instructions.
 

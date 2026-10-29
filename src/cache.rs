@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 use std::fs::OpenOptions;
 use std::io::{BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
-use std::time::{Instant, UNIX_EPOCH};
+use std::time::Instant;
 
 use anyhow::{Context, Result};
 use rayon::prelude::*;
@@ -11,19 +11,12 @@ use serde::{Deserialize, Serialize};
 use crate::index::LexicalIndex;
 use crate::model::Symbol;
 use crate::parser::SymbolExtractor;
-use crate::repository::load_source_file;
+use crate::repository::{FileFingerprint, load_source_file};
 
 const CACHE_SCHEMA: u32 = 4;
 pub const CACHE_FINGERPRINT: &str = env!("FLEXCONTEXT_CACHE_FINGERPRINT");
 const CACHE_DIRECTORY: &str = ".flexcontext";
 const CACHE_FILE: &str = "index.json";
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-struct FileFingerprint {
-    bytes: u64,
-    modified_ns: u128,
-    identity: Option<(u64, u64, i64, i64)>,
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct CachedFile {
@@ -70,6 +63,21 @@ pub fn load_indexed_repository(
     paths: &[PathBuf],
     use_cache: bool,
 ) -> Result<IndexedRepository> {
+    let fingerprints: Result<BTreeMap<_, _>> = paths
+        .iter()
+        .map(|path| {
+            crate::repository::check_cancelled()?;
+            Ok((path.clone(), FileFingerprint::read(path)?))
+        })
+        .collect();
+    load_with_fingerprints(root, &fingerprints?, use_cache)
+}
+
+pub(crate) fn load_with_fingerprints(
+    root: &Path,
+    fingerprints: &BTreeMap<PathBuf, FileFingerprint>,
+    use_cache: bool,
+) -> Result<IndexedRepository> {
     let stage = Instant::now();
     let mut old_cache = if use_cache { read_cache(root) } else { None };
     let cache_load_us = stage.elapsed().as_micros();
@@ -88,19 +96,18 @@ pub fn load_indexed_repository(
     let parse_stage = Instant::now();
 
     let mut changed = Vec::new();
-    for path in paths {
+    for (path, fingerprint) in fingerprints {
         crate::repository::check_cancelled()?;
         let relative = relative_path(root, path);
-        let fingerprint = fingerprint(path)?;
         source_bytes += fingerprint.bytes as usize;
         if let Some(cached) = old_files.remove(&relative)
-            && cached.fingerprint == fingerprint
+            && cached.fingerprint == *fingerprint
         {
             files_reused += 1;
             files.insert(relative, cached);
             continue;
         }
-        changed.push((relative, path.clone(), fingerprint));
+        changed.push((relative, path.clone(), fingerprint.clone()));
     }
     let parsed: Result<Vec<_>> = changed
         .par_iter()
@@ -168,7 +175,7 @@ pub fn load_indexed_repository(
     let symbols = files.into_values().flat_map(|file| file.symbols).collect();
     Ok(IndexedRepository {
         files_available,
-        files_skipped: paths.len() - files_available,
+        files_skipped: fingerprints.len() - files_available,
         symbols,
         index,
         source_bytes,
@@ -242,31 +249,4 @@ fn relative_path(root: &Path, path: &Path) -> String {
         .unwrap_or(path)
         .to_string_lossy()
         .replace('\\', "/")
-}
-
-fn fingerprint(path: &Path) -> Result<FileFingerprint> {
-    let metadata = std::fs::metadata(path)
-        .with_context(|| format!("cannot inspect source file {}", path.display()))?;
-    let modified_ns = metadata
-        .modified()
-        .ok()
-        .and_then(|time| time.duration_since(UNIX_EPOCH).ok())
-        .map_or(0, |duration| duration.as_nanos());
-    #[cfg(unix)]
-    let identity = {
-        use std::os::unix::fs::MetadataExt;
-        Some((
-            metadata.dev(),
-            metadata.ino(),
-            metadata.ctime(),
-            metadata.ctime_nsec(),
-        ))
-    };
-    #[cfg(not(unix))]
-    let identity = None;
-    Ok(FileFingerprint {
-        bytes: metadata.len(),
-        modified_ns,
-        identity,
-    })
 }

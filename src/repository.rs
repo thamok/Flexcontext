@@ -1,4 +1,6 @@
+use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
+use std::time::UNIX_EPOCH;
 
 use anyhow::{Context, Result};
 use ignore::{DirEntry, WalkBuilder};
@@ -38,6 +40,47 @@ pub struct ScanStats {
 pub struct Discovery {
     pub paths: Vec<PathBuf>,
     pub stats: ScanStats,
+    pub(crate) fingerprints: BTreeMap<PathBuf, FileFingerprint>,
+}
+
+/// Shared by disk-cache validation and resident snapshot change detection.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
+pub(crate) struct FileFingerprint {
+    pub(crate) bytes: u64,
+    modified_ns: u128,
+    identity: Option<(u64, u64, i64, i64)>,
+}
+impl FileFingerprint {
+    pub(crate) fn read(path: &Path) -> Result<Self> {
+        let metadata = std::fs::metadata(path)
+            .with_context(|| format!("cannot inspect source file {}", path.display()))?;
+        Ok(Self::from_metadata(&metadata))
+    }
+
+    fn from_metadata(metadata: &std::fs::Metadata) -> Self {
+        let modified_ns = metadata
+            .modified()
+            .ok()
+            .and_then(|time| time.duration_since(UNIX_EPOCH).ok())
+            .map_or(0, |duration| duration.as_nanos());
+        #[cfg(unix)]
+        let identity = {
+            use std::os::unix::fs::MetadataExt;
+            Some((
+                metadata.dev(),
+                metadata.ino(),
+                metadata.ctime(),
+                metadata.ctime_nsec(),
+            ))
+        };
+        #[cfg(not(unix))]
+        let identity = None;
+        Self {
+            bytes: metadata.len(),
+            modified_ns,
+            identity,
+        }
+    }
 }
 static CANCELLED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 pub fn cancel_scan() {
@@ -100,6 +143,7 @@ pub fn discover_with_limits(root: &Path, limits: &ScanLimits) -> Result<Discover
         })
         .build();
     let mut paths = Vec::new();
+    let mut fingerprints = BTreeMap::new();
     let mut stats = ScanStats::default();
     for entry in walker {
         check_cancelled()?;
@@ -139,12 +183,19 @@ pub fn discover_with_limits(root: &Path, limits: &ScanLimits) -> Result<Discover
             limits.max_source_files,
             limits.max_source_bytes
         );
-        paths.push(entry.into_path());
+        let path = entry.into_path();
+        fingerprints.insert(path.clone(), FileFingerprint::from_metadata(&metadata));
+        paths.push(path);
     }
     stats.excluded_directories = excluded.load(Ordering::Relaxed);
     stats.depth_limited_directories = deep.load(Ordering::Relaxed);
     paths.sort();
-    Ok(Discovery { paths, stats })
+    check_cancelled()?;
+    Ok(Discovery {
+        paths,
+        stats,
+        fingerprints,
+    })
 }
 
 pub fn load_source_file(root: &Path, path: &Path) -> Result<Option<SourceFile>> {
