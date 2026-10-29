@@ -14,6 +14,11 @@ Supports Rust, TypeScript, JavaScript, Python, Java, Apex, Go, C, C#, C++, Objec
 
 ## Build and install
 
+Prebuilt Apple Silicon macOS and Linux x86-64 executables, SHA-256 checksums, and
+upgrade instructions are available in [v0.0.2](https://github.com/thamok/Flexcontext/releases/tag/v0.0.2).
+The archives contain build metadata identifying the exact source commit. See the
+[release verification and installation notes](docs/releases/v0.0.2.md).
+
 You need [Rust stable](https://rustup.rs/) and a C/C++ build toolchain for the parser grammars. On macOS, install the Xcode Command Line Tools; on Linux, install your distribution's development tools. CI checks Linux and macOS.
 
 ```sh
@@ -37,6 +42,14 @@ cargo install --git https://github.com/thamok/flexcontext.git --branch main --lo
 ```
 
 Ensure Cargo's executable directory (usually `~/.cargo/bin`) is on your `PATH`. Installing from Git builds from source; you do not need a separate runtime after compilation.
+
+To install or upgrade to a fixed release instead of the moving `main` branch:
+
+```sh
+cargo install --git https://github.com/thamok/Flexcontext.git --tag v0.0.2 --locked --bin flexcontext --force
+```
+
+Check `flexcontext --version` and restart your MCP client after upgrading.
 
 ## Search a repository
 

@@ -1,6 +1,6 @@
 [package]
 name = "flexcontext"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2024"
 default-run = "flexcontext"
 description = "Fast structural lexical context retrieval for coding agents"
