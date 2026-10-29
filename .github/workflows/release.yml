@@ -2,7 +2,7 @@ name: Release
 on:
   push:
     branches: [main]
-    paths: [Cargo.toml]
+    paths: [Cargo.toml, .github/workflows/release.yml]
     tags: ['v*']
   pull_request:
     paths:
@@ -66,6 +66,13 @@ jobs:
       - run: cargo fmt --check
       - run: cargo clippy --locked --all-targets --all-features -- -D warnings
       - run: cargo test --locked
+      - name: Repeat cancellation recovery regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in {1..50}; do
+            cargo test --locked --lib search::tests::cancelled_change_check_retains_snapshot_and_next_query_recovers -- --exact --nocapture
+          done
       - run: cargo build --release --locked --bins --target "$TARGET"
       - run: ./target/$TARGET/release/flexcontext benchmark benchmarks --max-bytes 12000 --output "$RUNNER_TEMP/retrieval.json"
       - run: cargo bench --locked --bench pipeline -- --test

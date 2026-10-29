@@ -606,7 +606,24 @@ mod tests {
         std::fs::write(&path, "function authOld() {}").unwrap();
         let mut session = SearchSession::open(dir.path(), true).unwrap();
         let source = session.symbols()[0].source.clone();
+        let before = FileFingerprint::read(&path).unwrap();
+        let modified = std::fs::metadata(&path).unwrap().modified().unwrap();
         std::fs::write(&path, "function authNew() {}").unwrap();
+        if FileFingerprint::read(&path).unwrap() == before {
+            eprintln!("same-tick metadata collision; making the test edit observable");
+        }
+        // This tests cancellation recovery after a detectable change. Two rapid,
+        // same-size writes can share filesystem timestamps; do not depend on a tick.
+        std::fs::File::options()
+            .write(true)
+            .open(&path)
+            .unwrap()
+            .set_times(
+                std::fs::FileTimes::new()
+                    .set_modified(modified + std::time::Duration::from_secs(1)),
+            )
+            .unwrap();
+        assert_ne!(FileFingerprint::read(&path).unwrap(), before);
         let query = QueryOptions {
             query: "auth".into(),
             ..Default::default()

@@ -2,6 +2,7 @@
 """Exercise the packaged executable, including freshness in one MCP process."""
 import argparse
 import json
+import os
 from pathlib import Path
 import queue
 import subprocess
@@ -76,7 +77,10 @@ def smoke(binary, version, protocol):
                     call("server/discover", {})
                 assert search()["results"][0]["symbol"] == "authOld"
                 # Same-length edit in the same resident process; never refresh_index.
+                modified_ns = source.stat().st_mtime_ns
                 source.write_text("function authNew() { return 'new'; }\n")
+                # Exercise a detectable same-length edit, independent of clock granularity.
+                os.utime(source, ns=(modified_ns, modified_ns + 1_000_000_000))
                 changed = search()
                 assert changed["results"][0]["symbol"] == "authNew", changed
                 assert "'new'" in changed["results"][0]["content"], changed
