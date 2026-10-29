@@ -1,0 +1,175 @@
+name: Release
+on:
+  push:
+    branches: [main]
+    paths: [Cargo.toml]
+    tags: ['v*']
+  pull_request:
+    paths:
+      - Cargo.toml
+      - Cargo.lock
+      - .github/workflows/release.yml
+      - scripts/smoke_release.py
+      - docs/releases/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            target: aarch64-apple-darwin
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      TARGET: ${{ matrix.target }}
+      MACOSX_DEPLOYMENT_TARGET: '14.0'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@1.99.1
+        with:
+          components: rustfmt, clippy
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate native target and package version
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(rustc -vV | sed -n 's/^host: //p')" = "$TARGET"
+          python3 - <<'PY'
+          import os, tomllib
+          from pathlib import Path
+          package = tomllib.loads(Path('Cargo.toml').read_text())['package']
+          locked = tomllib.loads(Path('Cargo.lock').read_text())['package']
+          assert any(p['name'] == package['name'] and p['version'] == package['version'] for p in locked)
+          version = package['version']
+          assert all(p.isdigit() for p in version.split('.')) and len(version.split('.')) == 3
+          if os.environ['GITHUB_REF'].startswith('refs/tags/'):
+              assert os.environ['GITHUB_REF_NAME'] == f'v{version}'
+          with open(os.environ['GITHUB_ENV'], 'a') as out:
+              out.write(f'VERSION={version}\n')
+          PY
+      - run: cargo fmt --check
+      - run: cargo clippy --locked --all-targets --all-features -- -D warnings
+      - run: cargo test --locked
+      - run: cargo build --release --locked --bins --target "$TARGET"
+      - run: ./target/$TARGET/release/flexcontext benchmark benchmarks --max-bytes 12000 --output "$RUNNER_TEMP/retrieval.json"
+      - run: cargo bench --locked --bench pipeline -- --test
+      - name: Package and execute the distributable
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          mkdir -p package dist unpacked
+          cp "target/$TARGET/release/flexcontext" LICENSE package/
+          file package/flexcontext
+          python3 - <<'PY'
+          import hashlib, json, os, platform, subprocess
+          from pathlib import Path
+          info = dict(version=os.environ['VERSION'], source_commit=subprocess.check_output(
+              ['git', 'rev-parse', 'HEAD'], text=True).strip(), target=os.environ['TARGET'],
+              runner=platform.platform(), rustc=subprocess.check_output(['rustc', '-vV'], text=True),
+              cargo_lock_sha256=hashlib.sha256(Path('Cargo.lock').read_bytes()).hexdigest(),
+              binary_sha256=hashlib.sha256(Path('package/flexcontext').read_bytes()).hexdigest(),
+              workflow_run=f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}")
+          Path('package/BUILD_INFO.json').write_text(json.dumps(info, indent=2) + '\n')
+          PY
+          tar -czf "dist/flexcontext-v$VERSION-$TARGET.tar.gz" -C package flexcontext LICENSE BUILD_INFO.json
+          tar -xzf "dist/flexcontext-v$VERSION-$TARGET.tar.gz" -C unpacked
+          python3 scripts/smoke_release.py unpacked/flexcontext "$VERSION"
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          info = json.loads(Path('unpacked/BUILD_INFO.json').read_text())
+          assert hashlib.sha256(Path('unpacked/flexcontext').read_bytes()).hexdigest() == info['binary_sha256']
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.target }}
+          path: dist/*.tar.gz
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: dist
+          merge-multiple: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify source and generate SHA-256 checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, subprocess, tarfile, tomllib
+          from pathlib import Path
+          version = tomllib.loads(Path('Cargo.toml').read_text())['package']['version']
+          commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          targets = {'aarch64-apple-darwin', 'x86_64-unknown-linux-gnu'}
+          assert {p.name for p in Path('dist').glob('*')} == {f'flexcontext-v{version}-{t}.tar.gz' for t in targets}
+          for target in targets:
+              with tarfile.open(f'dist/flexcontext-v{version}-{target}.tar.gz') as archive:
+                  info = json.load(archive.extractfile('BUILD_INFO.json'))
+                  assert info['source_commit'] == commit and info['target'] == target and info['version'] == version
+                  assert info['cargo_lock_sha256'] == hashlib.sha256(Path('Cargo.lock').read_bytes()).hexdigest()
+                  assert info['binary_sha256'] == hashlib.sha256(archive.extractfile('flexcontext').read()).hexdigest()
+          Path('dist/SHA256SUMS').write_text(''.join(
+              f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.name}\n' for p in sorted(Path('dist').glob('*.tar.gz'))))
+          with open(os.environ['GITHUB_ENV'], 'a') as out:
+              out.write(f'VERSION={version}\nRELEASE_COMMIT={commit}\n')
+          PY
+      - name: Upload draft, verify downloaded assets, then publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="v$VERSION"
+          notes="docs/releases/$tag.md"
+          test -f "$notes"
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" > tag.json 2>/dev/null; then
+            test "$(python3 -c 'import json; print(json.load(open("tag.json"))["object"]["sha"])')" = "$RELEASE_COMMIT"
+          else
+            gh api "repos/$GITHUB_REPOSITORY/git/refs" -f "ref=refs/tags/$tag" -f "sha=$RELEASE_COMMIT"
+          fi
+          cp "$notes" "$RUNNER_TEMP/release-notes.md"
+          printf '\nSource commit: `%s`\n\nNative build and execution evidence: %s\n' "$RELEASE_COMMIT" "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> "$RUNNER_TEMP/release-notes.md"
+          if gh release view "$tag" --json isDraft > release.json 2>/dev/null; then
+            test "$(python3 -c 'import json; print(json.load(open("release.json"))["isDraft"])')" = True
+            gh release upload "$tag" dist/* --clobber
+            gh release edit "$tag" --notes-file "$RUNNER_TEMP/release-notes.md"
+          else
+            gh release create "$tag" dist/* --verify-tag --draft --title "$tag" --notes-file "$RUNNER_TEMP/release-notes.md"
+          fi
+          mkdir downloaded
+          gh release download "$tag" --dir downloaded
+          cmp dist/SHA256SUMS downloaded/SHA256SUMS
+          (cd downloaded && sha256sum --check SHA256SUMS)
+          gh release edit "$tag" --draft=false --latest
+          gh release view "$tag" --json url,tagName,isDraft,targetCommitish

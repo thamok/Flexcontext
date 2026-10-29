@@ -22,6 +22,19 @@ python3 scripts/bench_scaling.py --output /tmp/scaling.json
 
 CI runs formatting, lint, tests, release build and benchmark smoke tests on Linux and macOS with Rust stable. No separate MSRV promise is made. MIT licensed; see [LICENSE](../LICENSE).
 
+## Releases
+
+Update the package version in both `Cargo.toml` and the `flexcontext` entry in
+`Cargo.lock`, and add `docs/releases/vVERSION.md`. The release workflow validates
+the version pair and natively builds Apple Silicon macOS and Linux x86-64 with
+Rust 1.99.1. It runs the standard Rust checks plus
+`python3 scripts/smoke_release.py PATH_TO_EXTRACTED_BINARY VERSION` against each
+packaged executable. Pull requests validate without publishing. Merging a version
+bump into `main` builds again at the merge commit and publishes only after both
+targets pass. A `v*` tag push or manual run on `main` can also trigger it; tags
+must match the package version and release source. Published releases are never
+overwritten. Native runner and toolchain details are recorded in `BUILD_INFO.json`.
+
 ## Contributing
 
 Keep changes scoped and explain the behavior they improve. Add regression coverage for behavior changes and run the checks above before opening a pull request. Retrieval changes should include reproducible comparisons against the frozen corpora; report quality, source and payload cost, and latency separately. Experimental policies stay opt-in until their documented acceptance gates pass.
