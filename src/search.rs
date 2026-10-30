@@ -120,8 +120,7 @@ impl SearchSession {
         } else {
             CacheMode::Disabled
         };
-        *self =
-            Self::from_discovery(self.root.clone(), cache_mode, &self.scan_limits, discovery)?;
+        *self = Self::from_discovery(self.root.clone(), cache_mode, &self.scan_limits, discovery)?;
         Ok(())
     }
 

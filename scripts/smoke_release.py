@@ -92,7 +92,7 @@ def smoke(binary, version, protocol):
                 assert refreshed["stats"]["index_reused"]
                 assert refreshed["stats"]["files_reparsed"] == 0
                 cli = subprocess.run(
-                    [binary, "search", str(root), "authNew", "--json"],
+                    [binary, "search", str(root), "new", "--json", "--detail", "full"],
                     check=True, capture_output=True, text=True, timeout=30,
                 )
                 persisted = json.loads(cli.stdout)

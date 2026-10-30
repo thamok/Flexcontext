@@ -133,14 +133,17 @@ fn explicit_refresh_reparses_matching_fingerprints_and_persists_fresh_source() {
                 assert_eq!(stats[counter], 0, "{counter}: {response}");
             }
             assert_eq!(stats["index_reused"], true);
-            assert!(std::sync::Arc::ptr_eq(&source, &session.symbols()[0].source));
+            assert!(std::sync::Arc::ptr_eq(
+                &source,
+                &session.symbols()[0].source
+            ));
             assert_eq!(std::fs::read(&cache_path).unwrap(), refreshed_cache);
         }
         let reopened = SearchSession::open(dir.path(), true).unwrap();
         assert_eq!(reopened.index_summary()["files_reused"], 1);
         assert_eq!(reopened.index_summary()["files_reparsed"], 0);
         assert_eq!(
-            reopened.query("authNew", 4096, 12).unwrap().results[0].symbol,
+            reopened.query("new", 4096, 12).unwrap().results[0].symbol,
             "authNew"
         );
         assert_eq!(reopened.symbols()[0].source.as_ref(), new_source);
@@ -162,7 +165,10 @@ fn explicit_refresh_without_cache_reparses_without_creating_a_cache() {
     session.refresh().unwrap();
     assert_eq!(session.index_summary()["files_reparsed"], 1);
     assert_eq!(session.index_summary()["files_reused"], 0);
-    assert!(!std::sync::Arc::ptr_eq(&source, &session.symbols()[0].source));
+    assert!(!std::sync::Arc::ptr_eq(
+        &source,
+        &session.symbols()[0].source
+    ));
     assert!(!dir.path().join(".flexcontext").exists());
 }
 
@@ -421,7 +427,10 @@ fn parser_failure_during_refresh_is_atomic_and_recovers_on_next_search() {
             .unwrap()
             .contains("complexity limit")
     );
-    assert!(std::sync::Arc::ptr_eq(&source, &session.symbols()[0].source));
+    assert!(std::sync::Arc::ptr_eq(
+        &source,
+        &session.symbols()[0].source
+    ));
     assert_eq!(std::fs::read(&cache_path).unwrap(), cache);
     let failed = mcp_search(&mut session, true);
     assert_eq!(failed["isError"], true);
