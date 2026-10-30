@@ -75,6 +75,98 @@ fn mcp_search(session: &mut SearchSession, modern: bool) -> Value {
 }
 
 #[test]
+fn explicit_refresh_reparses_matching_fingerprints_and_persists_fresh_source() {
+    for modern in [false, true] {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("auth.ts");
+        let cache_path = dir.path().join(".flexcontext/index.json");
+        let old_source = "function authOld() { return 'old'; }";
+        let new_source = "function authNew() { return 'new'; }";
+        assert_eq!(old_source.len(), new_source.len());
+        std::fs::write(&path, old_source).unwrap();
+        SearchSession::open(dir.path(), true).unwrap();
+        let mut stale_cache: Value =
+            serde_json::from_slice(&std::fs::read(&cache_path).unwrap()).unwrap();
+
+        std::fs::write(&path, new_source).unwrap();
+        std::fs::remove_file(&cache_path).unwrap();
+        SearchSession::open(dir.path(), true).unwrap();
+        let current_cache: Value =
+            serde_json::from_slice(&std::fs::read(&cache_path).unwrap()).unwrap();
+        // Model a fingerprint collision deterministically: keep old source, symbols,
+        // and postings, but give that cache the current file's exact fingerprint.
+        stale_cache["files"]["auth.ts"]["fingerprint"] =
+            current_cache["files"]["auth.ts"]["fingerprint"].clone();
+        std::fs::write(&cache_path, serde_json::to_vec(&stale_cache).unwrap()).unwrap();
+        let mut session = SearchSession::open(dir.path(), true).unwrap();
+        assert_eq!(session.index_summary()["files_reused"], 1);
+        assert_eq!(session.index_summary()["files_reparsed"], 0);
+        let stale = mcp_search(&mut session, modern);
+        assert_eq!(
+            stale["structuredContent"]["results"][0]["symbol"],
+            "authOld"
+        );
+        assert_eq!(stale["structuredContent"]["stats"]["files_reparsed"], 0);
+        assert_eq!(std::fs::read_to_string(&path).unwrap(), new_source);
+
+        let refreshed = mcp_call(&mut session, "refresh_index", json!({}), modern);
+        assert_eq!(refreshed["isError"], false);
+        assert_eq!(session.index_summary()["files_reparsed"], 1);
+        assert_eq!(session.index_summary()["files_reused"], 0);
+        assert_eq!(session.symbols()[0].name, "authNew");
+        assert_eq!(session.symbols()[0].source.as_ref(), new_source);
+        let source = session.symbols()[0].source.clone();
+        let refreshed_cache = std::fs::read(&cache_path).unwrap();
+        for _ in 0..3 {
+            let response = mcp_search(&mut session, modern);
+            let stats = &response["structuredContent"]["stats"];
+            assert_eq!(
+                response["structuredContent"]["results"][0]["symbol"],
+                "authNew"
+            );
+            for counter in [
+                "files_reparsed",
+                "cache_load_us",
+                "cache_write_us",
+                "index_us",
+            ] {
+                assert_eq!(stats[counter], 0, "{counter}: {response}");
+            }
+            assert_eq!(stats["index_reused"], true);
+            assert!(std::sync::Arc::ptr_eq(&source, &session.symbols()[0].source));
+            assert_eq!(std::fs::read(&cache_path).unwrap(), refreshed_cache);
+        }
+        let reopened = SearchSession::open(dir.path(), true).unwrap();
+        assert_eq!(reopened.index_summary()["files_reused"], 1);
+        assert_eq!(reopened.index_summary()["files_reparsed"], 0);
+        assert_eq!(
+            reopened.query("authNew", 4096, 12).unwrap().results[0].symbol,
+            "authNew"
+        );
+        assert_eq!(reopened.symbols()[0].source.as_ref(), new_source);
+
+        // Forced reparsing must not become the policy for later automatic refreshes.
+        std::fs::write(dir.path().join("added.ts"), "function authAdded() {}").unwrap();
+        let added = mcp_search(&mut session, modern);
+        assert_eq!(added["structuredContent"]["stats"]["files_reparsed"], 1);
+        assert_eq!(added["structuredContent"]["stats"]["files_reused"], 1);
+    }
+}
+
+#[test]
+fn explicit_refresh_without_cache_reparses_without_creating_a_cache() {
+    let dir = tempfile::tempdir().unwrap();
+    std::fs::write(dir.path().join("auth.ts"), "function auth() {}").unwrap();
+    let mut session = SearchSession::open(dir.path(), false).unwrap();
+    let source = session.symbols()[0].source.clone();
+    session.refresh().unwrap();
+    assert_eq!(session.index_summary()["files_reparsed"], 1);
+    assert_eq!(session.index_summary()["files_reused"], 0);
+    assert!(!std::sync::Arc::ptr_eq(&source, &session.symbols()[0].source));
+    assert!(!dir.path().join(".flexcontext").exists());
+}
+
+#[test]
 fn mcp_automatically_tracks_edits_additions_renames_and_deletions() {
     for use_cache in [false, true] {
         for modern in [false, true] {
@@ -312,12 +404,25 @@ fn parser_failure_during_refresh_is_atomic_and_recovers_on_next_search() {
     let path = dir.path().join("auth.rs");
     std::fs::write(&path, "fn authOld() {}").unwrap();
     let mut session = SearchSession::open(dir.path(), true).unwrap();
+    let cache_path = dir.path().join(".flexcontext/index.json");
+    let cache = std::fs::read(&cache_path).unwrap();
+    let source = session.symbols()[0].source.clone();
     let nested = format!(
         "{}fn authNew() {{}}{}",
         "mod nested {".repeat(270),
         "}".repeat(270)
     );
     std::fs::write(&path, nested).unwrap();
+    let explicit = mcp_call(&mut session, "refresh_index", json!({}), true);
+    assert_eq!(explicit["isError"], true);
+    assert!(
+        explicit["content"][0]["text"]
+            .as_str()
+            .unwrap()
+            .contains("complexity limit")
+    );
+    assert!(std::sync::Arc::ptr_eq(&source, &session.symbols()[0].source));
+    assert_eq!(std::fs::read(&cache_path).unwrap(), cache);
     let failed = mcp_search(&mut session, true);
     assert_eq!(failed["isError"], true);
     assert!(failed.get("structuredContent").is_none());

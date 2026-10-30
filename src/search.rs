@@ -3,7 +3,7 @@ use std::time::Instant;
 
 use anyhow::{Context, Result, bail};
 
-use crate::cache::load_with_fingerprints;
+use crate::cache::{CacheMode, load_with_fingerprints};
 use crate::lexical::Query;
 use crate::model::{
     QueryOptions, RetrievalPolicy, RetrievalTrace, ScopeMode, SearchOptions, SearchResponse,
@@ -34,7 +34,8 @@ pub fn search(options: &SearchOptions) -> Result<SearchResponse> {
     let discovery = discover_with_limits(&root, &options.scan_limits)?;
     let traversal_us = stage.elapsed().as_micros();
 
-    let repository = load_with_fingerprints(&root, &discovery.fingerprints, options.use_cache)?;
+    let repository =
+        load_with_fingerprints(&root, &discovery.fingerprints, options.use_cache.into())?;
     search_repository(
         options,
         &root,
@@ -73,16 +74,16 @@ impl SearchSession {
     ) -> Result<Self> {
         let root = root.canonicalize()?;
         let discovery = discover_with_limits(&root, limits)?;
-        Self::from_discovery(root, use_cache, limits, discovery)
+        Self::from_discovery(root, use_cache.into(), limits, discovery)
     }
 
     fn from_discovery(
         root: std::path::PathBuf,
-        use_cache: bool,
+        cache_mode: CacheMode,
         limits: &ScanLimits,
         discovery: Discovery,
     ) -> Result<Self> {
-        let repository = load_with_fingerprints(&root, &discovery.fingerprints, use_cache)?;
+        let repository = load_with_fingerprints(&root, &discovery.fingerprints, cache_mode)?;
         let prepared = PreparedIndex::build(&repository.symbols);
         let relations = RelationIndex::build(&repository.symbols);
         crate::repository::check_cancelled()?;
@@ -91,7 +92,7 @@ impl SearchSession {
             repository,
             prepared,
             relations,
-            use_cache,
+            use_cache: cache_mode != CacheMode::Disabled,
             scan: discovery.stats,
             scan_limits: limits.clone(),
             fingerprints: discovery.fingerprints,
@@ -110,8 +111,17 @@ impl SearchSession {
         crate::progressive::expand(&self.root, self.symbols(), reference, max_bytes)
     }
 
+    /// Reparse every eligible source file, bypassing metadata-based cache reuse.
+    /// Persist the rebuilt cache when enabled; replace the snapshot only on success.
     pub fn refresh(&mut self) -> Result<()> {
-        *self = Self::open_with_limits(&self.root, self.use_cache, &self.scan_limits)?;
+        let discovery = discover_with_limits(&self.root, &self.scan_limits)?;
+        let cache_mode = if self.use_cache {
+            CacheMode::Rebuild
+        } else {
+            CacheMode::Disabled
+        };
+        *self =
+            Self::from_discovery(self.root.clone(), cache_mode, &self.scan_limits, discovery)?;
         Ok(())
     }
 
@@ -141,7 +151,7 @@ impl SearchSession {
         if changed {
             let updated = Self::from_discovery(
                 self.root.clone(),
-                self.use_cache,
+                self.use_cache.into(),
                 &self.scan_limits,
                 discovery,
             )
@@ -606,6 +616,8 @@ mod tests {
         std::fs::write(&path, "function authOld() {}").unwrap();
         let mut session = SearchSession::open(dir.path(), true).unwrap();
         let source = session.symbols()[0].source.clone();
+        let cache_path = dir.path().join(".flexcontext/index.json");
+        let cache = std::fs::read(&cache_path).unwrap();
         let before = FileFingerprint::read(&path).unwrap();
         let modified = std::fs::metadata(&path).unwrap().modified().unwrap();
         std::fs::write(&path, "function authNew() {}").unwrap();
@@ -634,6 +646,10 @@ mod tests {
             let error = session.query_current(&query).unwrap_err();
             assert!(format!("{error:#}").contains("cancelled"));
             assert!(Arc::ptr_eq(&source, &session.symbols()[0].source));
+            let error = session.refresh().unwrap_err();
+            assert!(format!("{error:#}").contains("cancelled"));
+            assert!(Arc::ptr_eq(&source, &session.symbols()[0].source));
+            assert_eq!(std::fs::read(&cache_path).unwrap(), cache);
         }
         assert_eq!(
             session.query_current(&query).unwrap().results[0].symbol,

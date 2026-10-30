@@ -85,6 +85,19 @@ def smoke(binary, version, protocol):
                 assert changed["results"][0]["symbol"] == "authNew", changed
                 assert "'new'" in changed["results"][0]["content"], changed
                 assert search()["stats"]["index_reused"]
+                # Explicit refresh reparses, persists, and returns to memory reuse.
+                call("tools/call", dict(name="refresh_index", arguments={}))
+                refreshed = search()
+                assert refreshed["results"][0]["symbol"] == "authNew", refreshed
+                assert refreshed["stats"]["index_reused"]
+                assert refreshed["stats"]["files_reparsed"] == 0
+                cli = subprocess.run(
+                    [binary, "search", str(root), "authNew", "--json"],
+                    check=True, capture_output=True, text=True, timeout=30,
+                )
+                persisted = json.loads(cli.stdout)
+                assert persisted["results"][0]["symbol"] == "authNew", persisted
+                assert persisted["stats"]["index_reused"], persisted
                 added = root / "added.ts"
                 added.write_text("function authAdded() { return true; }\n")
                 assert {r["symbol"] for r in search()["results"]} == {"authNew", "authAdded"}
@@ -104,7 +117,7 @@ def smoke(binary, version, protocol):
                 diagnostic = errors.read()
                 if diagnostic:
                     print(diagnostic)
-    print(f"PASS: CLI and resident MCP {protocol}: edit, reuse, add, rename, delete")
+    print(f"PASS: CLI and resident MCP {protocol}: edit, forced refresh, reuse, add, rename, delete")
 
 
 if __name__ == "__main__":
