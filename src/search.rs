@@ -3,7 +3,7 @@ use std::time::Instant;
 
 use anyhow::{Context, Result, bail};
 
-use crate::cache::load_with_fingerprints;
+use crate::cache::{CacheMode, load_with_fingerprints};
 use crate::lexical::Query;
 use crate::model::{
     QueryOptions, RetrievalPolicy, RetrievalTrace, ScopeMode, SearchOptions, SearchResponse,
@@ -34,7 +34,8 @@ pub fn search(options: &SearchOptions) -> Result<SearchResponse> {
     let discovery = discover_with_limits(&root, &options.scan_limits)?;
     let traversal_us = stage.elapsed().as_micros();
 
-    let repository = load_with_fingerprints(&root, &discovery.fingerprints, options.use_cache)?;
+    let repository =
+        load_with_fingerprints(&root, &discovery.fingerprints, options.use_cache.into())?;
     search_repository(
         options,
         &root,
@@ -73,25 +74,29 @@ impl SearchSession {
     ) -> Result<Self> {
         let root = root.canonicalize()?;
         let discovery = discover_with_limits(&root, limits)?;
-        Self::from_discovery(root, use_cache, limits, discovery)
+        Self::from_discovery(root, use_cache.into(), limits, discovery)
     }
 
     fn from_discovery(
         root: std::path::PathBuf,
-        use_cache: bool,
+        cache_mode: CacheMode,
         limits: &ScanLimits,
         discovery: Discovery,
     ) -> Result<Self> {
-        let repository = load_with_fingerprints(&root, &discovery.fingerprints, use_cache)?;
+        let repository = load_with_fingerprints(&root, &discovery.fingerprints, cache_mode)?;
+        #[cfg(test)]
+        tests::after_repository_load();
+        // Loading performs the final cancellation check before cache persistence.
+        // Keep the remaining construction infallible so a successful cache install
+        // always gets its matching resident snapshot, even if cancellation arrives.
         let prepared = PreparedIndex::build(&repository.symbols);
         let relations = RelationIndex::build(&repository.symbols);
-        crate::repository::check_cancelled()?;
         Ok(Self {
             root,
             repository,
             prepared,
             relations,
-            use_cache,
+            use_cache: cache_mode != CacheMode::Disabled,
             scan: discovery.stats,
             scan_limits: limits.clone(),
             fingerprints: discovery.fingerprints,
@@ -110,8 +115,17 @@ impl SearchSession {
         crate::progressive::expand(&self.root, self.symbols(), reference, max_bytes)
     }
 
+    /// Reparse every eligible source file, bypassing metadata-based cache reuse.
+    /// Persist the rebuilt cache when enabled; replace the snapshot only on success.
+    /// Cancellation after the loader's final check does not abort the refresh.
     pub fn refresh(&mut self) -> Result<()> {
-        *self = Self::open_with_limits(&self.root, self.use_cache, &self.scan_limits)?;
+        let discovery = discover_with_limits(&self.root, &self.scan_limits)?;
+        let cache_mode = if self.use_cache {
+            CacheMode::Rebuild
+        } else {
+            CacheMode::Disabled
+        };
+        *self = Self::from_discovery(self.root.clone(), cache_mode, &self.scan_limits, discovery)?;
         Ok(())
     }
 
@@ -141,7 +155,7 @@ impl SearchSession {
         if changed {
             let updated = Self::from_discovery(
                 self.root.clone(),
-                self.use_cache,
+                self.use_cache.into(),
                 &self.scan_limits,
                 discovery,
             )
@@ -598,6 +612,74 @@ fn search_repository(
 mod tests {
     use super::*;
 
+    thread_local! {
+        static AFTER_REPOSITORY_LOAD: std::cell::RefCell<Option<Box<dyn FnOnce()>>> =
+            const { std::cell::RefCell::new(None) };
+    }
+
+    pub(super) fn after_repository_load() {
+        let hook = AFTER_REPOSITORY_LOAD.with(|slot| slot.borrow_mut().take());
+        if let Some(hook) = hook {
+            hook();
+        }
+    }
+
+    #[test]
+    fn cancellation_after_cache_installation_finishes_refresh() {
+        use std::sync::{
+            Arc,
+            atomic::{AtomicBool, Ordering},
+        };
+
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("auth.ts");
+        std::fs::write(&path, "function authOld() {}").unwrap();
+        let mut session = SearchSession::open(dir.path(), true).unwrap();
+        let source = session.symbols()[0].source.clone();
+        let cache_path = dir.path().join(".flexcontext/index.json");
+        let cache = std::fs::read(&cache_path).unwrap();
+        let new_source = "function authNew() {}";
+        std::fs::write(&path, new_source).unwrap();
+
+        let cancelled = Arc::new(AtomicBool::new(false));
+        let flag = cancelled.clone();
+        let installed_cache_path = cache_path.clone();
+        AFTER_REPOSITORY_LOAD.with(|slot| {
+            *slot.borrow_mut() = Some(Box::new(move || {
+                // Real persistence must precede cancellation; no sleeps or polling.
+                let installed = std::fs::read(&installed_cache_path).unwrap();
+                assert_ne!(installed, cache);
+                let installed: serde_json::Value = serde_json::from_slice(&installed).unwrap();
+                assert_eq!(installed["files"]["auth.ts"]["source"], new_source);
+                flag.store(true, Ordering::Relaxed);
+            }));
+        });
+        {
+            let _scope = crate::repository::RequestCancellation::enter(cancelled.clone());
+            let result = session.refresh();
+            // Clear even if refresh failed before reaching the one-shot hook.
+            AFTER_REPOSITORY_LOAD.with(|slot| slot.borrow_mut().take());
+            assert!(cancelled.load(Ordering::Relaxed));
+            result.unwrap();
+            assert!(!Arc::ptr_eq(&source, &session.symbols()[0].source));
+            assert_eq!(session.symbols()[0].source.as_ref(), new_source);
+        }
+
+        assert_eq!(
+            session.query("auth", 4096, 12).unwrap().results[0].symbol,
+            "authNew"
+        );
+        let installed = std::fs::read(&cache_path).unwrap();
+        let reopened = SearchSession::open(dir.path(), true).unwrap();
+        assert_eq!(reopened.index_summary()["files_reused"], 1);
+        assert_eq!(reopened.index_summary()["files_reparsed"], 0);
+        assert_eq!(
+            reopened.query("auth", 4096, 12).unwrap().results[0].symbol,
+            "authNew"
+        );
+        assert_eq!(std::fs::read(&cache_path).unwrap(), installed);
+    }
+
     #[test]
     fn cancelled_change_check_retains_snapshot_and_next_query_recovers() {
         use std::sync::{Arc, atomic::AtomicBool};
@@ -606,6 +688,8 @@ mod tests {
         std::fs::write(&path, "function authOld() {}").unwrap();
         let mut session = SearchSession::open(dir.path(), true).unwrap();
         let source = session.symbols()[0].source.clone();
+        let cache_path = dir.path().join(".flexcontext/index.json");
+        let cache = std::fs::read(&cache_path).unwrap();
         let before = FileFingerprint::read(&path).unwrap();
         let modified = std::fs::metadata(&path).unwrap().modified().unwrap();
         std::fs::write(&path, "function authNew() {}").unwrap();
@@ -634,6 +718,10 @@ mod tests {
             let error = session.query_current(&query).unwrap_err();
             assert!(format!("{error:#}").contains("cancelled"));
             assert!(Arc::ptr_eq(&source, &session.symbols()[0].source));
+            let error = session.refresh().unwrap_err();
+            assert!(format!("{error:#}").contains("cancelled"));
+            assert!(Arc::ptr_eq(&source, &session.symbols()[0].source));
+            assert_eq!(std::fs::read(&cache_path).unwrap(), cache);
         }
         assert_eq!(
             session.query_current(&query).unwrap().results[0].symbol,
