@@ -18,6 +18,24 @@ pub const CACHE_FINGERPRINT: &str = env!("FLEXCONTEXT_CACHE_FINGERPRINT");
 const CACHE_DIRECTORY: &str = ".flexcontext";
 const CACHE_FILE: &str = "index.json";
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) enum CacheMode {
+    Disabled,
+    Reuse,
+    /// Ignore cached source and indexes, but persist the rebuilt cache.
+    Rebuild,
+}
+
+impl From<bool> for CacheMode {
+    fn from(use_cache: bool) -> Self {
+        if use_cache {
+            Self::Reuse
+        } else {
+            Self::Disabled
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct CachedFile {
     fingerprint: FileFingerprint,
@@ -70,16 +88,20 @@ pub fn load_indexed_repository(
             Ok((path.clone(), FileFingerprint::read(path)?))
         })
         .collect();
-    load_with_fingerprints(root, &fingerprints?, use_cache)
+    load_with_fingerprints(root, &fingerprints?, use_cache.into())
 }
 
 pub(crate) fn load_with_fingerprints(
     root: &Path,
     fingerprints: &BTreeMap<PathBuf, FileFingerprint>,
-    use_cache: bool,
+    mode: CacheMode,
 ) -> Result<IndexedRepository> {
     let stage = Instant::now();
-    let mut old_cache = if use_cache { read_cache(root) } else { None };
+    let mut old_cache = if mode == CacheMode::Reuse {
+        read_cache(root)
+    } else {
+        None
+    };
     let cache_load_us = stage.elapsed().as_micros();
     let old_cache_valid = old_cache.as_ref().is_some_and(|cache| {
         cache.schema == CACHE_SCHEMA && cache.compatibility == CACHE_FINGERPRINT
@@ -152,8 +174,7 @@ pub(crate) fn load_with_fingerprints(
     }
 
     let index_stage = Instant::now();
-    let index_reused = use_cache
-        && old_cache_valid
+    let index_reused = old_cache_valid
         && changed.is_empty()
         && files_reparsed == 0
         && !removed_files
@@ -166,7 +187,8 @@ pub(crate) fn load_with_fingerprints(
     let index_us = index_stage.elapsed().as_micros();
 
     let write_stage = Instant::now();
-    if use_cache && !index_reused {
+    crate::repository::check_cancelled()?;
+    if mode != CacheMode::Disabled && !index_reused {
         write_cache(root, &files, &index)?;
     }
     let cache_write_us = write_stage.elapsed().as_micros();

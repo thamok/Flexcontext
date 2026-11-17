@@ -19,6 +19,8 @@ jobs:
       - run: cargo clippy --locked --all-targets --all-features -- -D warnings
       - run: cargo test --locked
       - run: cargo build --release --locked --bins
+      - name: CLI and resident MCP smoke checks
+        run: python3 scripts/smoke_release.py target/release/flexcontext "$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["package"]["version"])')"
       - run: ./target/release/flexcontext benchmark benchmarks --max-bytes 12000 --output /tmp/retrieval.json
       - run: cargo bench --locked --bench pipeline -- --test
       - uses: actions/upload-artifact@v4
